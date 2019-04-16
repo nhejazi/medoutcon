@@ -15,7 +15,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Causal Mediation Analysis for Stochastic Interventions
+> Causal Mediation Analysis Under Mediator-Outcome Confounding
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org) and [Iván
 Díaz](https://idiaz.xyz)
@@ -29,7 +29,7 @@ estimating a parameter that arises in a decomposition of the population
 intervention causal effect into the (in)direct effects under stochastic
 interventions in the setting of mediation analysis. `medoutcon` is
 designed as an implementation to accompany the methodology described in
-(<span class="citeproc-not-found" data-reference-id="diaz2019efficient">**???**</span>).
+Díaz et al. (2019).
 
 -----
 
@@ -176,3 +176,15 @@ See below for details:
 -----
 
 ## References
+
+<div id="refs" class="references">
+
+<div id="ref-diaz2019efficient">
+
+Díaz, Iván, Kara E Rudolph, Nima S Hejazi, and Mark J van der Laan.
+2019. “Efficient Mediation Analysis Under Mediator-Outcome Confounding
+Affected by Exposure.”
+
+</div>
+
+</div>

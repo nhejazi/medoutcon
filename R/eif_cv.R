@@ -1,136 +1,5 @@
-utils::globalVariables(c("..w_names"))
-################################################################################
 
-#' Get Dzw component of efficient influence function from nuisance parameters
-#'
-#' @param g_output Object containing results from fitting the propensity score
-#'  regression, as produced by a call to \code{fit_g_mech}.
-#' @param m_output Object containing results from fitting the outcome
-#'  regression, as produced by a call to \code{fit_m_mech}.
-#' @param shift_type A choice of the type of stochastic treatment regime to use
-#'  -- either \code{"mtp"} for a modified treatment policy that shifts the
-#'  center of the observed intervention distribution by the scalar \code{delta}
-#'  or \code{"ipsi"} for an incremental propensity score shift that multiples
-#'  the odds of receiving the intervention by the scalar \code{delta}.
-#'
-#' @keywords internal
-#
-compute_Dzw <- function(g_output,
-                        m_output,
-                        shift_type = c("ipsi", "mtp")) {
-  # set IPSI shift as default for now...
-  shift_type <- match.arg(shift_type)
-
-  if (shift_type == "ipsi") {
-    # get g components from output for that nuisance parameter
-    g_shifted_A1 <- g_output$g_est$g_pred_shifted_A1
-    g_shifted_A0 <- g_output$g_est$g_pred_shifted_A0
-
-    # get m components from output for that nuisance parameter
-    m_pred_A1 <- m_output$m_pred$m_pred_A1
-    m_pred_A0 <- m_output$m_pred$m_pred_A0
-
-    # compute component Dzw from nuisance parameters
-    Dzw_A1 <- g_shifted_A1 * m_pred_A1
-    Dzw_A0 <- g_shifted_A0 * m_pred_A0
-
-    # output as simple list
-    return(list(
-      dzw_cntrl = Dzw_A0,
-      dzw_treat = Dzw_A1
-    ))
-  } else if (shift_type == "mtp") {
-    # approximate Monte Carlo integral using inverse uniform weighting
-    Dzw_int <- integrate_over_g(g_mech = g_output$g_est$g_shifted,
-                                a_vals = g_output$a_vals$a_shifted,
-                                weighting = m_output$m_pred$m_natural)
-
-    # output as simple list
-    return(list(
-      dzw = Dzw_int
-    ))
-  }
-}
-
-################################################################################
-
-#' Get inverse probability weighted (IPW) estimate from nuisance parameters
-#'
-#' @param g_output Object containing results from fitting the propensity score
-#'  regression, as produced by a call to \code{fit_g_mech}.
-#' @param e_output Object containing results from fitting the propensity score
-#'  regression while conditioning on mediators, as produced by a call to
-#'  \code{fit_e_mech}.
-#' @param idx_treat A \code{numeric} vector providing the indices corresponding
-#'  to units that received treatment (A = 1), for a binary intervention.
-#' @param idx_cntrl A \code{numeric} vector providing the indices corresponding
-#'  to units that did not receive treatment (A = 0), for a binary intervention.
-#' @param shift_type A choice of the type of stochastic treatment regime to use
-#'  -- either \code{"mtp"} for a modified treatment policy that shifts the
-#'  center of the observed intervention distribution by the scalar \code{delta}
-#'  or \code{"ipsi"} for an incremental propensity score shift that multiples
-#'  the odds of receiving the intervention by the scalar \code{delta}.
-#'
-#' @keywords internal
-#
-compute_ipw <- function(g_output,
-                        e_output,
-                        idx_treat = NULL,
-                        idx_cntrl = NULL,
-                        shift_type = c("ipsi", "mtp")) {
-  # set IPSI shift as default for now...
-  shift_type <- match.arg(shift_type)
-
-  if (shift_type == "ipsi") {
-    # extract components for A = 0 and A = 1 cases
-    g_shifted_A1 <- g_output$g_est$g_pred_shifted_A1
-    g_shifted_A0 <- g_output$g_est$g_pred_shifted_A0
-    e_pred_A1 <- e_output$e_est$e_pred_A1
-    e_pred_A0 <- e_output$e_est$e_pred_A0
-
-    # subset computed components based on observed treatment status for g
-    g_shifted_obs <- rep(NA, length(idx_treat) + length(idx_cntrl))
-    g_shifted_A1_obs <- g_shifted_A1[idx_treat]
-    g_shifted_A0_obs <- g_shifted_A0[idx_cntrl]
-    g_shifted_obs[idx_treat] <- g_shifted_A1_obs
-    g_shifted_obs[idx_cntrl] <- g_shifted_A0_obs
-
-    # subset computed components based on observed treatment status for e
-    e_pred_obs <- rep(NA, length(idx_treat) + length(idx_cntrl))
-    e_pred_A1_obs <- e_pred_A1[idx_treat]
-    e_pred_A0_obs <- e_pred_A0[idx_cntrl]
-    e_pred_obs[idx_treat] <- e_pred_A1_obs
-    e_pred_obs[idx_cntrl] <- e_pred_A0_obs
-
-    # Hajek/stabilized weights by dividing by sample average since E[g/e] = 1
-    mean_ipw <- mean(g_shifted_obs / e_pred_obs)
-
-    # output as simple list
-    return(list(
-      g_shifted = g_shifted_obs,
-      e_pred = e_pred_obs,
-      mean_ipw = mean_ipw
-    ))
-  } else if (shift_type == "mtp") {
-    # extract components of g and e mechanisms based on intervention type
-    g_shifted_pred <- g_output$g_est$g_shifted
-    e_natural_pred <- e_output$e_est$e_natural
-
-    # Hajek/stabilized weights by dividing by sample average since E[g/e] = 1
-    mean_ipw <- mean(g_shifted_pred / e_natural_pred)
-
-    # output as simple list
-    return(list(
-      g_shifted = g_shifted_pred,
-      e_pred = e_natural_pred,
-      mean_ipw = mean_ipw
-    ))
-  }
-}
-
-################################################################################
-
-#' Cross-validated evaluation of EIF components
+#' Cross-validated evaluation of EIF with mediator-outcome confounder
 #'
 #' @param fold Object specifying cross-validation folds as generated by a call
 #'  to \code{origami::make_folds}.
@@ -180,16 +49,16 @@ compute_ipw <- function(g_output,
 #'
 #' @keywords internal
 #
-cv_eif <- function(fold,
-                   data,
-                   delta,
-                   lrnr_stack_g,
-                   lrnr_stack_e,
-                   lrnr_stack_m,
-                   lrnr_stack_phi,
-                   w_names,
-                   z_names,
-                   shift_type = c("ipsi", "mtp")) {
+cv_eif_moc <- function(fold,
+                       data,
+                       delta,
+                       lrnr_stack_g,
+                       lrnr_stack_e,
+                       lrnr_stack_m,
+                       lrnr_stack_phi,
+                       w_names,
+                       z_names,
+                       shift_type = c("ipsi", "mtp")) {
   # set IPSI shift as default for now...
   shift_type <- match.arg(shift_type)
 

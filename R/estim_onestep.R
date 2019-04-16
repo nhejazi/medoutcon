@@ -50,18 +50,18 @@ utils::globalVariables(c("..eif_component_names"))
 #'
 #' @importFrom stats var
 #' @importFrom origami make_folds cross_validate folds_vfold
-#
-est_onestep_moc <- function(data,
-                            contrast,
-                            g_lrnrs,
-                            e_lrnrs,
-                            q_lrnrs,
-                            r_lrnrs,
-                            u_lrnrs,
-                            v_lrnrs,
-                            w_names,
-                            z_names,
-                            cv_folds = 10) {
+#'
+est_onestep <- function(data,
+                        contrast,
+                        g_lrnrs,
+                        e_lrnrs,
+                        q_lrnrs,
+                        r_lrnrs,
+                        u_lrnrs,
+                        v_lrnrs,
+                        w_names,
+                        z_names,
+                        cv_folds = 10) {
   # use origami to perform CV-SL, fitting/evaluating EIF components per fold
   eif_component_names <- c("Dy", "Da", "Dzw")
 

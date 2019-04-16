@@ -2,10 +2,10 @@
 % Please edit documentation in R/estim_onestep.R
 \name{est_onestep}
 \alias{est_onestep}
-\title{Estimating equation one-step (efficient) estimator}
+\title{Estimating equation one-step estimator under mediator-outcome confounding}
 \usage{
-est_onestep(data, delta, g_lrnrs, e_lrnrs, m_lrnrs, phi_lrnrs, w_names,
-  z_names, cv_folds = 10, shift_type = c("ipsi", "mtp"))
+est_onestep(data, contrast, g_lrnrs, e_lrnrs, q_lrnrs, r_lrnrs, u_lrnrs,
+  v_lrnrs, w_names, z_names, cv_folds = 10)
 }
 \arguments{
 \item{data}{A \code{data.table} containing the observed data, with columns
@@ -15,33 +15,40 @@ a convenience utility to passing data around to the various core estimation
 routines and is automatically generated as part of a call to the user-facing
 wrapper function \code{medshift}.}
 
-\item{delta}{A \code{numeric} value indicating the degree of shift in the
-intervention to be used in defining the causal quantity of interest. In the
-case of binary interventions, this takes the form of an incremental
-propensity score shift, acting as a multiplier of the probability with which
-a given observational unit receives the intervention (EH Kennedy, 2018,
-JASA; <doi:10.1080/01621459.2017.1422737>).}
+\item{contrast}{...}
 
 \item{g_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting a model for the propensity
 score, i.e., g = P(A | W).}
 
-\item{e_lrnrs}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, to be used in fitting a cleverly parameterized
+\item{e_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\code{Lrnr_base}), containing a single or set of instantiated learners from
+the \code{sl3} package, to be used in fitting a cleverly parameterized
 propensity score that includes the mediators, i.e., e = P(A | Z, W).}
 
-\item{m_lrnrs}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, to be used in fitting the outcome regression,
-i.e., m(A, Z, W).}
+\item{q_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\code{Lrnr_base}), containing a single or set of instantiated learners from
+the \code{sl3} package, to be used in fitting a regression involving the
+mediator-outcome confounder, i.e., q(L | A', W).}
 
-\item{phi_lrnrs}{A \code{Stack} object, or other learner class
-(inheriting from \code{Lrnr_base}), containing a single or set of
-instantiated learners from the \code{sl3} package, to be used in fitting a
-reduced regression useful for computing the efficient one-step estimator,
-i.e., phi(W) = E[m(A = 1, Z, W) - m(A = 0, Z, W) | W).}
+\item{r_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\code{Lrnr_base}), containing a single or set of instantiated learners from
+the \code{sl3} package, to be used in fitting a regression involving the
+mediator-outcome confounder, i.e., r(L | A', M, W).}
+
+\item{u_lrnrs}{A \code{Stack} object, or other learner class (inheriting
+from \code{Lrnr_base}), containing a single or set of instantiated learners
+from the \code{sl3} package, to be used in fitting a reduced regression
+useful for computing the efficient one-step estimator, i.e., u(L, A, W) =
+E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) * (e(a'|Z,W) / e(A|Z,W)) |
+L = l, A = a, W = w].}
+
+\item{v_lrnrs}{A \code{Stack} object, or other learner class (inheriting
+from \code{Lrnr_base}), containing a single or set of instantiated learners
+from the \code{sl3} package, to be used in fitting a reduced regression
+useful for computing the efficient one-step estimator, i.e., v(A,W) =
+E[\int_z m(a', l, Z, W) * q(l|A',W) d\nu(z) | A = a, W = w)].}
 
 \item{w_names}{A \code{character} vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is
@@ -56,13 +63,7 @@ to be created for cross-validation. Use of cross-validation / cross-fitting
 allows for entropy conditions on the AIPW estimator to be relaxed. Note: for
 compatibility with \code{origami::make_folds}, this value specified here
 must be greater than or equal to 2; the default is to create 10 folds.}
-
-\item{shift_type}{A choice of the type of stochastic treatment regime to use
--- either \code{"mtp"} for a modified treatment policy that shifts the
-center of the observed intervention distribution by the scalar \code{delta}
-or \code{"ipsi"} for an incremental propensity score shift that multiples
-the odds of receiving the intervention by the scalar \code{delta}.}
 }
 \description{
-Estimating equation one-step (efficient) estimator
+Estimating equation one-step estimator under mediator-outcome confounding
 }

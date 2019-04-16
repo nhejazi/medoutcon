@@ -24,9 +24,8 @@ knitr::opts_chunk$set(
 
 > Causal Mediation Analysis for Stochastic Interventions
 
-__Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
-Díaz](https://idiaz.xyz), and [Kara
-Rudolph](http://biostat.jhsph.edu/~krudolph/)
+__Authors:__ [Nima Hejazi](https://nimahejazi.org) and [Iván
+Díaz](https://idiaz.xyz)
 
 ---
 
@@ -57,7 +56,7 @@ To illustrate how `medoutcon` may be used to estimate the effect of applying a
 stochastic intervention to the treatment (`A`) while keeping the mediator(s)
 (`Z`) fixed, consider the following example:
 
-```{r simple_example, message=FALSE, warning=FALSE}
+```{r simple_example, message=FALSE, warning=FALSE, eval=FALSE}
 library(data.table)
 library(medoutcon)
 
@@ -126,7 +125,8 @@ After using the `medoutcon` R package, please cite the following:
         @article{diaz2019efficient,
           title={Efficient mediation analysis under mediator-outcome
             confounding affected by exposure},
-          author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E},
+          author={D{\'\i}az, Iv{\'a}n and Rudolph, Kara E and Hejazi, Nima S
+            and {van der Laan}, Mark J},
           year={2019},
           url = {},
           doi = {},
@@ -138,7 +138,7 @@ After using the `medoutcon` R package, please cite the following:
         }
 
         @manual{hejazi2019medoutcon,
-          author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
+          author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n},
           title = {{medoutcon}: Causal mediation analysis under
             mediator-outcome confounding in {R}},
           year  = {2019},

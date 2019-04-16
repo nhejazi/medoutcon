@@ -1,18 +1,21 @@
-#' Nonparametric estimation of decomposition term for causal mediation analysis
-#' with stochastic interventions under mediator-outcome confounding
+#' Nonparametric estimation of a stochastic mediation effect under
+#' mediator-outcome confounding
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
 #'  set of baseline covariates.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
 #'  parameter of interest is defined as a location shift of this quantity.
-#' @param L A \code{numeric} vector corresponding to a mediator-outcome
+#' @param Z A \code{numeric} vector corresponding to a mediator-outcome
 #'  confounder affected by treatment (on the causal pathway between intervention
-#'  A, mediator Z, and outcome Y, but unaffected itself by the mediator Z).
-#' @param Z A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
+#'  A, mediator M, and outcome Y, but unaffected itself by the mediator M).
+#' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'  similar corresponding to a set of mediators (on the causal pathway between
 #'  the intervention A and the outcome Y).
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
-#' @param contrast ...
+#' @param contrast A \code{numeric} double indicating the two values of the
+#'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
+#'  assumes a binary intervention node \code{A}, though support for categorical
+#'  interventions is planned for future releases.
 #' @param g_lrnrs A \code{Stack} object, or other learner class (inheriting from
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting a model for the propensity
@@ -60,11 +63,10 @@
 #' @importFrom stats binomial
 #'
 #' @export
-#
 medoutcon <- function(W,
                       A,
-                      L,
                       Z,
+                      M,
                       Y,
                       contrast = c(0, 1),
                       g_lrnrs =
@@ -90,14 +92,14 @@ medoutcon <- function(W,
 
   # NOTE: mediator-outcome confounding case
   # construct input data structure
-  data <- data.table::as.data.table(cbind(Y, Z, L, A, W))
+  data <- data.table::as.data.table(cbind(Y, M, Z, A, W))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
   )
-  z_names <- paste("Z", seq_len(dim(data.table::as.data.table(Z))[2]),
+  m_names <- paste("Z", seq_len(dim(data.table::as.data.table(M))[2]),
     sep = "_"
   )
-  data.table::setnames(data, c("Y", z_names, "L", "A", w_names))
+  data.table::setnames(data, c("Y", m_names, "Z", "A", w_names))
 
   browser()
 
@@ -117,7 +119,7 @@ medoutcon <- function(W,
       w_names = w_names, z_names = z_names,
       estimator_args
     )
-    est_out <- do.call(est_onestep_moc, onestep_est_args)
+    est_out <- do.call(est_onestep, onestep_est_args)
   } else if (estimator == "tmle") {
     # TARGETED MAXIMUM LIKELIHOOD ESTIMATOR (just call tmle3::fit_tmle?)
     stop("The TML estimator is currently under development.")

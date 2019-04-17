@@ -96,7 +96,7 @@ medoutcon <- function(W,
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
   )
-  m_names <- paste("Z", seq_len(dim(data.table::as.data.table(M))[2]),
+  m_names <- paste("M", seq_len(dim(data.table::as.data.table(M))[2]),
     sep = "_"
   )
   data.table::setnames(data, c("Y", m_names, "Z", "A", w_names))
@@ -116,7 +116,7 @@ medoutcon <- function(W,
       g_lrnrs = g_lrnrs, e_lrnrs = e_lrnrs,
       q_lrnrs = q_lrnrs, r_lrnrs = r_lrnrs,
       u_lrnrs = u_lrnrs, v_lrnrs = v_lrnrs,
-      w_names = w_names, z_names = z_names,
+      w_names = w_names, m_names = m_names,
       estimator_args
     )
     est_out <- do.call(est_onestep, onestep_est_args)

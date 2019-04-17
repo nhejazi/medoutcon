@@ -1,5 +1,5 @@
 Package: medoutcon
-Title: Causal mediation analysis under mediator-outcome confounding
+Title: Efficient causal mediation analysis under mediator-outcome confounding
 Version: 0.0.1
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
@@ -9,7 +9,8 @@ Authors@R: c(
            role = c("aut"),
            comment = c(ORCID = "0000-0001-9056-2047")),
     person("Kara", "Rudolph", email = "kara.rudolph@gmail.com",
-           role = "aut"),
+           role = "aut",
+           comment = c(ORCID = "0000-XXXX-XXXX-XXXX")),
     person("Mark", "van der Laan", email = "laan@berkeley.edu",
            role = c("ctb", "ths"),
            comment = c(ORCID = "0000-0003-1432-5511"))

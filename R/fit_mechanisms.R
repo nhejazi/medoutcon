@@ -259,8 +259,8 @@ fit_m_mech <- function(data,
                                     "m_pred_A_prime",
                                     "m_pred_A_star"))
   out <- list(
-    m_pred = out_m_est,
-    m_fit_sl = m_natural_fit
+    m_est = out_m_est,
+    m_fit = m_natural_fit
   )
   return(out)
 }

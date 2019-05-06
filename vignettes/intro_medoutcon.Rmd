@@ -1,5 +1,6 @@
 ---
-title: "Causal Mediation Analysis for Stochastic Interventions"
+title: "Efficient mediation analysis under mediator-outcome confounding
+  affected by exposure"
 author: "[Nima Hejazi](https://nimahejazi.org) and
   [Iván Díaz](https://www.idiaz.xyz/)"
 date: "`r Sys.Date()`"
@@ -24,12 +25,12 @@ CRAN](https://CRAN.R-project.org/package=mma). First, let's load the packages
 we'll be using and set a seed; then, load this data set and take a quick look
 at it
 
-```{r load_data, message=FALSE, warning=FALSE}
+```{r load_data, message=FALSE, warning=FALSE, eval=FALSE}
 # preliminaries
 library(data.table)
 library(dplyr)
 library(sl3)
-library(medshift)
+library(medoutcon)
 library(mma)
 set.seed(429153)
 
@@ -52,7 +53,7 @@ to fully make of the observed data, perhaps by imputing missing values. For now,
 we simply remove the incomplete observations, resulting in a data set with fewer
 observations but much the same structure as the original:
 
-```{r remove_na, echo=FALSE, message=FALSE, warning=FALSE}
+```{r remove_na, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 # remove missing values
 is_na <- unique(do.call(c, apply(apply(weight_behavior, 2, is.na), 2, which)))
 weight_behavior_complete <- weight_behavior[-is_na, ]
@@ -69,7 +70,7 @@ all other collected covariates as potential confounders. Considering an NPSEM,
 we separate the observed variables from the data set into their corresponding
 nodes as follows
 
-```{r npsem, message=FALSE, warning=FALSE}
+```{r npsem, message=FALSE, warning=FALSE, eval=FALSE}
 Y <- weight_behavior_complete$bmi
 A <- weight_behavior_complete$sports
 Z <- weight_behavior_complete %>%
@@ -88,7 +89,7 @@ participate in sports teams. To exemplify our approach, we postulate a
 motivational intervention that _triples the odds_ of participating in a sports
 team for each individual:
 
-```{r delta_ipsi, message=FALSE, warning=FALSE}
+```{r delta_ipsi, message=FALSE, warning=FALSE, eval=FALSE}
 delta_shift_ipsi <- 3
 ```
 
@@ -100,7 +101,7 @@ https://tlverse.org (and https://github.com/tlverse) for the `tlverse`
 ecosystem, of which `sl3` is a major part. We construct an ensemble learner
 using a handful of popular machine learning algorithms below
 
-```{r make_sl, message=FALSE, warning=FALSE}
+```{r make_sl, message=FALSE, warning=FALSE, eval=FALSE}
 # SL learners used for continuous data (the nuisance parameter M)
 xgb_contin_lrnr <- Lrnr_xgboost$new(nrounds = 50, objective = "reg:linear")
 hal_contin_lrnr <- Lrnr_hal9001$new(n_folds = 5, degrees = 3)
@@ -184,7 +185,7 @@ which is implemented in the `medshift` R package [@hejazi2019medshift]. We
 make use of that implementation to estimate $\mathbb{E}\{Y(g_{\delta}, q)\}$
 via its one-step estimator $\hat{\theta}(\delta)$ below
 
-```{r efficient_est, message=FALSE, warning=FALSE}
+```{r efficient_est, message=FALSE, warning=FALSE, eval=FALSE}
 # let's compute the parameter where A (but not Z) are shifted
 theta_eff <- medshift(W = W, A = A, Z = Z, Y = Y,
                       delta = delta_shift_ipsi,
@@ -214,7 +215,7 @@ Based on the above, we may construct an estimator of the DE using the quantities
 already computed. The convenience function below applies the simple delta method
 required in the case of a linear contrast between the two constituent
 parameters:
-```{r linear_contrast_delta, message=FALSE, warning=FALSE}
+```{r linear_contrast_delta, message=FALSE, warning=FALSE, eval=FALSE}
 # convenience function to compute inference via delta method: EY1 - EY0
 linear_contrast <- function(params, eifs, ci_level = 0.95) {
   # bounds for confidence interval
@@ -232,7 +233,7 @@ linear_contrast <- function(params, eifs, ci_level = 0.95) {
 
 With the above convenience function in hand, we'll construct or extract the
 necessary components from existing objects and simply apply the function:
-```{r comp_de_binary, message=FALSE, warning=FALSE}
+```{r comp_de_binary, message=FALSE, warning=FALSE, eval=FALSE}
 # parameter estimates and EIFs for components of direct effect
 EY <- mean(Y)
 eif_EY <- Y - EY
@@ -248,4 +249,3 @@ As given above, we have for our estimate of the direct effect
 $\hat{\beta}_{\text{DE}}({\delta}) =$ `r round(de_est[2], 3)`.
 
 ## References
-

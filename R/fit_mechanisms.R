@@ -44,45 +44,86 @@ fit_g_mech <- function(data,
   if (is.null(valid_data)) {
     # copy full data
     data_intervene <- data.table::copy(data)
+
+    # set intervention to first contrast a_prime := contrast[1]
+    data_intervene[, A := contrast[1]]
+    g_intervened_task <- sl3_Task$new(
+      data = data_intervene,
+      covariates = w_names,
+      outcome_type = "binomial",
+      outcome = "A"
+    )
+
+    # get predictions from natural propensity score model for intervened data
+    g_intervened_pred_A_prime <- g_natural_fit$predict(g_intervened_task)
+
+    # compute A = a_star = contrast[2] case by symmetry
+    g_intervened_pred_A_star <- 1 - g_intervened_pred_A_prime
+
+    # bounding to numerical precision and for positivity considerations
+    out_g_mat <- cbind(g_natural_pred,
+                       g_intervened_pred_A_prime,
+                       g_intervened_pred_A_star)
+    out_g_est <- apply(out_g_mat, 2, function(x) {
+                         x_precise <- bound_precision(x)
+                         x_bounded <- bound_propensity(x_precise)
+                         return(x_bounded)
+                      })
+    out_g_est <- data.table::as.data.table(out_g_est)
+    data.table::setnames(out_g_est, c("g_pred_A_natural",
+                                      "g_pred_A_prime",
+                                      "g_pred_A_star"))
+
+    # output
+    out <- list(
+      g_est = out_g_est,
+      g_fit = g_natural_fit
+    )
   } else {
     # copy only validation data
-    data_intervene <- data.table::copy(valid_data)
+    data_intervene_train <- data.table::copy(train_data)
+    data_intervene_valid <- data.table::copy(valid_data)
+
+    # set intervention to first contrast a_prime := contrast[1]
+    out_g_est <- lapply(list(data_intervene_train, data_intervene_valid),
+                        function(data_intervene) {
+      data_intervene[, A := contrast[1]]
+      g_intervened_task_train <- sl3_Task$new(
+        data = data_intervene,
+        covariates = w_names,
+        outcome_type = "binomial",
+        outcome = "A"
+      )
+
+      # get predictions from natural propensity score model for intervened data
+      g_intervened_pred_A_prime <- g_natural_fit$predict(g_intervened_task)
+
+      # compute A = a_star = contrast[2] case by symmetry
+      g_intervened_pred_A_star <- 1 - g_intervened_pred_A_prime
+
+      # bounding to numerical precision and for positivity considerations
+      out_g_mat <- cbind(g_natural_pred,
+                         g_intervened_pred_A_prime,
+                         g_intervened_pred_A_star)
+      out_g_est <- apply(out_g_mat, 2, function(x) {
+                           x_precise <- bound_precision(x)
+                           x_bounded <- bound_propensity(x_precise)
+                           return(x_bounded)
+                        })
+      out_g_est <- data.table::as.data.table(out_g_est)
+      data.table::setnames(out_g_est, c("g_pred_A_natural",
+                                        "g_pred_A_prime",
+                                        "g_pred_A_star"))
+      return(out_g_est)
+    })
+
+    # output
+    out <- list(
+      g_est_train = out_g_est[[1]],
+      g_est_valid = out_g_est[[2]],
+      g_fit = g_natural_fit
+    )
   }
-
-  # set intervention to first contrast a_prime := contrast[1]
-  data_intervene[, A := contrast[1]]
-  g_intervened_task <- sl3_Task$new(
-    data = data_intervene,
-    covariates = w_names,
-    outcome_type = "binomial",
-    outcome = "A"
-  )
-
-  # get predictions from natural propensity score model for intervened data
-  g_intervened_pred_A_prime <- g_natural_fit$predict(g_intervened_task)
-
-  # compute A = a_star = contrast[2] case by symmetry
-  g_intervened_pred_A_star <- 1 - g_intervened_pred_A_prime
-
-  # bounding to numerical precision and for positivity considerations
-  out_g_mat <- cbind(g_natural_pred,
-                     g_intervened_pred_A_prime,
-                     g_intervened_pred_A_star)
-  out_g_est <- apply(out_g_mat, 2, function(x) {
-                       x_precise <- bound_precision(x)
-                       x_bounded <- bound_propensity(x_precise)
-                       return(x_bounded)
-                    })
-  out_g_est <- data.table::as.data.table(out_g_est)
-  data.table::setnames(out_g_est, c("g_pred_A_natural",
-                                    "g_pred_A_prime",
-                                    "g_pred_A_star"))
-
-  # output
-  out <- list(
-    g_est = out_g_est,
-    g_fit = g_natural_fit
-  )
   return(out)
 }
 
@@ -138,45 +179,81 @@ fit_e_mech <- function(data,
   if (is.null(valid_data)) {
     # copy full data
     data_intervene <- data.table::copy(data)
+
+    # set intervention to first contrast a_prime := contrast[1]
+    data_intervene[, A := contrast[1]]
+    e_intervened_task <- sl3_Task$new(
+      data = data_intervene,
+      covariates = c(m_names, w_names),
+      outcome_type = "binomial",
+      outcome = "A"
+    )
+
+    # predict from trained model on counterfactual data
+    e_intervened_pred_A_prime <- e_natural_fit$predict(e_intervened_task)
+
+    # get values of nuisance parameter E for A = a_star = contrast[2] by symmetry
+    e_intervened_pred_A_star <- 1 - e_intervened_pred_A_prime
+
+    # bounding to numerical precision and for positivity considerations
+    out_e_mat <- cbind(e_natural_pred,
+                       e_intervened_pred_A_prime,
+                       e_intervened_pred_A_star)
+    out_e_est <- apply(out_e_mat, 2, function(x) {
+                         x_precise <- bound_precision(x)
+                         x_bounded <- bound_propensity(x_precise)
+                         return(x_bounded)
+                      })
+    out_e_est <- data.table::as.data.table(out_e_est)
+    data.table::setnames(out_e_est, c("e_pred_A_natural",
+                                      "e_pred_A_prime",
+                                      "e_pred_A_star"))
   } else {
     # copy only validation data
-    data_intervene <- data.table::copy(valid_data)
+    data_intervene_train <- data.table::copy(train_data)
+    data_intervene_valid <- data.table::copy(valid_data)
+
+    out_e_est <- lapply(list(data_intervene_train, data_intervene_valid),
+                        function(data_intervene) {
+
+      # set intervention to first contrast a_prime := contrast[1]
+      data_intervene[, A := contrast[1]]
+      e_intervened_task <- sl3_Task$new(
+        data = data_intervene,
+        covariates = c(m_names, w_names),
+        outcome_type = "binomial",
+        outcome = "A"
+      )
+
+      # predict from trained model on counterfactual data
+      e_intervened_pred_A_prime <- e_natural_fit$predict(e_intervened_task)
+
+      # values of nuisance parameter E for A = a_star = contrast[2] by symmetry
+      e_intervened_pred_A_star <- 1 - e_intervened_pred_A_prime
+
+      # bounding to numerical precision and for positivity considerations
+      out_e_mat <- cbind(e_natural_pred,
+                         e_intervened_pred_A_prime,
+                         e_intervened_pred_A_star)
+      out_e_est <- apply(out_e_mat, 2, function(x) {
+                           x_precise <- bound_precision(x)
+                           x_bounded <- bound_propensity(x_precise)
+                           return(x_bounded)
+                        })
+      out_e_est <- data.table::as.data.table(out_e_est)
+      data.table::setnames(out_e_est, c("e_pred_A_natural",
+                                        "e_pred_A_prime",
+                                        "e_pred_A_star"))
+      return(out_e_est)
+    })
+
+    # output
+    out <- list(
+      e_est_train = out_e_est[[1]],
+      e_est_valid = out_e_est[[2]],
+      e_fit = e_natural_fit
+    )
   }
-
-  # set intervention to first contrast a_prime := contrast[1]
-  data_intervene[, A := contrast[1]]
-  e_intervened_task <- sl3_Task$new(
-    data = data_intervene,
-    covariates = c(m_names, w_names),
-    outcome_type = "binomial",
-    outcome = "A"
-  )
-
-  # predict from trained model on counterfactual data
-  e_intervened_pred_A_prime <- e_natural_fit$predict(e_intervened_task)
-
-  # get values of nuisance parameter E for A = a_star = contrast[2] by symmetry
-  e_intervened_pred_A_star <- 1 - e_intervened_pred_A_prime
-
-  # bounding to numerical precision and for positivity considerations
-  out_e_mat <- cbind(e_natural_pred,
-                     e_intervened_pred_A_prime,
-                     e_intervened_pred_A_star)
-  out_e_est <- apply(out_e_mat, 2, function(x) {
-                       x_precise <- bound_precision(x)
-                       x_bounded <- bound_propensity(x_precise)
-                       return(x_bounded)
-                    })
-  out_e_est <- data.table::as.data.table(out_e_est)
-  data.table::setnames(out_e_est, c("e_pred_A_natural",
-                                    "e_pred_A_prime",
-                                    "e_pred_A_star"))
-
-  # output
-  out <- list(
-    e_est = out_e_est,
-    e_fit = e_natural_fit
-  )
   return(out)
 }
 

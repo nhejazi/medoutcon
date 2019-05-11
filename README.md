@@ -15,10 +15,12 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Causal Mediation Analysis Under Mediator-Outcome Confounding
+> Efficient Causal Mediation Analysis Under Mediator-Outcome Confounding
+> Affected by Exposure
 
-**Authors:** [Nima Hejazi](https://nimahejazi.org) and [Iván
-Díaz](https://idiaz.xyz)
+**Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
+Díaz](https://idiaz.xyz), and [Kara
+Rudolph](http://biostat.jhsph.edu/~krudolph/)
 
 -----
 
@@ -29,7 +31,7 @@ estimating a parameter that arises in a decomposition of the population
 intervention causal effect into the (in)direct effects under stochastic
 interventions in the setting of mediation analysis. `medoutcon` is
 designed as an implementation to accompany the methodology described in
-Díaz et al. (2019).
+(<span class="citeproc-not-found" data-reference-id="diaz2019efficient">**???**</span>).
 
 -----
 
@@ -55,39 +57,50 @@ library(data.table)
 library(medoutcon)
 
 # produces a simple data set based on ca causal model with mediation
-make_simple_mediation_data <- function(n_obs = 1000) {
+make_example_data <- function(n_obs = 1000) {
   # baseline covariate -- simple, binary
-  W <- rbinom(n_obs, 1, prob = 0.50)
+  W <- replicate(2, rbinom(n_obs, 1, prob = 0.50))
+  W <- as.data.table(W)
+  setnames(W, c("w_1", "w_2"))
 
   # create treatment based on baseline W
-  A <- as.numeric(rbinom(n_obs, 1, prob = W / 4 + 0.1))
+  A <- as.numeric(rbinom(n_obs, 1, prob = rowSums(W)/3 + 0.1))
 
-  # single mediator to affect the outcome
-  z1_prob <- 1 - plogis((A^2 + W) / (A + W^3 + 0.5))
-  z1_prob[z1_prob < 0.01] <- 0.01
-  z1_prob[z1_prob > 0.99] <- 0.99
-  Z <- rbinom(n_obs, 1, prob = z1_prob)
+  # single mediator-outcome confounder
+  z_prob <- 1 - plogis((A^2 + rowMeans(W)) / (A + rowSums(W^3) + 0.5))
+  Z <- rbinom(n_obs, 1, prob = z_prob)
 
-  # create outcome as a linear function of A, W + white noise
-  Y <- Z + A - 0.1 * W + rnorm(n_obs, mean = 0, sd = 0.25)
+  # matrix of mediators
+  m1_prob <- plogis((A^2 - Z) / (A + rowMeans(W) + 0.5))
+  m2_prob <- 1 - plogis((A + rowSums(W)) / (Z + 0.5))
+  M1 <- rbinom(n_obs, 1, prob = m1_prob)
+  M2 <- rbinom(n_obs, 1, prob = m2_prob)
+  M <- as.data.table(list(m_1 = M1, m_2 = M2))
+
+  # create outcome as a linear function + white noise
+  Y <- rowMeans(M) - Z + A - 0.1 * rowSums(W) +
+    rnorm(n_obs, mean = 0, sd = 0.25)
 
   # full data structure
-  data <- as.data.table(cbind(Y, Z, A, W))
-  setnames(data, c("Y", "Z", "A", "W"))
+  data <- as.data.table(cbind(Y, M, Z, A, W))
   return(data)
 }
 
 # set seed and simulate example data
 set.seed(75681)
-example_data <- make_simple_mediation_data()
+example_data <- make_example_data()
+w_names <- str_subset(colnames(example_data), "w")
+m_names <- str_subset(colnames(example_data), "m")
 
-# compute AIPW estimate based on an incremental propensity score intervention
-# that triples (delta = 3) the individual-specific odds of receiving treatment
-aipw_medoutcon <- medoutcon(W = example_data$W, A = example_data$A,
-                          Z = example_data$Z, Y = example_data$Y,
-                          delta = 3, estimator = "onestep",
+# compute one-step estimate
+os_medoutcon <- medoutcon(W = example_data[, ..w_names],
+                          A = example_data$A,
+                          Z = example_data$Z,
+                          M = example_data[, ..m_names],
+                          Y = example_data$Y,
+                          estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
-summary(aipw_medoutcon)
+summary(os_medoutcon)
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -117,10 +130,10 @@ prior to submitting a pull request.
 After using the `medoutcon` R package, please cite the following:
 
 ``` 
-    @article{diaz2019efficient,
+    @article{rudolph2019efficient,
       title={Efficient mediation analysis under mediator-outcome
         confounding affected by exposure},
-      author={D{\'\i}az, Iv{\'a}n and Rudolph, Kara E and Hejazi, Nima S
+      author={Rudolph, Kara E and D{\'\i}az, Iv{\'a}n and Hejazi, Nima S
         and {van der Laan}, Mark J},
       year={2019},
       url = {},
@@ -133,7 +146,7 @@ After using the `medoutcon` R package, please cite the following:
     }
 
     @manual{hejazi2019medoutcon,
-      author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n},
+      author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
       title = {{medoutcon}: Causal mediation analysis under
         mediator-outcome confounding in {R}},
       year  = {2019},
@@ -176,15 +189,3 @@ See below for details:
 -----
 
 ## References
-
-<div id="refs" class="references">
-
-<div id="ref-diaz2019efficient">
-
-Díaz, Iván, Kara E Rudolph, Nima S Hejazi, and Mark J van der Laan.
-2019. “Efficient Mediation Analysis Under Mediator-Outcome Confounding
-Affected by Exposure.”
-
-</div>
-
-</div>

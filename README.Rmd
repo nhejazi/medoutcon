@@ -23,9 +23,11 @@ knitr::opts_chunk$set(
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 > Efficient Causal Mediation Analysis Under Mediator-Outcome Confounding
+> Affected by Exposure
 
-__Authors:__ [Nima Hejazi](https://nimahejazi.org) and [Iván
-Díaz](https://idiaz.xyz)
+__Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
+Díaz](https://idiaz.xyz), and [Kara
+Rudolph](http://biostat.jhsph.edu/~krudolph/)
 
 ---
 
@@ -133,10 +135,10 @@ prior to submitting a pull request.
 
 After using the `medoutcon` R package, please cite the following:
 
-        @article{diaz2019efficient,
+        @article{rudolph2019efficient,
           title={Efficient mediation analysis under mediator-outcome
             confounding affected by exposure},
-          author={D{\'\i}az, Iv{\'a}n and Rudolph, Kara E and Hejazi, Nima S
+          author={Rudolph, Kara E and D{\'\i}az, Iv{\'a}n and Hejazi, Nima S
             and {van der Laan}, Mark J},
           year={2019},
           url = {},
@@ -149,7 +151,7 @@ After using the `medoutcon` R package, please cite the following:
         }
 
         @manual{hejazi2019medoutcon,
-          author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n},
+          author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
           title = {{medoutcon}: Causal mediation analysis under
             mediator-outcome confounding in {R}},
           year  = {2019},
@@ -192,4 +194,3 @@ SOFTWARE.
 ---
 
 ## References
-

@@ -1,9 +1,9 @@
 #' Fit propensity score over given contrasts
 #'
-#' @param data A \code{data.table} containing the observed data, with columns
-#'  in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
-#'  appropriately based on the original input data. Such a structure is merely
-#'  a convenience utility to passing data around to the various core estimation
+#' @param train_data A \code{data.table} containing the observed data; columns
+#'  are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
+#'  set appropriately based on the input data. Such a structure is merely a
+#'  convenience utility to passing data around to the various core estimation
 #'  routines and is automatically generated as part of a call to the user-facing
 #'  wrapper function \code{medoutcon}.
 #' @param valid_data A holdout data set, with columns exactly matching those
@@ -24,14 +24,14 @@
 #' @importFrom data.table as.data.table copy setnames ":="
 #' @importFrom sl3 sl3_Task
 #'
-fit_g_mech <- function(data,
+fit_g_mech <- function(train_data,
                        valid_data = NULL,
                        contrast,
                        lrnr_stack,
                        w_names) {
   # construct task for propensity score fit
   g_natural_task <- sl3::sl3_Task$new(
-    data = data,
+    data = train_data,
     covariates = w_names,
     outcome = "A"
   )
@@ -42,15 +42,15 @@ fit_g_mech <- function(data,
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
-    # add intervention column to full data
-    data[, A_prime := contrast[1]]
+    # set intervention column to the first contrast
+    train_data[, A := contrast[1]]
 
     # set intervention to first contrast a_prime := contrast[1]
     g_intervened_task <- sl3_Task$new(
-      data = data_intervene,
+      data = train_data,
       covariates = w_names,
       outcome_type = "binomial",
-      outcome = "A_prime"
+      outcome = "A"
     )
 
     # get predictions from natural propensity score model for intervened data
@@ -79,18 +79,19 @@ fit_g_mech <- function(data,
       g_fit = g_natural_fit
     )
   } else {
-    # add intervention columns to training and validation splits
-    train_data[, A_prime := contrast[1]]
-    valid_data[, A_prime := contrast[1]]
+    # set intervention columns to first contrast for training, validation splits
+    train_data[, A := contrast[1]]
+    valid_data[, A := contrast[1]]
 
     # set intervention to first contrast a_prime := contrast[1]
-    out_g_est <- lapply(list(train_data, valid_data),
-                        function(data_intervene) {
-      g_intervened_task_train <- sl3_Task$new(
+    out_g_est <- lapply(list(train_data, valid_data), function(data_intervene) {
+
+      # create task to generate contrast-specific predictions
+      g_intervened_task <- sl3_Task$new(
         data = data_intervene,
         covariates = w_names,
         outcome_type = "binomial",
-        outcome = "A_prime"
+        outcome = "A"
       )
 
       # get predictions from natural propensity score model for intervened data
@@ -128,10 +129,10 @@ fit_g_mech <- function(data,
 
 #' Fit propensity score conditioning on mediators over given contrasts
 #'
-#' @param data A \code{data.table} containing the observed data, with columns
-#'  in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
-#'  appropriately based on the original input data. Such a structure is merely
-#'  a convenience utility to passing data around to the various core estimation
+#' @param train_data A \code{data.table} containing the observed data; columns
+#'  are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
+#'  set appropriately based on the input data. Such a structure is merely a
+#'  convenience utility to passing data around to the various core estimation
 #'  routines and is automatically generated as part of a call to the user-facing
 #'  wrapper function \code{medoutcon}.
 #' @param valid_data A holdout data set, with columns exactly matching those
@@ -155,7 +156,7 @@ fit_g_mech <- function(data,
 #' @importFrom data.table as.data.table copy setnames ":="
 #' @importFrom sl3 sl3_Task
 #'
-fit_e_mech <- function(data,
+fit_e_mech <- function(train_data,
                        valid_data = NULL,
                        contrast,
                        lrnr_stack,
@@ -163,7 +164,7 @@ fit_e_mech <- function(data,
                        w_names) {
   # construct task for nuisance parameter fit
   e_natural_task <- sl3::sl3_Task$new(
-    data = data,
+    data = train_data,
     covariates = c(m_names, w_names),
     outcome = "A"
   )
@@ -174,13 +175,12 @@ fit_e_mech <- function(data,
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
-    # copy full data
-    data_intervene <- data.table::copy(data)
-
     # set intervention to first contrast a_prime := contrast[1]
-    data_intervene[, A := contrast[1]]
+    train_data[, A := contrast[1]]
+
+    # create task for first treatment-specific propensity score regression
     e_intervened_task <- sl3_Task$new(
-      data = data_intervene,
+      data = train_data,
       covariates = c(m_names, w_names),
       outcome_type = "binomial",
       outcome = "A"
@@ -212,15 +212,14 @@ fit_e_mech <- function(data,
       e_fit = e_natural_fit
     )
   } else {
-    # copy only validation data
-    data_intervene_train <- data.table::copy(train_data)
-    data_intervene_valid <- data.table::copy(valid_data)
+    # set intervention to first contrast a_prime := contrast[1]
+    train_data[, A := contrast[1]]
+    valid_data[, A := contrast[1]]
 
-    out_e_est <- lapply(list(data_intervene_train, data_intervene_valid),
-                        function(data_intervene) {
+    # loop over training and validation data to get fold-specific predictions
+    out_e_est <- lapply(list(train_data, valid_data), function(data_intervene) {
 
-      # set intervention to first contrast a_prime := contrast[1]
-      data_intervene[, A := contrast[1]]
+      # create task to generate predictions for contrast-specific predictions
       e_intervened_task <- sl3_Task$new(
         data = data_intervene,
         covariates = c(m_names, w_names),
@@ -264,10 +263,10 @@ fit_e_mech <- function(data,
 
 #' Fit outcome regression
 #'
-#' @param data A \code{data.table} containing the observed data, with columns
-#'  in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
-#'  appropriately based on the original input data. Such a structure is merely
-#'  a convenience utility to passing data around to the various core estimation
+#' @param train_data A \code{data.table} containing the observed data, with
+#'  columns in the order specified by the NPSEM (Y, M, Z, A, W), with column
+#'  names set based on the original input data. Such a structure is merely a
+#'  convenience utility to passing data around to the various core estimation
 #'  routines and is automatically generated as part of a call to the user-facing
 #'  wrapper function \code{medoutcon}.
 #' @param valid_data A holdout data set, with columns exactly matching those
@@ -291,7 +290,7 @@ fit_e_mech <- function(data,
 #' @importFrom data.table as.data.table copy setnames ":="
 #' @importFrom sl3 sl3_Task
 #'
-fit_m_mech <- function(data,
+fit_m_mech <- function(train_data,
                        valid_data = NULL,
                        contrast,
                        lrnr_stack,
@@ -299,7 +298,7 @@ fit_m_mech <- function(data,
                        w_names) {
   #  construct task for propensity score fit
   m_natural_task <- sl3::sl3_Task$new(
-    data = data,
+    data = train_data,
     covariates = c("A", m_names, "Z", w_names),
     outcome = "Y"
   )
@@ -310,14 +309,10 @@ fit_m_mech <- function(data,
 
   # use full data for counterfactual prediction if no validation data given
   if (is.null(valid_data)) {
-    # copy full data, once for each contrast
-    data_intervene_prime <- data.table::copy(data)
-    data_intervene_star <- data.table::copy(data)
-
-    # set intervention to first contrast a_prime := contrast[1]
-    data_intervene_prime[, A := contrast[1]]
+    # set intervention to first contrast a_prime := contrast[1] and create task
+    train_data[, A := contrast[1]]
     m_intervened_prime_task <- sl3::sl3_Task$new(
-      data = data_intervene_prime,
+      data = train_data,
       covariates = c("A", m_names, "Z", w_names),
       outcome = "Y"
     )
@@ -325,10 +320,10 @@ fit_m_mech <- function(data,
     # predict from trained model on counterfactual data
     m_intervened_pred_A_prime <- m_natural_fit$predict(m_intervened_prime_task)
 
-    # set intervention to first contrast a_star := contrast[2]
-    data_intervene_star[, A := contrast[2]]
+    # set intervention to second contrast a_star := contrast[2] and create task
+    train_data[, A := contrast[2]]
     m_intervened_star_task <- sl3::sl3_Task$new(
-      data = data_intervene_star,
+      data = train_data,
       covariates = c("A", m_names, "Z", w_names),
       outcome = "Y"
     )

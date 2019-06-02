@@ -58,15 +58,14 @@ sim_medoutcon_data <- function(n_obs = 1000) {
 # get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data()
 w_names <- str_subset(colnames(data), "w")
-z_names <- str_subset(colnames(data), "m")
+m_names <- str_subset(colnames(data), "m")
 
 ################################################################################
 # test different estimators
 ################################################################################
-
-theta_os <- medshift_moc(
-  W = data[, ..w_names], A = data$a, L = data$z,
-  Z = data[, ..z_names], Y = data$y,
+theta_os <- medoutcon(
+  W = data[, ..w_names], A = data$a, Z = data$z,
+  M = data[, ..m_names], Y = data$y,
   contrast = c(0, 1),
   g_lrnrs = hal_binary_lrnr,
   e_lrnrs = hal_binary_lrnr,

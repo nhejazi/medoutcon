@@ -82,8 +82,8 @@ medoutcon <- function(W,
                       estimator = c(
                         "onestep",
                         "tmle",
-                        "sub",
-                        "ipw"
+                        "ipw",
+                        "sub"
                       ),
                       estimator_args = list(cv_folds = 5)) {
   # set defaults

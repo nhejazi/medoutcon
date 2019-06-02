@@ -12,7 +12,7 @@ medoutcon(W, A, Z, M, Y, contrast = c(0, 1),
   r_lrnrs = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_lrnrs = sl3::Lrnr_glm_fast$new(),
   v_lrnrs = sl3::Lrnr_glm_fast$new(), estimator = c("onestep", "tmle",
-  "sub", "ipw"), estimator_args = list(cv_folds = 5))
+  "ipw", "sub"), estimator_args = list(cv_folds = 5))
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a

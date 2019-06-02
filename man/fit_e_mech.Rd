@@ -4,14 +4,14 @@
 \alias{fit_e_mech}
 \title{Fit propensity score conditioning on mediators over given contrasts}
 \usage{
-fit_e_mech(data, valid_data = NULL, contrast, lrnr_stack, m_names,
+fit_e_mech(train_data, valid_data = NULL, contrast, lrnr_stack, m_names,
   w_names)
 }
 \arguments{
-\item{data}{A \code{data.table} containing the observed data, with columns
-in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
-appropriately based on the original input data. Such a structure is merely
-a convenience utility to passing data around to the various core estimation
+\item{train_data}{A \code{data.table} containing the observed data; columns
+are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
+set appropriately based on the input data. Such a structure is merely a
+convenience utility to passing data around to the various core estimation
 routines and is automatically generated as part of a call to the user-facing
 wrapper function \code{medoutcon}.}
 

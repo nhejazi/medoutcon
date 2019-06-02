@@ -1,10 +1,10 @@
 #' Confidence Intervals for Stochastic Mediation Parameter Objects
 #'
-#' Compute confidence intervals for objects of class \code{medshift}, which
-#' contain estimates produced by \code{medshift}.
+#' Compute confidence intervals for objects of class \code{medoutcon}, which
+#' contain estimates produced by \code{medoutcon}.
 #'
-#' @param object An object of class \code{medshift}, as produced by invoking
-#'  the function \code{tmle_medshift}, for which a confidence interval is to be
+#' @param object An object of class \code{medoutcon}, as produced by invoking
+#'  the function \code{tmle_medoutcon}, for which a confidence interval is to be
 #'  computed.
 #' @param parm A \code{numeric} vector indicating indices of \code{object$est}
 #'  for which to return confidence intervals.
@@ -15,11 +15,11 @@
 #' @importFrom stats qnorm
 #' @importFrom assertthat assert_that
 #'
-#' @method confint medshift
+#' @method confint medoutcon
 #'
 #' @export
 #
-confint.medshift <- function(object,
+confint.medoutcon <- function(object,
                               parm = seq_len(object$psi),
                               level = 0.95,
                               ...) {
@@ -47,10 +47,10 @@ confint.medshift <- function(object,
 
 #' Summary for Stochastic Mediation Parameter Objects
 #'
-#' Print a convenient summary for objects of \code{S3} class \code{medshift}.
+#' Print a convenient summary for objects of \code{S3} class \code{medoutcon}.
 #'
-#' @param object An object of class \code{medshift}, as produced by invoking
-#'  the function \code{tmle_medshift}, for which a confidence interval is to be
+#' @param object An object of class \code{medoutcon}, as produced by invoking
+#'  the function \code{tmle_medoutcon}, for which a confidence interval is to be
 #'  computed.
 #' @param ... Other arguments. Not currently used.
 #' @param ci_level A \code{numeric} indicating the level of the confidence
@@ -58,11 +58,11 @@ confint.medshift <- function(object,
 #'
 #' @importFrom stats confint
 #'
-#' @method summary medshift
+#' @method summary medoutcon
 #'
 #' @export
 #
-summary.medshift <- function(object,
+summary.medoutcon <- function(object,
                               ...,
                               ci_level = 0.95) {
   # inference is currently limited to the one-step efficient estimator
@@ -91,16 +91,16 @@ summary.medshift <- function(object,
 
 #' Print Method for Stochastic Mediation Parameter Objects
 #'
-#' The \code{print} method for objects of class \code{medshift}.
+#' The \code{print} method for objects of class \code{medoutcon}.
 #'
-#' @param x An object of class \code{medshift}.
+#' @param x An object of class \code{medoutcon}.
 #' @param ... Other options (not currently used).
 #'
-#' @method print medshift
+#' @method print medoutcon
 #'
 #' @export
 #
-print.medshift <- function(x, ...) {
+print.medoutcon <- function(x, ...) {
   # inference is currently limited to the one-step efficient estimator
   # TODO: allow use for TML estimators once impelemented
   if (x$type == "one-step efficient") {
@@ -180,49 +180,4 @@ scale_to_unit <- function(vals) {
 scale_to_original <- function(scaled_vals, max_orig, min_orig) {
   vals_orig <- (scaled_vals * (max_orig - min_orig)) + min_orig
   return(vals_orig)
-}
-
-################################################################################
-
-#' Numerical Integration for Weighted Treatment Mechanism
-#'
-#' In the case of modified treatment policies, it is necessary to numerically
-#' evaluate an integral over the domain of the treatment mechanism. This is a
-#' simple procedure to numerically compute such an integral based on Monte
-#' Carlo importance sampling from a uniform distribution.
-#'
-#' @param g_mech The estimated conditional density corresponding to the natural
-#'  or shifted value of the treatment for modified treatment policies based on
-#'  the observed values of the treatment.
-#' @param a_vals The observed values of the treatment used in computing the
-#'  conditional density estimates provided in the argument \code{g_mech}.
-#' @param weighting A \code{numeric} vector of weights corresponding to various
-#'  regression functions estiated based on the observed values of the treatment.
-#'  Such values correspond to a multiplicative weight applied to the estimated
-#'  conditional density.
-#' @param int_grid_prop A \code{numeric} scalar corresponding to the propotion
-#'  of points to be used in numerically evaluating an integral over the domain
-#'  of the natural/shifted conditional density of the treatment. This is only
-#'  relevant in the case of modified treatment policies for continuous-valued
-#'  exposures; it is irrelevant for incremental propensity score interventions.
-#'
-#' @keywords internal
-#
-integrate_over_g <- function(g_mech, a_vals, weighting, int_grid_prop = 0.5) {
-  # numerical integration over the domain of A via Monte Carlo
-  min_a_shifted <- min(a_vals)
-  max_a_shifted <- max(a_vals)
-  range_a_shifted <- max_a_shifted - min_a_shifted
-
-  # sample points uniformly distributed over the treatment mechanism
-  int_grid_size <- round(length(a_vals) * int_grid_prop)
-  int_grid_points <- sample(length(a_vals), int_grid_size)
-  g_mech_grid <- g_mech[int_grid_points]
-
-  # choose same grid of uniformly sampled points for the weighting component
-  weighting_grid <- weighting[int_grid_points]
-
-  # compute weighted combination of terms for numerical integration
-  integ_mc <- (range_a_shifted / int_grid_size) * g_mech_grid * weighting_grid
-  return(integ_mc)
 }

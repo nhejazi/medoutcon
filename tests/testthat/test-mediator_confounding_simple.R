@@ -69,6 +69,7 @@ theta_os <- medoutcon(
   contrast = c(0, 1),
   g_lrnrs = hal_binary_lrnr,
   e_lrnrs = hal_binary_lrnr,
+  m_lrnrs = hal_contin_lrnr,
   q_lrnrs = hal_binary_lrnr,
   r_lrnrs = hal_binary_lrnr,
   u_lrnrs = hal_contin_lrnr,

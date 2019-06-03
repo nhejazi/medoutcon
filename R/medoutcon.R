@@ -24,6 +24,9 @@
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting a cleverly parameterized
 #'  propensity score that includes the mediators, i.e., e = P(A | Z, W).
+#' @param m_lrnrs A \code{Stack} object, or other learner class (inheriting from
+#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
+#'  the \code{sl3} package, to be used in fitting the outcome regression.
 #' @param q_lrnrs A \code{Stack} object, or other learner class (inheriting from
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting a regression involving the
@@ -73,6 +76,7 @@ medoutcon <- function(W,
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
                       e_lrnrs =
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+                      m_lrnrs = sl3::Lrnr_glm_fast$new(),
                       q_lrnrs =
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
                       r_lrnrs =
@@ -114,6 +118,7 @@ medoutcon <- function(W,
     onestep_est_args <- list(
       data = data, contrast = contrast,
       g_lrnrs = g_lrnrs, e_lrnrs = e_lrnrs,
+      m_lrnrs = m_lrnrs,
       q_lrnrs = q_lrnrs, r_lrnrs = r_lrnrs,
       u_lrnrs = u_lrnrs, v_lrnrs = v_lrnrs,
       w_names = w_names, m_names = m_names,

@@ -4,11 +4,11 @@
 \alias{fit_moc_mech}
 \title{Fit mediator-outcome confounder score with(out) conditioning on mediators}
 \usage{
-fit_moc_mech(data, valid_data = NULL, contrast, lrnr_stack, m_names,
-  w_names, type = c("q", "r"))
+fit_moc_mech(train_data, valid_data = NULL, contrast, lrnr_stack,
+  m_names, w_names, type = c("q", "r"))
 }
 \arguments{
-\item{data}{A \code{data.table} containing the observed data, with columns
+\item{train_data}{A \code{data.table} containing observed data, with columns
 in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
 appropriately based on the original input data. Such a structure is merely
 a convenience utility to passing data around to the various core estimation

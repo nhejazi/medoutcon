@@ -4,8 +4,8 @@
 \alias{est_onestep}
 \title{Estimating equation one-step estimator under mediator-outcome confounding}
 \usage{
-est_onestep(data, contrast, g_lrnrs, e_lrnrs, q_lrnrs, r_lrnrs, u_lrnrs,
-  v_lrnrs, w_names, m_names, cv_folds = 10)
+est_onestep(data, contrast, g_lrnrs, e_lrnrs, m_lrnrs, q_lrnrs, r_lrnrs,
+  u_lrnrs, v_lrnrs, w_names, m_names, cv_folds = 10)
 }
 \arguments{
 \item{data}{A \code{data.table} containing the observed data, with columns
@@ -26,6 +26,10 @@ score, i.e., g = P(A | W).}
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting a cleverly parameterized
 propensity score that includes the mediators, i.e., e = P(A | Z, W).}
+
+\item{m_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\code{Lrnr_base}), containing a single or set of instantiated learners from
+the \code{sl3} package, to be used in fitting the outcome regression.}
 
 \item{q_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from

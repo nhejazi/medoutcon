@@ -8,6 +8,7 @@ mediator-outcome confounding}
 medoutcon(W, A, Z, M, Y, contrast = c(0, 1),
   g_lrnrs = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   e_lrnrs = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  m_lrnrs = sl3::Lrnr_glm_fast$new(),
   q_lrnrs = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   r_lrnrs = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_lrnrs = sl3::Lrnr_glm_fast$new(),
@@ -45,6 +46,10 @@ score, i.e., g = P(A | W).}
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting a cleverly parameterized
 propensity score that includes the mediators, i.e., e = P(A | Z, W).}
+
+\item{m_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\code{Lrnr_base}), containing a single or set of instantiated learners from
+the \code{sl3} package, to be used in fitting the outcome regression.}
 
 \item{q_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from

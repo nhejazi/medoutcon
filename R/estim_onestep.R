@@ -238,11 +238,125 @@ cv_eif <- function(fold,
   )
 
   # 6) construct pseudo-outcome and perform regression for nuisance parameter u
+  u_pseudo_train <- m_out$m_est_train$m_pred_A_natural *
+    (q_out$moc_est_train$moc_pred_A_natural /
+     r_out$moc_est_train$moc_pred_A_natural) *
+    (e_out$e_est_train$e_pred_A_star / e_out$e_est_train$e_pred_A_natural)
+  ## construct data set and training task
+  u_data_train <- data.table::as.data.table(cbind(train_data[, ..w_names],
+                                                  train_data$A, train_data$Z,
+                                                  u_pseudo_train))
+  data.table::setnames(u_data_train, c(w_names, "A", "Z", "U_pseudo"))
+  u_task_train <- sl3::sl3_Task$new(
+    data = u_data_train,
+    covariates = c(w_names, "A", "Z"),
+    outcome_type = "continuous",
+    outcome = "U_pseudo"
+  )
+  ## fit model for nuisance parameter regression on training data
+  u_param_fit <- u_lrnr_stack$train(u_task_train)
 
-
-
+  ## now, same process but for the validation set
+  u_pseudo_valid <- m_out$m_est_valid$m_pred_A_natural *
+    (q_out$moc_est_valid$moc_pred_A_natural /
+     r_out$moc_est_valid$moc_pred_A_natural) *
+    (e_out$e_est_valid$e_pred_A_star / e_out$e_est_valid$e_pred_A_natural)
+  ## construct data set and validation task for prediction
+  u_data_valid <- data.table::as.data.table(cbind(valid_data[, ..w_names],
+                                                  valid_data$A, valid_data$Z,
+                                                  u_pseudo_valid))
+  data.table::setnames(u_data_valid, c(w_names, "A", "Z", "U_pseudo"))
+  u_task_valid <- sl3::sl3_Task$new(
+    data = u_data_valid,
+    covariates = c(w_names, "A", "Z"),
+    outcome_type = "continuous",
+    outcome = "U_pseudo"
+  )
+  ## predict from nuisance parameter regression model on validation data
+  u_valid_pred <- u_param_fit$predict(u_task_valid)
 
   # 7) construct pseudo-outcome and perform regression for nuisance parameter v
+  ## first, compute components of integral over mediation-outcome confounder
+  v_pseudo <- lapply(as.list(unique(train_data$Z)), function(mediator_val) {
+    # training data
+    train_data_z_interv <- data.table::copy(train_data)
+    train_data_z_interv[, Z := mediator_val]
+    train_data_z_interv[, A := contrast[1]]
+
+    # tasks for predicting from trained m and q regression models
+    m_reg_train_v_subtask <- sl3::sl3_Task$new(
+      data = train_data_z_interv,
+      covariates = c(w_names, "A", "Z", m_names),
+      outcome = "Y"
+    )
+    q_reg_train_v_subtask <- sl3::sl3_Task$new(
+      data = train_data_z_interv,
+      covariates = c("A", w_names),
+      outcome_type = "binomial",
+      outcome = "Z"
+    )
+
+    # outcome regression after intervening on mediator-outcome confounder
+    m_pred_train_z_interv <- m_out$m_fit$predict(m_reg_train_v_subtask)
+
+    # "q" nuisance regression after intervening on mediator-outcome confounder
+    q_pred_train_z_interv <- q_out$moc_fit$predict(q_reg_train_v_subtask)
+
+    # now on validation set
+    valid_data_z_interv <- data.table::copy(valid_data)
+    valid_data_z_interv[, Z := mediator_val]
+    valid_data_z_interv[, A := contrast[1]]
+
+    # tasks for predicting from trained m and q regression models
+    m_reg_valid_v_subtask <- sl3::sl3_Task$new(
+      data = valid_data_z_interv,
+      covariates = c(w_names, "A", "Z", m_names),
+      outcome = "Y"
+    )
+    q_reg_valid_v_subtask <- sl3::sl3_Task$new(
+      data = valid_data_z_interv,
+      covariates = c("A", w_names),
+      outcome_type = "binomial",
+      outcome = "Z"
+    )
+
+    # outcome regression after intervening on mediator-outcome confounder
+    m_pred_valid_z_interv <- m_out$m_fit$predict(m_reg_valid_v_subtask)
+
+    # "q" nuisance regression after intervening on mediator-outcome confounder
+    q_pred_valid_z_interv <- q_out$moc_fit$predict(q_reg_valid_v_subtask)
+
+    # return partial pseudo-outcome for v nuisance regression
+    out_train <- m_pred_train_z_interv * q_pred_train_z_interv
+    out_valid <- m_pred_valid_z_interv * q_pred_valid_z_interv
+    out <- list(training = out_train, validation = out_valid)
+    return(out)
+  })
+  ## compute pseudo-outcome and build regression task for training set
+  v_pseudo_train <- v_pseudo[[1]]$training + v_pseudo[[2]]$training
+  v_data_train <- data.table::as.data.table(cbind(train_data[, ..w_names],
+                                                  train_data$A, v_pseudo_train))
+  data.table::setnames(v_data_train, c(w_names, "A", "V_pseudo"))
+  v_task_train <- sl3::sl3_Task$new(
+    data = v_data_train,
+    covariates = c(w_names, "A"),
+    outcome_type = "continuous",
+    outcome = "V_pseudo"
+  )
+  ## compute pseudo-outcome and build regression task for validation set
+  v_pseudo_valid <- v_pseudo[[1]]$validation + v_pseudo[[2]]$validation
+  v_data_valid <- data.table::as.data.table(cbind(valid_data[, ..w_names],
+                                                  valid_data$A, v_pseudo_valid))
+  data.table::setnames(v_data_valid, c(w_names, "A", "V_pseudo"))
+  v_task_valid <- sl3::sl3_Task$new(
+    data = v_data_valid,
+    covariates = c(w_names, "A"),
+    outcome_type = "continuous",
+    outcome = "V_pseudo"
+  )
+  ## fit regression model for v on training task, get predictions on validation
+  v_param_fit <- v_lrnr_stack$train(v_task_train)
+  v_valid_pred <- v_param_fit$predict(v_task_valid)
 
 
 

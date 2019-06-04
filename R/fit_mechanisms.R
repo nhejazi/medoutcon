@@ -47,7 +47,7 @@ fit_g_mech <- function(train_data,
     train_data_intervene[, A := contrast[1]]
 
     # set intervention to first contrast a_prime := contrast[1]
-    g_intervened_task <- sl3_Task$new(
+    g_intervened_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
       covariates = w_names,
       outcome_type = "binomial",
@@ -179,7 +179,7 @@ fit_e_mech <- function(train_data,
     e_natural_pred <- e_natural_fit$predict()
 
     # create task for treatment-specific propensity score for first contrast
-    e_intervened_task <- sl3_Task$new(
+    e_intervened_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
       covariates = c(m_names, w_names),
       outcome_type = "binomial",
@@ -231,7 +231,7 @@ fit_e_mech <- function(train_data,
     out_e_est <- lapply(list(train_data_intervene, valid_data_intervene),
                         function(data_intervene) {
       # create task to generate predictions for contrast-specific predictions
-      e_intervened_task <- sl3_Task$new(
+      e_intervened_task <- sl3::sl3_Task$new(
         data = data_intervene,
         covariates = c(m_names, w_names),
         outcome_type = "binomial",
@@ -333,7 +333,7 @@ fit_m_mech <- function(train_data,
     m_natural_pred <- m_natural_fit$predict()
 
     # create task for post-intervention outcome regression
-    m_intervened_prime_task <- sl3_Task$new(
+    m_intervened_prime_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
       covariates = c("A", m_names, "Z", w_names),
       outcome = "Y"
@@ -505,14 +505,14 @@ fit_moc_mech <- function(train_data,
 
     # create task for post-intervention outcome regression
     if (type == "q") {
-      moc_intervened_prime_task <- sl3_Task$new(
+      moc_intervened_prime_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", w_names),
         outcome_type = "binomial",
         outcome = "Z"
       )
     } else if (type == "r") {
-      moc_intervened_prime_task <- sl3_Task$new(
+      moc_intervened_prime_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", m_names, w_names),
         outcome_type = "binomial",
@@ -527,14 +527,14 @@ fit_moc_mech <- function(train_data,
     # set intervention to second contrast a_star := contrast[2] and create task
     train_data_intervene[, A := contrast[2]]
     if (type == "q") {
-      moc_intervened_star_task <- sl3_Task$new(
+      moc_intervened_star_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", w_names),
         outcome_type = "binomial",
         outcome = "Z"
       )
     } else if (type == "r") {
-      moc_intervened_star_task <- sl3_Task$new(
+      moc_intervened_star_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", m_names, w_names),
         outcome_type = "binomial",
@@ -569,14 +569,14 @@ fit_moc_mech <- function(train_data,
 
     # create task for post-intervention outcome regression
     if (type == "q") {
-      moc_natural_task_valid <- sl3_Task$new(
+      moc_natural_task_valid <- sl3::sl3_Task$new(
         data = valid_data,
         covariates = c("A", w_names),
         outcome_type = "binomial",
         outcome = "Z"
       )
     } else if (type == "r") {
-      moc_natural_task_valid <- sl3_Task$new(
+      moc_natural_task_valid <- sl3::sl3_Task$new(
         data = valid_data,
         covariates = c("A", m_names, w_names),
         outcome_type = "binomial",
@@ -595,14 +595,14 @@ fit_moc_mech <- function(train_data,
 
       # create task for post-intervention outcome regression
       if (type == "q") {
-        moc_intervened_prime_task <- sl3_Task$new(
+        moc_intervened_prime_task <- sl3::sl3_Task$new(
           data = data_intervene,
           covariates = c("A", w_names),
           outcome_type = "binomial",
           outcome = "Z"
         )
       } else if (type == "r") {
-        moc_intervened_prime_task <- sl3_Task$new(
+        moc_intervened_prime_task <- sl3::sl3_Task$new(
           data = data_intervene,
           covariates = c("A", m_names, w_names),
           outcome_type = "binomial",
@@ -617,14 +617,14 @@ fit_moc_mech <- function(train_data,
       # set intervention to second contrast a_star := contrast[2]; create task
       data_intervene[, A := contrast[2]]
       if (type == "q") {
-        moc_intervened_star_task <- sl3_Task$new(
+        moc_intervened_star_task <- sl3::sl3_Task$new(
           data = data_intervene,
           covariates = c("A", w_names),
           outcome_type = "binomial",
           outcome = "Z"
         )
       } else if (type == "r") {
-        moc_intervened_star_task <- sl3_Task$new(
+        moc_intervened_star_task <- sl3::sl3_Task$new(
           data = data_intervene,
           covariates = c("A", m_names, w_names),
           outcome_type = "binomial",

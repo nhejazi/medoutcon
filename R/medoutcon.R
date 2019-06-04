@@ -16,41 +16,41 @@
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
 #'  interventions is planned for future releases.
-#' @param g_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a model for the propensity
+#' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, for use in fitting a model for the propensity
 #'  score, i.e., g = P(A | W).
-#' @param e_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a cleverly parameterized
-#'  propensity score that includes the mediators, i.e., e = P(A | Z, W).
-#' @param m_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting the outcome regression.
-#' @param q_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a regression involving the
-#'  mediator-outcome confounder, i.e., q(L | A', W).
-#' @param r_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a regression involving the
-#'  mediator-outcome confounder, i.e., r(L | A', M, W).
-#' @param u_lrnrs A \code{Stack} object, or other learner class (inheriting
+#' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, for use in fitting a cleverly parameterized
+#'  propensity score that includes the mediators, i.e., e = P(A | M, W).
+#' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting the outcome regression.
+#' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a regression involving
+#'  the mediator-outcome confounder, i.e., q(Z | A, W).
+#' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a regression involving
+#'  the mediator-outcome confounder, i.e., r(Z | A, M, W).
+#' @param u_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e., u(L, A, W) =
-#'  E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) * (e(a'|Z,W) / e(A|Z,W)) |
-#'  L = l, A = a, W = w].
-#' @param v_lrnrs A \code{Stack} object, or other learner class (inheriting
+#'  useful for computing the efficient one-step estimator, i.e., u(Z, A, W) =
+#'  E[m(A, Z, M, W) * (q(Z | A, W) / r(Z | A, M, W)) * (e(a' | M, W) /
+#'    e(A | M, W)) | Z = z, A = a, W = w].
+#' @param v_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e., v(A,W) =
-#'  E[\int_z m(a', l, Z, W) * q(l|A',W) d\nu(z) | A = a, W = w)].
+#'  useful for computing the efficient one-step estimator, i.e., v(A, W) =
+#'  E[\int_z m(a', z, M, W) * q(z | a', W) d\nu(z) | A = a, W = w)].
 #' @param estimator The desired estimator of the natural direct effect to be
 #'  computed. Currently, choices are limited to a substitution estimator, a
 #'  re-weighted estimator, and an efficient one-step estimator. The interested
-#'  user should consider consulting Díaz & Hejazi (2019+) for a comparative
-#'  investigation of each of these estimators.
+#'  user should consider consulting Rudolph, Hejazi, & Díaz (2019+) for a
+#'  comparative investigation of each of these estimators.
 #' @param estimator_args A \code{list} of extra arguments to be passed (via
 #'  \code{...}) to the function call for the specified estimator. The default
 #'  is so chosen as to allow the number of folds used in computing the AIPW
@@ -72,17 +72,17 @@ medoutcon <- function(W,
                       M,
                       Y,
                       contrast = c(0, 1),
-                      g_lrnrs =
+                      g_lrnr_stack =
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      e_lrnrs =
+                      e_lrnr_stack =
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      m_lrnrs = sl3::Lrnr_glm_fast$new(),
-                      q_lrnrs =
+                      m_lrnr_stack = sl3::Lrnr_glm_fast$new(),
+                      q_lrnr_stack =
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      r_lrnrs =
+                      r_lrnr_stack =
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      u_lrnrs = sl3::Lrnr_glm_fast$new(),
-                      v_lrnrs = sl3::Lrnr_glm_fast$new(),
+                      u_lrnr_stack = sl3::Lrnr_glm_fast$new(),
+                      v_lrnr_stack = sl3::Lrnr_glm_fast$new(),
                       estimator = c(
                         "onestep",
                         "tmle",
@@ -116,12 +116,17 @@ medoutcon <- function(W,
   } else if (estimator == "onestep") {
     # EFFICIENT ONE-STEP ESTIMATOR
     onestep_est_args <- list(
-      data = data, contrast = contrast,
-      g_lrnrs = g_lrnrs, e_lrnrs = e_lrnrs,
-      m_lrnrs = m_lrnrs,
-      q_lrnrs = q_lrnrs, r_lrnrs = r_lrnrs,
-      u_lrnrs = u_lrnrs, v_lrnrs = v_lrnrs,
-      w_names = w_names, m_names = m_names,
+      data = data,
+      contrast = contrast,
+      g_lrnr_stack = g_lrnr_stack,
+      e_lrnr_stack = e_lrnr_stack,
+      m_lrnr_stack = m_lrnr_stack,
+      q_lrnr_stack = q_lrnr_stack,
+      r_lrnr_stack = r_lrnr_stack,
+      u_lrnr_stack = u_lrnr_stack,
+      v_lrnr_stack = v_lrnr_stack,
+      w_names = w_names,
+      m_names = m_names,
       estimator_args
     )
     est_out <- do.call(est_onestep, onestep_est_args)

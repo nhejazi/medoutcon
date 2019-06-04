@@ -2,7 +2,7 @@
 % Please edit documentation in R/estim_onestep.R
 \name{est_onestep}
 \alias{est_onestep}
-\title{Estimating equation one-step estimator under mediator-outcome confounding}
+\title{One-step estimator: mediation parameter under mediator-outcome confounding}
 \usage{
 est_onestep(data, contrast, g_lrnrs, e_lrnrs, m_lrnrs, q_lrnrs, r_lrnrs,
   u_lrnrs, v_lrnrs, w_names, m_names, cv_folds = 10)
@@ -69,5 +69,5 @@ compatibility with \code{origami::make_folds}, this value specified here
 must be greater than or equal to 2; the default is to create 10 folds.}
 }
 \description{
-Estimating equation one-step estimator under mediator-outcome confounding
+One-step estimator: mediation parameter under mediator-outcome confounding
 }

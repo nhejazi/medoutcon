@@ -1,6 +1,6 @@
 utils::globalVariables(c("..eif_component_names"))
 
-#' Estimating equation one-step estimator under mediator-outcome confounding
+#' One-step estimator: mediation parameter under mediator-outcome confounding
 #'
 #' @param data A \code{data.table} containing the observed data, with columns
 #'  in the order specified by the NPSEM (Y, Z, A, W), with column names set
@@ -9,32 +9,32 @@ utils::globalVariables(c("..eif_component_names"))
 #'  routines and is automatically generated as part of a call to the user-facing
 #'  wrapper function \code{medshift}.
 #' @param contrast ...
-#' @param g_lrnrs A \code{Stack} object, or other learner class (inheriting from
+#' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting a model for the propensity
 #'  score, i.e., g = P(A | W).
-#' @param e_lrnrs A \code{Stack} object, or other learner class (inheriting from
+#' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting a cleverly parameterized
 #'  propensity score that includes the mediators, i.e., e = P(A | Z, W).
-#' @param m_lrnrs A \code{Stack} object, or other learner class (inheriting from
+#' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting the outcome regression.
-#' @param q_lrnrs A \code{Stack} object, or other learner class (inheriting from
+#' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting a regression involving the
 #'  mediator-outcome confounder, i.e., q(L | A', W).
-#' @param r_lrnrs A \code{Stack} object, or other learner class (inheriting from
+#' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
 #'  \code{Lrnr_base}), containing a single or set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting a regression involving the
 #'  mediator-outcome confounder, i.e., r(L | A', M, W).
-#' @param u_lrnrs A \code{Stack} object, or other learner class (inheriting
+#' @param u_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
 #'  useful for computing the efficient one-step estimator, i.e., u(L, A, W) =
 #'  E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) * (e(a'|Z,W) / e(A|Z,W)) |
 #'  L = l, A = a, W = w].
-#' @param v_lrnrs A \code{Stack} object, or other learner class (inheriting
+#' @param v_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
 #'  useful for computing the efficient one-step estimator, i.e., v(A,W) =
@@ -56,19 +56,16 @@ utils::globalVariables(c("..eif_component_names"))
 #'
 est_onestep <- function(data,
                         contrast,
-                        g_lrnrs,
-                        e_lrnrs,
-                        m_lrnrs,
-                        q_lrnrs,
-                        r_lrnrs,
-                        u_lrnrs,
-                        v_lrnrs,
+                        g_lrnr_stack,
+                        e_lrnr_stack,
+                        m_lrnr_stack,
+                        q_lrnr_stack,
+                        r_lrnr_stack,
+                        u_lrnr_stack,
+                        v_lrnr_stack,
                         w_names,
                         m_names,
                         cv_folds = 10) {
-  # use origami to perform CV-SL, fitting/evaluating EIF components per fold
-  eif_component_names <- c("Dy", "Da", "Dzw")
-
   # create folds for use with origami::cross_validate
   folds <- origami::make_folds(data,
     fold_fun = origami::folds_vfold,
@@ -82,10 +79,10 @@ est_onestep <- function(data,
     data = data,
     delta = delta,
     shift_type = shift_type,
-    lrnr_stack_g = g_lrnrs,
-    lrnr_stack_e = e_lrnrs,
-    lrnr_stack_m = m_lrnrs,
-    lrnr_stack_phi = phi_lrnrs,
+    lrnr_stack_g = g_lrnr_stack,
+    lrnr_stack_e = e_lrnr_stack,
+    lrnr_stack_m = m_lrnr_stack,
+    lrnr_stack_phi = phi_lrnr_stack,
     w_names = w_names,
     z_names = z_names,
     use_future = FALSE,
@@ -117,46 +114,50 @@ est_onestep <- function(data,
 
 ################################################################################
 
-#' Cross-validated EIF for (in)direct effect with mediator-outcome confounder
+#' EIF for (in)direct effect under mediator-outcome confounding
 #'
 #' @param fold Object specifying cross-validation folds as generated by a call
 #'  to \code{origami::make_folds}.
-#' @param data_in A \code{data.table} containing the observed data, with columns
-#'  in the order specified by the NPSEM (Y, Z, A, W), with column names set
-#'  appropriately based on the original input data. Such a structure is merely
-#'  a convenience utility to passing data around to the various core estimation
+#' @param data_ing A \code{data.table} containing the observed data with columns
+#'  are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
+#'  set appropriately based on the input data. Such a structure is merely a
+#'  convenience utility to passing data around to the various core estimation
 #'  routines and is automatically generated as part of a call to the user-facing
-#'  wrapper function \code{medshift}.
-#' @param g_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a model for the propensity
+#'  wrapper function \code{medoutcon}.
+#' @param contrast A \code{numeric} double indicating the two values of the
+#'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
+#'  assumes a binary intervention node \code{A}, though support for categorical
+#'  interventions is planned for future releases.
+#' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, for use in fitting a model for the propensity
 #'  score, i.e., g = P(A | W).
-#' @param e_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a cleverly parameterized
+#' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a cleverly parameterized
 #'  propensity score that includes the mediators, i.e., e = P(A | Z, W).
-#' @param m_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting the outcome regression.
-#' @param q_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a regression involving the
-#'  mediator-outcome confounder, i.e., q(L | A', W).
-#' @param r_lrnrs A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a regression involving the
-#'  mediator-outcome confounder, i.e., r(L | A', M, W).
-#' @param u_lrnrs A \code{Stack} object, or other learner class (inheriting
+#' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting the outcome regression.
+#' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a regression involving
+#'  the mediator-outcome confounder, i.e., q(Z | A, W).
+#' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a regression involving
+#'  the mediator-outcome confounder, i.e., r(Z | A, M, W).
+#' @param u_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e., u(L, A, W) =
-#'  E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) * (e(a'|Z,W) / e(A|Z,W)) |
-#'  L = l, A = a, W = w].
-#' @param v_lrnrs A \code{Stack} object, or other learner class (inheriting
+#'  appearing in the efficient influence function, i.e., u(L, A, W) =
+#'  E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) * (e(a'|M,W) / e(A|M,W)) |
+#'  Z = z, A = a, W = w].
+#' @param v_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
 #'  useful for computing the efficient one-step estimator, i.e., v(A,W) =
-#'  E[\int_z m(a', l, Z, W) * q(l|A',W) d\nu(z) | A = a, W = w)].
+#'  E[\int_z m(a', z, M, W) * q(z | A', W) d\nu(z) | A = a, W = w)].
 #' @param w_names A \code{character} vector of the names of the columns that
 #'  correspond to baseline covariates (W). The input for this argument is
 #'  automatically generated by a call to the wrapper function \code{medshift}.
@@ -171,131 +172,113 @@ est_onestep <- function(data,
 #
 cv_eif <- function(fold,
                    data_in,
-                   g_lrnrs,
-                   e_lrnrs,
-                   m_lrnrs,
-                   q_lrnrs,
-                   r_lrnrs,
-                   u_lrnrs,
-                   v_lrnrs,
+                   contrast,
+                   g_lrnr_stack,
+                   e_lrnr_stack,
+                   m_lrnr_stack,
+                   q_lrnr_stack,
+                   r_lrnr_stack,
+                   u_lrnr_stack,
+                   v_lrnr_stack,
                    w_names,
                    m_names) {
   # make training and validation data
-  train_data <- origami::training(data_in)
-  valid_data <- origami::validation(data_in)
+  train_data <- origami::training(data_in, fold = folds[[1]])
+  valid_data <- origami::validation(data_in, fold = folds[[1]])
 
-  # 1) fit regression for incremental propensity score intervention
+  # 1) fit regression for propensity score regression
   g_out <- fit_g_mech(
-    data = train_data, valid_data = valid_data,
-    delta = delta,
-    lrnr_stack = lrnr_stack_g, w_names = w_names,
-    shift_type = shift_type
+    train_data = train_data,
+    valid_data = valid_data,
+    contrast = contrast,
+    lrnr_stack = g_lrnr_stack,
+    w_names = w_names
   )
 
   # 2) fit clever regression for treatment, conditional on mediators
   e_out <- fit_e_mech(
-    data = train_data, valid_data = valid_data,
-    lrnr_stack = lrnr_stack_e,
-    z_names = z_names, w_names = w_names,
-    shift_type = shift_type
+    train_data = train_data,
+    valid_data = valid_data,
+    contrast = contrast,
+    lrnr_stack = e_lrnr_stack,
+    m_names = m_names,
+    w_names = w_names
   )
 
-  # 3) fit regression for incremental propensity score intervention
+  # 3) fit outcome regression
   m_out <- fit_m_mech(
-    data = train_data, valid_data = valid_data,
-    lrnr_stack = lrnr_stack_m,
-    z_names = z_names, w_names = w_names,
+    train_data = train_data,
+    valid_data = valid_data,
+    contrast = contrast,
+    lrnr_stack = m_lrnr_stack,
+    m_names = m_names,
+    w_names = w_names
+  )
+
+  # 4) fit mediator-outcome confounder regression, excluding mediator(s)
+  q_out <- fit_moc_mech(
+    train_data = train_data,
+    valid_data = valid_data,
+    contrast = contrast,
+    lrnr_stack = q_lrnr_stack,
+    m_names = m_names,
+    w_names = w_names,
+    type = "q"
+  )
+
+  # 5) fit mediator-outcome confounder regression, conditioning on mediator(s)
+  r_out <- fit_moc_mech(
+    train_data = train_data,
+    valid_data = valid_data,
+    contrast = contrast,
+    lrnr_stack = r_lrnr_stack,
+    m_names = m_names,
+    w_names = w_names,
+    type = "r"
+  )
+
+  # 6) construct pseudo-outcome and perform regression for nuisance parameter u
+
+
+
+
+  # 7) construct pseudo-outcome and perform regression for nuisance parameter v
+
+
+
+
+  # compute component Dzw from nuisance parameters
+  Dzw_est <- compute_Dzw(g_output = g_out, m_output = m_out,
+                         shift_type = shift_type)
+  Dzw <- rep(as.numeric(sum(Dzw_est$dzw)), times = nrow(g_out$g_est))
+
+  # compute component Da from nuisance parameters
+  g_natural <- g_out$g_est$g_natural
+  a_natural <- g_out$a_vals$a_natural
+
+  # approximate Monte Carlo integral using inverse uniform weighting
+  int_Da_phi <- integrate_over_g(g_mech = g_natural,
+                                 a_vals = a_natural,
+                                 weighting = phi_est)
+  Da <- phi_est - sum(int_Da_phi)
+
+  # compute component Dy from nuisance parameters
+  ipw_out <- compute_ipw(
+    g_output = g_out, e_output = e_out,
     shift_type = shift_type
   )
 
-  # 4) difference-reduced dimension regression for phi
-  if (shift_type == "ipsi") {
-    phi_est <- fit_phi_mech_ipsi(
-      data = valid_data, lrnr_stack = lrnr_stack_phi,
-      m_output = m_out, w_names = w_names
-    )
-  } else if (shift_type == "mtp") {
-    phi_est <- fit_phi_mech_mtp(
-      data = valid_data, lrnr_stack = lrnr_stack_phi,
-      m_output = m_out, e_output = e_out,
-      g_output = g_out, w_names = w_names
-    )
-  }
+  # stabilize weights in AIPW by dividing by sample average since E[g/e] = 1
+  mean_ipw <- ipw_out$mean_ipw
+  g_shifted <- ipw_out$g_shifted
+  e_pred <- ipw_out$e_pred
+  sipw <- ((g_shifted / e_pred) / mean_ipw)
 
-  if (shift_type == "ipsi") {
-    # get indices of treated and control units in validation data
-    idx_A1 <- which(valid_data$A == 1)
-    idx_A0 <- which(valid_data$A == 0)
+  # extract outcome mechanism estimate under natural intervention value
+  m_pred <- m_out$m_pred$m_natural
 
-    # compute component Dzw from nuisance parameters
-    Dzw_groupwise <- compute_Dzw(g_output = g_out, m_output = m_out,
-                                 shift_type = shift_type)
-    Dzw <- Dzw_groupwise$dzw_cntrl + Dzw_groupwise$dzw_treat
-
-    # compute component Da from nuisance parameters
-    g_pred_A1 <- g_out$g_est$g_pred_A1
-    g_pred_A0 <- g_out$g_est$g_pred_A0
-    Da_numerator <- delta * phi_est * (valid_data$A - g_pred_A1)
-    Da_denominator <- (delta * g_pred_A1 + g_pred_A0)^2
-    Da <- Da_numerator / Da_denominator
-
-    # compute component Dy from nuisance parameters
-    ipw_groupwise <- compute_ipw(
-      g_output = g_out, e_output = e_out,
-      idx_treat = idx_A1, idx_cntrl = idx_A0,
-      shift_type = shift_type
-    )
-
-    # stabilize weights in AIPW by dividing by sample average since E[g/e] = 1
-    mean_ipw <- ipw_groupwise$mean_ipw
-    g_shifted <- ipw_groupwise$g_shifted
-    e_pred <- ipw_groupwise$e_pred
-    sipw <- ((g_shifted / e_pred) / mean_ipw)
-
-    # extract outcome component mechanism for estimting Dy
-    m_pred_obs <- rep(NA, nrow(valid_data))
-    m_pred_A1_obs <- m_out$m_pred$m_pred_A1[idx_A1]
-    m_pred_A0_obs <- m_out$m_pred$m_pred_A0[idx_A0]
-    m_pred_obs[idx_A1] <- m_pred_A1_obs
-    m_pred_obs[idx_A0] <- m_pred_A0_obs
-
-    # assemble Dy component estimate
-    Dy <- sipw * (valid_data$Y - m_pred_obs)
-
-  } else if (shift_type == "mtp") {
-    # compute component Dzw from nuisance parameters
-    Dzw_est <- compute_Dzw(g_output = g_out, m_output = m_out,
-                           shift_type = shift_type)
-    Dzw <- rep(as.numeric(sum(Dzw_est$dzw)), times = nrow(g_out$g_est))
-
-    # compute component Da from nuisance parameters
-    g_natural <- g_out$g_est$g_natural
-    a_natural <- g_out$a_vals$a_natural
-
-    # approximate Monte Carlo integral using inverse uniform weighting
-    int_Da_phi <- integrate_over_g(g_mech = g_natural,
-                                   a_vals = a_natural,
-                                   weighting = phi_est)
-    Da <- phi_est - sum(int_Da_phi)
-
-    # compute component Dy from nuisance parameters
-    ipw_out <- compute_ipw(
-      g_output = g_out, e_output = e_out,
-      shift_type = shift_type
-    )
-
-    # stabilize weights in AIPW by dividing by sample average since E[g/e] = 1
-    mean_ipw <- ipw_out$mean_ipw
-    g_shifted <- ipw_out$g_shifted
-    e_pred <- ipw_out$e_pred
-    sipw <- ((g_shifted / e_pred) / mean_ipw)
-
-    # extract outcome mechanism estimate under natural intervention value
-    m_pred <- m_out$m_pred$m_natural
-
-    # assemble Dy component estimate
-    Dy <- sipw * (valid_data$Y - m_pred)
-  }
+  # assemble Dy component estimate
+  Dy <- sipw * (valid_data$Y - m_pred)
 
   # output list
   out <- list(data.table::data.table(

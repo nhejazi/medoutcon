@@ -4,8 +4,9 @@
 \alias{est_onestep}
 \title{One-step estimator: mediation parameter under mediator-outcome confounding}
 \usage{
-est_onestep(data, contrast, g_lrnrs, e_lrnrs, m_lrnrs, q_lrnrs, r_lrnrs,
-  u_lrnrs, v_lrnrs, w_names, m_names, cv_folds = 10)
+est_onestep(data, contrast, g_lrnr_stack, e_lrnr_stack, m_lrnr_stack,
+  q_lrnr_stack, r_lrnr_stack, u_lrnr_stack, v_lrnr_stack, w_names, m_names,
+  cv_folds = 10)
 }
 \arguments{
 \item{data}{A \code{data.table} containing the observed data, with columns
@@ -17,38 +18,38 @@ wrapper function \code{medshift}.}
 
 \item{contrast}{...}
 
-\item{g_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\item{g_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting a model for the propensity
 score, i.e., g = P(A | W).}
 
-\item{e_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\item{e_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting a cleverly parameterized
 propensity score that includes the mediators, i.e., e = P(A | Z, W).}
 
-\item{m_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\item{m_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting the outcome regression.}
 
-\item{q_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\item{q_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting a regression involving the
 mediator-outcome confounder, i.e., q(L | A', W).}
 
-\item{r_lrnrs}{A \code{Stack} object, or other learner class (inheriting from
+\item{r_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting from
 \code{Lrnr_base}), containing a single or set of instantiated learners from
 the \code{sl3} package, to be used in fitting a regression involving the
 mediator-outcome confounder, i.e., r(L | A', M, W).}
 
-\item{u_lrnrs}{A \code{Stack} object, or other learner class (inheriting
+\item{u_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
 useful for computing the efficient one-step estimator, i.e., u(L, A, W) =
 E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) * (e(a'|Z,W) / e(A|Z,W)) |
 L = l, A = a, W = w].}
 
-\item{v_lrnrs}{A \code{Stack} object, or other learner class (inheriting
+\item{v_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
 useful for computing the efficient one-step estimator, i.e., v(A,W) =

@@ -1,54 +1,55 @@
-utils::globalVariables(c("..eif_component_names"))
+utils::globalVariables(c("..w_names", "A", "Z"))
 
 #' One-step estimator: mediation parameter under mediator-outcome confounding
 #'
 #' @param data A \code{data.table} containing the observed data, with columns
-#'  in the order specified by the NPSEM (Y, Z, A, W), with column names set
+#'  in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
 #'  appropriately based on the original input data. Such a structure is merely
 #'  a convenience utility to passing data around to the various core estimation
 #'  routines and is automatically generated as part of a call to the user-facing
-#'  wrapper function \code{medshift}.
+#'  wrapper function \code{\link{medoutcon}}.
 #' @param contrast ...
-#' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a model for the propensity
-#'  score, i.e., g = P(A | W).
-#' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a cleverly parameterized
-#'  propensity score that includes the mediators, i.e., e = P(A | Z, W).
-#' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting the outcome regression.
-#' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a regression involving the
-#'  mediator-outcome confounder, i.e., q(L | A', W).
-#' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting from
-#'  \code{Lrnr_base}), containing a single or set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting a regression involving the
-#'  mediator-outcome confounder, i.e., r(L | A', M, W).
+#' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, for use in fitting a model for the propensity
+#'  score, i.e., \eqn{g = P(A | W)}.
+#' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a cleverly parameterized
+#'  propensity score that includes the mediators, i.e., \eqn{e = P(A | Z, W)}.
+#' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting the outcome regression.
+#' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, for use in fitting a regression involving the
+#'  mediator-outcome confounder, i.e., \eqn{q(L | A', W)}.
+#' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a regression involving
+#'  the mediator-outcome confounder, i.e., \eqn{r(L | A', M, W)}.
 #' @param u_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e., u(L, A, W) =
-#'  E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) * (e(a'|Z,W) / e(A|Z,W)) |
-#'  L = l, A = a, W = w].
+#'  useful for computing the efficient one-step estimator, i.e.,
+#'  \eqn{u(L, A, W) = E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) *
+#'  (e(a'|Z,W) / e(A|Z,W)) | L = l, A = a, W = w]}.
 #' @param v_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e., v(A,W) =
-#'  E[\int_z m(a', l, Z, W) * q(l|A',W) d\nu(z) | A = a, W = w)].
+#'  useful for computing the efficient one-step estimator, i.e.,
+#'  \eqn{v(A,W) = E[\int_z m(a', l, Z, W) * q(l|A',W) d\nu(z) | A = a, W = w)]}.
 #' @param w_names A \code{character} vector of the names of the columns that
 #'  correspond to baseline covariates (W). The input for this argument is
-#'  automatically generated by a call to the wrapper function \code{medshift}.
+#'  automatically generated by a call to the wrapper function
+#'  \code{\link{medoutcon}}.
 #' @param m_names A \code{character} vector of the names of the columns that
 #'  correspond to mediators (M). The input for this argument is automatically
-#'  generated by a call to the wrapper function \code{medshift}.
+#'  generated by a call to the wrapper function \code{\link{medoutcon}}.
 #' @param cv_folds A \code{numeric} integer value specifying the number of folds
 #'  to be created for cross-validation. Use of cross-validation / cross-fitting
-#'  allows for entropy conditions on the AIPW estimator to be relaxed. Note: for
-#'  compatibility with \code{origami::make_folds}, this value specified here
+#'  allows for entropy conditions on the one-step estimator to be relaxed. Note:
+#'  for compatibility with \code{origami::make_folds}, this value specified here
 #'  must be greater than or equal to 2; the default is to create 10 folds.
 #'
 #' @importFrom stats var
@@ -91,10 +92,10 @@ est_onestep <- function(data,
     .combine = FALSE
   )
 
-  # get estimated observation-level values of EIF
+  # get estimated observation-level values of efficient influence function
   eif_est <- do.call(c, lapply(cv_eif_results[[1]], `[[`, 1))
 
-  # compute one-step estimate of parameter and variance from EIF
+  # compute one-step estimate and variance from efficient influence function
   os_est <- mean(eif_est)
   os_var <- stats::var(eif_est) / length(eif_est)
 
@@ -105,12 +106,12 @@ est_onestep <- function(data,
     eif = (eif_est - os_est),
     type = "onestep"
   )
-  return(estim_onestep_out)
+  return(os_est_out)
 }
 
 ################################################################################
 
-#' EIF for (in)direct effect under mediator-outcome confounding
+#' EIF for stochastic (in)direct effects under mediator-outcome confounding
 #'
 #' @param fold Object specifying cross-validation folds as generated by a call
 #'  to \code{origami::make_folds}.
@@ -119,7 +120,7 @@ est_onestep <- function(data,
 #'  set appropriately based on the input data. Such a structure is merely a
 #'  convenience utility to passing data around to the various core estimation
 #'  routines and is automatically generated as part of a call to the user-facing
-#'  wrapper function \code{medoutcon}.
+#'  wrapper function \code{\link{medoutcon}}.
 #' @param contrast A \code{numeric} double indicating the two values of the
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
@@ -127,39 +128,41 @@ est_onestep <- function(data,
 #' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, for use in fitting a model for the propensity
-#'  score, i.e., g = P(A | W).
+#'  score, i.e., \eqn{g = P(A | W)}.
 #' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a cleverly parameterized
-#'  propensity score that includes the mediators, i.e., e = P(A | Z, W).
+#'  propensity score that includes the mediators, i.e., \eqn{e = P(A | Z, W)}.
 #' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting the outcome regression.
 #' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a regression involving
-#'  the mediator-outcome confounder, i.e., q(Z | A, W).
+#'  the mediator-outcome confounder, i.e., \eqn{q(Z | A, W)}.
 #' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a regression involving
-#'  the mediator-outcome confounder, i.e., r(Z | A, M, W).
+#'  the mediator-outcome confounder, i.e., \eqn{r(Z | A, M, W)}.
 #' @param u_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  appearing in the efficient influence function, i.e., u(L, A, W) =
-#'  E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) * (e(a'|M,W) / e(A|M,W)) |
-#'  Z = z, A = a, W = w].
+#'  appearing in the efficient influence function, i.e.,
+#'  \eqn{u(L, A, W) = E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) * (e(a'|M,W) /
+#'  e(A|M,W)) | Z = z, A = a, W = w]}.
 #' @param v_lrnr_stack A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e., v(A,W) =
-#'  E[\int_z m(a', z, M, W) * q(z | A', W) d\nu(z) | A = a, W = w)].
+#'  useful for computing the efficient one-step estimator, i.e.,
+#'  \eqn{v(A,W) = E[\int_z m(a', z, M, W) * q(z | A', W) d\nu(z) | A = a,
+#'  W = w)]}.
 #' @param w_names A \code{character} vector of the names of the columns that
 #'  correspond to baseline covariates (W). The input for this argument is
-#'  automatically generated by a call to the wrapper function \code{medshift}.
+#'  automatically generated by a call to the wrapper function
+#'  \code{\link{medoutcon}}.
 #' @param m_names A \code{character} vector of the names of the columns that
 #'  correspond to mediators (M). The input for this argument is automatically
-#'  generated by a call to the wrapper function \code{medshift}.
+#'  generated by a call to the wrapper function \code{\link{medoutcon}}.
 #'
 #' @importFrom data.table data.table copy
 #' @importFrom origami training validation fold_index
@@ -265,7 +268,7 @@ cv_eif <- function(fold,
                           w_names = w_names)
   v_star <- v_out$v_pred
 
-  # need an integral involving u over mediator-outcome confounder Z
+  # need an integral involving U over mediator-outcome confounder Z
   u_int_eif <- lapply(as.list(unique(train_data$Z)), function(mediator_val) {
     # intervene on training and validation data sets
     train_data_z_interv <- data.table::copy(train_data)
@@ -293,7 +296,7 @@ cv_eif <- function(fold,
       outcome = "Z"
     )
 
-    # "q" nuisance regression after intervening on mediator-outcome confounder
+    # q nuisance regression after intervening on mediator-outcome confounder
     q_pred_valid_z_interv <- q_out$moc_fit$predict(q_reg_valid_v_subtask)
 
     # return partial pseudo-outcome for v nuisance regression

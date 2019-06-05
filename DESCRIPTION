@@ -16,7 +16,18 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: TODO
+Description: Estimators of a parameter formulated to compare two user-given
+    values of a treatment variable A on an outcome variable Y, allowing for the
+    effect of the treatment on the outcome, through a direct path (i.e., through
+    A only) as well as an indirect path through a set of mediators M, to be
+    evaluated in the presence of a binary mediator-outcome confounder Z. The
+    approach imposes a static intervention on the treatment and a stochastic
+    intervention on the mediators M, thus deriving stochastic (in)direct effects
+    in the presence of mediator-outcome confounding. Currently supported are a
+    substitution (G-computation) and one-step (AIPW) estimator. Support for IPW
+    and targeted minimum loss (TML) estimators are planned for future releases.
+    For an in-depth treatment of the methodology, see Rudolph, Díaz, Hejazi,
+    and van der Laan; 2019+ (preprint); <https://arxiv.org/abs/XXXX.YYYYY>.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -35,7 +46,6 @@ Suggests:
     nnls,
     methods,
     stringr,
-    xgboost,
     hal9001,
     simcausal,
     condensier

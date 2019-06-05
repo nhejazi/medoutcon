@@ -2,8 +2,8 @@
 % Please edit documentation in R/medoutcon.R
 \name{medoutcon}
 \alias{medoutcon}
-\title{Nonparametric estimation of a stochastic mediation effect under
-mediator-outcome confounding}
+\title{Efficient estimation of stochastic (in)direct effects in the presence of
+mediator-outcome confounders affected by exposure}
 \usage{
 medoutcon(W, A, Z, M, Y, contrast = c(0, 1),
   g_lrnr_stack = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
@@ -40,12 +40,12 @@ interventions is planned for future releases.}
 \item{g_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, for use in fitting a model for the propensity
-score, i.e., g = P(A | W).}
+score, i.e., \eqn{g = P(A | W)}.}
 
 \item{e_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, for use in fitting a cleverly parameterized
-propensity score that includes the mediators, i.e., e = P(A | M, W).}
+propensity score that includes the mediators, i.e., \eqn{e = P(A | M, W)}.}
 
 \item{m_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
@@ -54,41 +54,35 @@ from the \code{sl3} package, to be used in fitting the outcome regression.}
 \item{q_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a regression involving
-the mediator-outcome confounder, i.e., q(Z | A, W).}
+the mediator-outcome confounder, i.e., \eqn{q(Z | A, W)}.}
 
 \item{r_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a regression involving
-the mediator-outcome confounder, i.e., r(Z | A, M, W).}
+the mediator-outcome confounder, i.e., \eqn{r(Z | A, M, W)}.}
 
 \item{u_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
-useful for computing the efficient one-step estimator, i.e., u(Z, A, W) =
-E[m(A, Z, M, W) * (q(Z | A, W) / r(Z | A, M, W)) * (e(a' | M, W) /
-  e(A | M, W)) | Z = z, A = a, W = w].}
+useful for computing the efficient one-step estimator, i.e.,
+\eqn{u(Z, A, W) = E[m(A, Z, M, W) * (q(Z | A, W) / r(Z | A, M, W)) *
+(e(a' | M, W) / e(A | M, W)) | Z = z, A = a, W = w]}.}
 
 \item{v_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
-useful for computing the efficient one-step estimator, i.e., v(A, W) =
-E[\int_z m(a', z, M, W) * q(z | a', W) d\nu(z) | A = a, W = w)].}
+useful for computing the efficient one-step estimator, i.e.,
+\eqn{v(A, W) = E[\int_z m(a', z, M, W) * q(z | a', W) d \nu(z) |
+A = a, W = w)]}.}
 
-\item{estimator}{The desired estimator of the natural direct effect to be
-computed. Currently, choices are limited to a substitution estimator, a
-re-weighted estimator, and an efficient one-step estimator. The interested
-user should consider consulting Rudolph, Hejazi, & Díaz (2019+) for a
-comparative investigation of each of these estimators.}
+\item{estimator}{...}
 
 \item{estimator_args}{A \code{list} of extra arguments to be passed (via
 \code{...}) to the function call for the specified estimator. The default
-is so chosen as to allow the number of folds used in computing the AIPW
-estimator to be easily tweaked. Refer to the documentation for functions
-\code{\link{est_onestep}}, \code{\link{est_ipw}}, and
-\code{\link{est_substitution}} for details on what other arguments may be
-specified through this mechanism.}
+is so chosen as to allow the number of folds used in computing the one-step
+estimator to be easily tweaked.}
 }
 \description{
-Nonparametric estimation of a stochastic mediation effect under
-mediator-outcome confounding
+Efficient estimation of stochastic (in)direct effects in the presence of
+mediator-outcome confounders affected by exposure
 }

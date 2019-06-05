@@ -1,8 +1,7 @@
-context("Estimators agree under mediator-outcome confounding")
+context("Estimators show agreeable performance in simple example setting")
 
 library(data.table)
 library(stringr)
-library(future)
 library(hal9001)
 library(sl3)
 set.seed(7128816)
@@ -75,6 +74,7 @@ theta_os <- medoutcon(
   u_lrnr_stack = hal_contin_lrnr,
   v_lrnr_stack = hal_contin_lrnr,
   estimator = "onestep",
+  estimator_args = list(cv_folds = 2)
 )
 theta_os
 

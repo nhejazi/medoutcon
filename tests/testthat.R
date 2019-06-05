@@ -1,4 +1,4 @@
 library(testthat)
-library(medshift)
+library(medoutcon)
 
-test_check("medshift")
+test_check("medoutcon")

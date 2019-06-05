@@ -1,3 +1,5 @@
+utils::globalVariables(c("..w_names", "A", "Z"))
+
 #' Fit propensity score for treatment contrasts
 #'
 #' @param train_data A \code{data.table} containing the observed data; columns
@@ -501,7 +503,7 @@ fit_moc_mech <- function(train_data,
     train_data_intervene[, A := contrast[1]]
 
     # predictions on observed data (i.e., under observed treatment status)
-    moc_natural_pred <- m_natural_fit$predict()
+    moc_natural_pred <- moc_natural_fit$predict()
 
     # create task for post-intervention outcome regression
     if (type == "q") {

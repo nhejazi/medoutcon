@@ -20,7 +20,7 @@
 #' @export
 #
 confint.medoutcon <- function(object,
-                              parm = seq_len(object$psi),
+                              parm = seq_len(object$theta),
                               level = 0.95,
                               ...) {
   # inference is currently limited to the one-step efficient estimator

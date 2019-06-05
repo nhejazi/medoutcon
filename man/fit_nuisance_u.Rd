@@ -4,7 +4,8 @@
 \alias{fit_nuisance_u}
 \title{Fit pseudo-outcome regression conditioning on mediator-outcome confounder}
 \usage{
-fit_nuisance_u(train_data, valid_data, m_out, q_out, r_out, e_out, w_names)
+fit_nuisance_u(train_data, valid_data, lrnr_stack, m_out, q_out, r_out,
+  e_out, w_names)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing observed data, with columns
@@ -17,6 +18,11 @@ wrapper function \code{medoutcon}.}
 \item{valid_data}{A holdout data set, with columns exactly matching those
 appearing in the preceding argument \code{data}, to be used for estimation
 via cross-fitting. Not optional for this nuisance parameter.}
+
+\item{lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+from \code{Lrnr_base}), containing a single or set of instantiated learners
+from the \code{sl3} package, to be used in fitting a model for this nuisance
+parameter.}
 
 \item{m_out}{...}
 

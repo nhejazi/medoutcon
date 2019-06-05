@@ -105,8 +105,6 @@ medoutcon <- function(W,
   )
   data.table::setnames(data, c("Y", m_names, "Z", "A", w_names))
 
-  browser()
-
   if (estimator == "sub") {
     # SUBSTITUTION ESTIMATOR
     stop("The substitution estimator is currently under development.")

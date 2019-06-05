@@ -674,6 +674,10 @@ fit_moc_mech <- function(train_data,
 #' @param valid_data A holdout data set, with columns exactly matching those
 #'  appearing in the preceding argument \code{data}, to be used for estimation
 #'  via cross-fitting. Not optional for this nuisance parameter.
+#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a model for this nuisance
+#'  parameter.
 #' @param m_out ...
 #' @param q_out ...
 #' @param r_out ...
@@ -687,6 +691,7 @@ fit_moc_mech <- function(train_data,
 #
 fit_nuisance_u <- function(train_data,
                            valid_data,
+                           lrnr_stack,
                            m_out,
                            q_out,
                            r_out,
@@ -711,7 +716,7 @@ fit_nuisance_u <- function(train_data,
   )
 
   # fit model for nuisance parameter regression on training data
-  u_param_fit <- u_lrnr_stack$train(u_task_train)
+  u_param_fit <- lrnr_stack$train(u_task_train)
 
   # now, same process but for the validation set
   u_pseudo_valid <- m_out$m_est_valid$m_pred_A_natural *
@@ -753,6 +758,10 @@ fit_nuisance_u <- function(train_data,
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
 #'  interventions is planned for future releases.
+#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting a model for this nuisance
+#'  parameter.
 #' @param m_out ...
 #' @param q_out ...
 #' @param m_names A \code{character} vector of the names of the columns that
@@ -768,6 +777,7 @@ fit_nuisance_u <- function(train_data,
 fit_nuisance_v <- function(train_data,
                            valid_data,
                            contrast,
+                           lrnr_stack,
                            m_out,
                            q_out,
                            m_names,
@@ -854,9 +864,10 @@ fit_nuisance_v <- function(train_data,
   )
 
   # fit regression model for v on training task, get predictions on validation
-  v_param_fit <- v_lrnr_stack$train(v_task_train)
+  v_param_fit <- lrnr_stack$train(v_task_train)
   v_valid_pred <- v_param_fit$predict(v_task_valid)
 
   # return prediction on validation set
-  return(as.numeric(v_valid_pred))
+  return(list(v_pred = as.numeric(v_valid_pred),
+              v_pseudo = as.numeric(v_pseudo_valid)))
 }

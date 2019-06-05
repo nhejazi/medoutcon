@@ -4,8 +4,8 @@
 \alias{fit_nuisance_v}
 \title{Fit pseudo-outcome regression conditioning on treatment and baseline}
 \usage{
-fit_nuisance_v(train_data, valid_data, contrast, m_out, q_out, m_names,
-  w_names)
+fit_nuisance_v(train_data, valid_data, contrast, lrnr_stack, m_out, q_out,
+  m_names, w_names)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing observed data, with columns
@@ -23,6 +23,11 @@ via cross-fitting. Not optional for this nuisance parameter}
 intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 assumes a binary intervention node \code{A}, though support for categorical
 interventions is planned for future releases.}
+
+\item{lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+from \code{Lrnr_base}), containing a single or set of instantiated learners
+from the \code{sl3} package, to be used in fitting a model for this nuisance
+parameter.}
 
 \item{m_out}{...}
 

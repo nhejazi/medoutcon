@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>EIF for stochastic (in)direct effects under mediator-outcome confounding — cv_eif • medoutcon</title>
+<title>Efficient estimation of stochastic (in)direct effects in the presence of
+mediator-outcome confounders affected by exposure — medoutcon • medoutcon</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -31,9 +32,11 @@
 
 
 
-<meta property="og:title" content="EIF for stochastic (in)direct effects under mediator-outcome confounding — cv_eif" />
+<meta property="og:title" content="Efficient estimation of stochastic (in)direct effects in the presence of
+mediator-outcome confounders affected by exposure — medoutcon" />
 
-<meta property="og:description" content="EIF for stochastic (in)direct effects under mediator-outcome confounding" />
+<meta property="og:description" content="Efficient estimation of stochastic (in)direct effects in the presence of
+mediator-outcome confounders affected by exposure" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,27 +115,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>EIF for stochastic (in)direct effects under mediator-outcome confounding</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/estim_onestep.R'><code>R/estim_onestep.R</code></a></small>
-    <div class="hidden name"><code>cv_eif.Rd</code></div>
+    <h1>Efficient estimation of stochastic (in)direct effects in the presence of
+mediator-outcome confounders affected by exposure</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/medoutcon.R'><code>R/medoutcon.R</code></a></small>
+    <div class="hidden name"><code>medoutcon.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>EIF for stochastic (in)direct effects under mediator-outcome confounding</p>
+    <p>Efficient estimation of stochastic (in)direct effects in the presence of
+mediator-outcome confounders affected by exposure</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>cv_eif</span>(<span class='no'>fold</span>, <span class='no'>data_in</span>, <span class='no'>contrast</span>, <span class='no'>g_lrnr_stack</span>, <span class='no'>e_lrnr_stack</span>, <span class='no'>m_lrnr_stack</span>,
-  <span class='no'>q_lrnr_stack</span>, <span class='no'>r_lrnr_stack</span>, <span class='no'>u_lrnr_stack</span>, <span class='no'>v_lrnr_stack</span>, <span class='no'>w_names</span>, <span class='no'>m_names</span>)</pre>
+    <pre class="usage"><span class='fu'>medoutcon</span>(<span class='no'>W</span>, <span class='no'>A</span>, <span class='no'>Z</span>, <span class='no'>M</span>, <span class='no'>Y</span>, <span class='kw'>contrast</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>),
+  <span class='kw'>g_lrnr_stack</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
+  <span class='kw'>e_lrnr_stack</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
+  <span class='kw'>m_lrnr_stack</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
+  <span class='kw'>q_lrnr_stack</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
+  <span class='kw'>r_lrnr_stack</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
+  <span class='kw'>u_lrnr_stack</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
+  <span class='kw'>v_lrnr_stack</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(), <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"onestep"</span>,
+  <span class='st'>"tmle"</span>, <span class='st'>"ipw"</span>, <span class='st'>"sub"</span>), <span class='kw'>estimator_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>fold</th>
-      <td><p>Object specifying cross-validation folds as generated by a call
-to <code><a href='http://tlverse.org/origami/reference/make_folds.html'>origami::make_folds</a></code>.</p></td>
+      <th>W</th>
+      <td><p>A <code>matrix</code>, <code>data.frame</code>, or similar corresponding to a
+set of baseline covariates.</p></td>
+    </tr>
+    <tr>
+      <th>A</th>
+      <td><p>A <code>numeric</code> vector corresponding to a treatment variable. The
+parameter of interest is defined as a location shift of this quantity.</p></td>
+    </tr>
+    <tr>
+      <th>Z</th>
+      <td><p>A <code>numeric</code> vector corresponding to a mediator-outcome
+confounder affected by treatment (on the causal pathway between intervention
+A, mediator M, and outcome Y, but unaffected itself by the mediator M).</p></td>
+    </tr>
+    <tr>
+      <th>M</th>
+      <td><p>A <code>numeric</code> vector, <code>matrix</code>, <code>data.frame</code>, or
+similar corresponding to a set of mediators (on the causal pathway between
+the intervention A and the outcome Y).</p></td>
+    </tr>
+    <tr>
+      <th>Y</th>
+      <td><p>A <code>numeric</code> vector corresponding to an outcome variable.</p></td>
     </tr>
     <tr>
       <th>contrast</th>
@@ -152,8 +185,8 @@ score, i.e., \(g = P(A | W)\).</p></td>
       <th>e_lrnr_stack</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting a cleverly parameterized
-propensity score that includes the mediators, i.e., \(e = P(A | Z, W)\).</p></td>
+from the <code>sl3</code> package, for use in fitting a cleverly parameterized
+propensity score that includes the mediators, i.e., \(e = P(A | M, W)\).</p></td>
     </tr>
     <tr>
       <th>m_lrnr_stack</th>
@@ -180,9 +213,9 @@ the mediator-outcome confounder, i.e., \(r(Z | A, M, W)\).</p></td>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
 from the <code>sl3</code> package, to be used in fitting a reduced regression
-appearing in the efficient influence function, i.e.,
-\(u(L, A, W) = E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) * (e(a'|M,W) /
-e(A|M,W)) | Z = z, A = a, W = w]\).</p></td>
+useful for computing the efficient one-step estimator, i.e.,
+\(u(Z, A, W) = E[m(A, Z, M, W) * (q(Z | A, W) / r(Z | A, M, W)) *
+(e(a' | M, W) / e(A | M, W)) | Z = z, A = a, W = w]\).</p></td>
     </tr>
     <tr>
       <th>v_lrnr_stack</th>
@@ -190,30 +223,19 @@ e(A|M,W)) | Z = z, A = a, W = w]\).</p></td>
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
 from the <code>sl3</code> package, to be used in fitting a reduced regression
 useful for computing the efficient one-step estimator, i.e.,
-\(v(A,W) = E[\int_z m(a', z, M, W) * q(z | A', W) d\nu(z) | A = a,
-W = w)]\).</p></td>
+\(v(A, W) = E[\int_z m(a', z, M, W) * q(z | a', W) d \nu(z) |
+A = a, W = w)]\).</p></td>
     </tr>
     <tr>
-      <th>w_names</th>
-      <td><p>A <code>character</code> vector of the names of the columns that
-correspond to baseline covariates (W). The input for this argument is
-automatically generated by a call to the wrapper function
-<code>medoutcon</code>.</p></td>
+      <th>estimator</th>
+      <td><p>...</p></td>
     </tr>
     <tr>
-      <th>m_names</th>
-      <td><p>A <code>character</code> vector of the names of the columns that
-correspond to mediators (M). The input for this argument is automatically
-generated by a call to the wrapper function <code>medoutcon</code>.</p></td>
-    </tr>
-    <tr>
-      <th>data_ing</th>
-      <td><p>A <code>data.table</code> containing the observed data with columns
-are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
-set appropriately based on the input data. Such a structure is merely a
-convenience utility to passing data around to the various core estimation
-routines and is automatically generated as part of a call to the user-facing
-wrapper function <code>medoutcon</code>.</p></td>
+      <th>estimator_args</th>
+      <td><p>A <code>list</code> of extra arguments to be passed (via
+<code>...</code>) to the function call for the specified estimator. The default
+is so chosen as to allow the number of folds used in computing the one-step
+estimator to be easily tweaked.</p></td>
     </tr>
     </table>
     

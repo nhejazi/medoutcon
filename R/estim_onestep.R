@@ -250,22 +250,26 @@ cv_eif <- function(fold,
   train_data_a_star <- data.table::copy(train_data)[, A := contrast[2]]
   valid_data_a_prime <- data.table::copy(valid_data)[, A := contrast[1]]
   valid_data_a_star <- data.table::copy(valid_data)[, A := contrast[2]]
-  u_prime <- fit_nuisance_u(train_data = train_data_a_prime,
-                            valid_data = valid_data_a_prime,
-                            lrnr_stack = u_lrnr_stack,
-                            m_out = m_out,
-                            q_out = q_out,
-                            r_out = r_out,
-                            e_out = e_out,
-                            w_names = w_names)
-  v_out <- fit_nuisance_v(train_data = train_data_a_star,
-                          valid_data = valid_data_a_star,
-                          contrast = contrast,
-                          lrnr_stack = v_lrnr_stack,
-                          m_out = m_out,
-                          q_out = q_out,
-                          m_names = m_names,
-                          w_names = w_names)
+  u_prime <- fit_nuisance_u(
+    train_data = train_data_a_prime,
+    valid_data = valid_data_a_prime,
+    lrnr_stack = u_lrnr_stack,
+    m_out = m_out,
+    q_out = q_out,
+    r_out = r_out,
+    e_out = e_out,
+    w_names = w_names
+  )
+  v_out <- fit_nuisance_v(
+    train_data = train_data_a_star,
+    valid_data = valid_data_a_star,
+    contrast = contrast,
+    lrnr_stack = v_lrnr_stack,
+    m_out = m_out,
+    q_out = q_out,
+    m_names = m_names,
+    w_names = w_names
+  )
   v_star <- v_out$v_pred
 
   # need an integral involving U over mediator-outcome confounder Z
@@ -279,14 +283,16 @@ cv_eif <- function(fold,
     valid_data_z_interv[, A := contrast[1]]
 
     # fit u(z, a', w) using intervened data with treatment set A = a'
-    u_prime_z_interv <- fit_nuisance_u(train_data = train_data_z_interv,
-                                       valid_data = valid_data_z_interv,
-                                       lrnr_stack = u_lrnr_stack,
-                                       m_out = m_out,
-                                       q_out = q_out,
-                                       r_out = r_out,
-                                       e_out = e_out,
-                                       w_names = w_names)
+    u_prime_z_interv <- fit_nuisance_u(
+      train_data = train_data_z_interv,
+      valid_data = valid_data_z_interv,
+      lrnr_stack = u_lrnr_stack,
+      m_out = m_out,
+      q_out = q_out,
+      r_out = r_out,
+      e_out = e_out,
+      w_names = w_names
+    )
 
     # task for predicting from trained q regression model
     q_reg_valid_v_subtask <- sl3::sl3_Task$new(

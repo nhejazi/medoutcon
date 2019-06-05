@@ -39,7 +39,7 @@ confint.medoutcon <- function(object,
     # compute the interval around the point estimate
     ci_theta <- ci_norm_bounds * se_eif + object$theta
 
-  # for binary outcomes, create CI on the logit scale and then back-transform
+    # for binary outcomes, create CI on the logit scale and then back-transform
   } else if (length(unique(object$outcome)) == 2) {
     theta_ratio <- stats::qlogis(object$theta)
     grad_ratio_delta <- (1 / object$theta) + (1 / (1 - object$theta))

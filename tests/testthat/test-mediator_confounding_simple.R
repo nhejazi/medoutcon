@@ -44,7 +44,7 @@ sim_medoutcon_data <- function(n_obs = 1000) {
   m_0 <- rbinom(n_obs, 1, plogis(rowSums(-log(3) * w[, -3] - a + z)))
   m_1 <- rbinom(n_obs, 1, plogis(log(10) * w[, 1] + a - z - 0.1))
   m <- cbind(m_0, m_1)
-  #m <- ifelse(z == 1, m_1, m_0)
+  # m <- ifelse(z == 1, m_1, m_0)
 
   # outcome
   y <- rbinom(n_obs, 1, plogis(1 / (log(7) * rowSums(w) - z * a + rowSums(m))))
@@ -78,6 +78,6 @@ theta_os <- medoutcon(
 )
 theta_os
 
-#test_that("IPW and efficient one-step estimator agree", {
-  #expect_equal(theta_ipw$theta, theta_aipw$theta, tol = 1e-2)
-#})
+# test_that("IPW and efficient one-step estimator agree", {
+# expect_equal(theta_ipw$theta, theta_aipw$theta, tol = 1e-2)
+# })

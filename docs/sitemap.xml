@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://code.nimahejazi.org/medshift/index.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/index.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/bound_precision.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/bound_precision.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/bound_propensity.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/bound_propensity.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/compute_Dzw.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/confint.medoutcon.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/compute_ipw.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/cv_eif.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/confint.medshiftx.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/est_onestep.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/cv_eif.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_e_mech.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/est_ipw.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_g_mech.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/est_onestep.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_m_mech.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/est_substitution.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_moc_mech.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/fit_e_mech.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_nuisance_u.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/fit_g_mech.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_nuisance_v.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/fit_m_mech.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/medoutcon.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/fit_phi_mech.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/print.medoutcon.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/medshift.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/scale_to_original.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/print.medshiftx.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/scale_to_unit.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/reference/summary.medshiftx.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/summary.medoutcon.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medshift/articles/intro_medshift.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/articles/intro_medoutcon.html</loc>
   </url>
 </urlset>

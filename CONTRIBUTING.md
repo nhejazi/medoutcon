@@ -1,10 +1,10 @@
-# Contributing to `medshift` development
+# Contributing to `medoutcome` development
 
-We, the authors of the `medshift` R package, use the same guide as is used for
+We, the authors of the `medoutcome` R package, use the same guide as is used for
 contributing to the development of the popular `tidyverse` ecosystem of R
 packages. This document is simply a formal re-statement of that fact.
 
-The goal of this guide is to help you get up and contributing to `medshift` as
+The goal of this guide is to help you get up and contributing to `medoutcome` as
 quickly as possible. The guide is divided into two main pieces:
 
 * Filing a bug report or feature request in an issue.
@@ -42,13 +42,13 @@ of `sessionInfo()`.)
 
 ## Pull requests
 
-To contribute a change to `medshift`, you follow these steps:
+To contribute a change to `medoutcome`, you follow these steps:
 
 1. Create a branch in git and make your changes.
 2. Push branch to GitHub and issue pull request (PR).
 3. Discuss the pull request.
 4. Iterate until either we accept the PR or decide that it's not a good fit for
-   `medshift`.
+   `medoutcome`.
 
 Each of these steps are described in more detail below. This might feel
 overwhelming the first time you get set up, but it gets easier with practice.
@@ -63,7 +63,7 @@ Pull requests will be evaluated against a checklist:
    how your pull request solves it as concisely as possible.
 
    Also include this motivation in `NEWS` so that when a new release of
-   `medshift` comes out it's easy for users to see what's changed. Add your
+   `medoutcome` comes out it's easy for users to see what's changed. Add your
    item at the top of the file and use markdown for formatting. The
    news item should end with `(@yourGithubUsername, #the_issue_number)`.
 
@@ -77,10 +77,10 @@ Pull requests will be evaluated against a checklist:
     multiple changes that depend on each other, start with the first one
     and don't submit any others until the first one has been processed.
 
-3.  __Use `medshift` coding style__. To do so, please follow the [official
+3.  __Use `medoutcome` coding style__. To do so, please follow the [official
     `tidyverse` style guide](http://style.tidyverse.org). Maintaining a
     consistent style across the whole code base makes it much easier to jump
-    into the code. If you're modifying existing `medshift` code that doesn't
+    into the code. If you're modifying existing `medoutcome` code that doesn't
     follow the style guide, a separate pull request to fix the style would be
     greatly appreciated.
 

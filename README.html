@@ -617,7 +617,7 @@ body {
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;nhejazi/medoutcon&quot;</span>)</a></code></pre></div>
 <hr />
 <h2 id="example">Example</h2>
-<p>To illustrate how <code>medoutcon</code> may be used to estimate the effect of applying a stochastic intervention to the treatment (<code>A</code>) while keeping the mediator(s) (<code>Z</code>) fixed, consider the following example:</p>
+<p>To illustrate how <code>medoutcon</code> may be used to estimate stochastic (in)direct effects of the treatment (<code>A</code>) on the outcome (<code>Y</code>) in the presence of mediator(s) (<code>M</code>) and a binary mediator-outcome confounder (<code>Z</code>), consider the following simple example:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(stringr)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(data.table)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">library</span>(medoutcon)</a>

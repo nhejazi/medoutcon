@@ -63,9 +63,10 @@ devtools::install_github("nhejazi/medoutcon")
 
 ## Example
 
-To illustrate how `medoutcon` may be used to estimate the effect of applying a
-stochastic intervention to the treatment (`A`) while keeping the mediator(s)
-(`Z`) fixed, consider the following example:
+To illustrate how `medoutcon` may be used to estimate stochastic (in)direct
+effects of the treatment (`A`) on the outcome (`Y`) in the presence of
+mediator(s) (`M`) and a binary mediator-outcome confounder (`Z`), consider the
+following simple example:
 
 ```{r simple_example, message=FALSE, warning=FALSE}
 library(stringr)

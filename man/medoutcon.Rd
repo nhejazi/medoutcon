@@ -13,7 +13,7 @@ medoutcon(W, A, Z, M, Y, contrast = c(0, 1),
   r_lrnr_stack = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_lrnr_stack = sl3::Lrnr_glm_fast$new(),
   v_lrnr_stack = sl3::Lrnr_glm_fast$new(), estimator = c("onestep",
-  "tmle", "ipw", "sub"), estimator_args = list(cv_folds = 5))
+  "tmle", "ipw", "sub"), estimator_args = list(cv_folds = 10))
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a

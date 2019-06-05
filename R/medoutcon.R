@@ -129,6 +129,7 @@ medoutcon <- function(W,
   }
 
   # lazily create output as classed list
+  est_out$outcome <- as.numeric(Y)
   class(est_out) <- "medoutcon"
   return(est_out)
 }

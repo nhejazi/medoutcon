@@ -27,11 +27,20 @@ Rudolph](http://biostat.jhsph.edu/~krudolph/)
 ## What’s `medoutcon`?
 
 The `medoutcon` R package is designed to provide facilities for
-estimating a parameter that arises in a decomposition of the population
-intervention causal effect into the (in)direct effects under stochastic
-interventions in the setting of mediation analysis. `medoutcon` is
-designed as an implementation to accompany the methodology described in
-(<span class="citeproc-not-found" data-reference-id="diaz2019efficient">**???**</span>).
+estimating a parameter formulated to compare two user-given values of a
+treatment variable A on an outcome variable Y, allowing for the effect
+of the treatment on the outcome, through a direct path (i.e., through A
+only) as well as an indirect path through a set of mediators M, to be
+evaluated in the presence of a binary mediator-outcome confounder Z,
+itself affected by exposure A. The approach makes use of a static
+intervention on the treatment A and a stochastic intervention on the
+mediators M, thus deriving stochastic (in)direct effects in the presence
+of mediator-outcome confounding. While the proposed approach is similar
+to those proposed in VanderWeele, Vansteelandt, and Robins (2014),
+Rudolph et al. (2017), and Zheng and van der Laan (2017), `medoutcon` is
+designed as a software implementation to accompany the methodology
+described in Rudolph et al. (n.d.). For an in-depth treatment of the
+effect decomposition and estimation strategy, please refer to that work.
 
 -----
 
@@ -53,6 +62,7 @@ applying a stochastic intervention to the treatment (`A`) while keeping
 the mediator(s) (`Z`) fixed, consider the following example:
 
 ``` r
+library(stringr)
 library(data.table)
 library(medoutcon)
 
@@ -101,6 +111,8 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
+#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
+#>     -0.315    -0.0461     0.2227     0.0188 1.1669e-16    onestep
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -135,7 +147,7 @@ After using the `medoutcon` R package, please cite the following:
         confounding affected by exposure},
       author={Rudolph, Kara E and D{\'\i}az, Iv{\'a}n and Hejazi, Nima S
         and {van der Laan}, Mark J},
-      year={2019},
+      year={2019+},
       url = {},
       doi = {},
       journal={},
@@ -147,7 +159,7 @@ After using the `medoutcon` R package, please cite the following:
 
     @manual{hejazi2019medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Causal mediation analysis under
+      title = {{medoutcon}: Efficient causal mediation analysis under
         mediator-outcome confounding in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/medoutcon},
@@ -189,3 +201,41 @@ See below for details:
 -----
 
 ## References
+
+<div id="refs" class="references">
+
+<div id="ref-rudolph2019efficient">
+
+Rudolph, Kara E, Iván Díaz, Nima S Hejazi, and Mark J van der Laan. n.d.
+“Efficient Mediation Analysis Under Mediator-Outcome Confounding
+Affected by Exposure.”
+
+</div>
+
+<div id="ref-rudolph2017robust">
+
+Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan.
+2017. “Robust and Flexible Estimation of Stochastic Mediation Effects: A
+Proposed Method and Example in a Randomized Trial Setting.”
+*Epidemiologic Methods* 7 (1). De Gruyter.
+
+</div>
+
+<div id="ref-vanderweele2014effect">
+
+VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014.
+“Effect Decomposition in the Presence of an Exposure-Induced
+Mediator-Outcome Confounder.” *Epidemiology (Cambridge, Mass.)* 25 (2).
+NIH Public Access: 300.
+
+</div>
+
+<div id="ref-zheng2017longitudinal">
+
+Zheng, Wenjing, and Mark J van der Laan. 2017. “Longitudinal Mediation
+Analysis with Time-Varying Mediators and Exposures, with Application to
+Survival Outcomes.” *Journal of Causal Inference* 5 (2). De Gruyter.
+
+</div>
+
+</div>

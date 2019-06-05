@@ -34,10 +34,19 @@ Rudolph](http://biostat.jhsph.edu/~krudolph/)
 ## What's `medoutcon`?
 
 The `medoutcon` R package is designed to provide facilities for estimating a
-parameter that arises in a decomposition of the population intervention causal
-effect into the (in)direct effects under stochastic interventions in the setting
-of mediation analysis. `medoutcon` is designed as an implementation to accompany
-the methodology described in @diaz2019efficient.
+parameter formulated to compare two user-given values of a treatment variable A
+on an outcome variable Y, allowing for the effect of the treatment on the
+outcome, through a direct path (i.e., through A only) as well as an indirect
+path through a set of mediators M, to be evaluated in the presence of a binary
+mediator-outcome confounder Z, itself affected by exposure A. The approach makes
+use of a static intervention on the treatment A and a stochastic intervention on
+the mediators M, thus deriving stochastic (in)direct effects in the presence of
+mediator-outcome confounding. While the proposed approach is similar to those
+proposed in @vanderweele2014effect, @rudolph2017robust, and
+@zheng2017longitudinal, `medoutcon` is designed as a software implementation to
+accompany the methodology described in @rudolph2019efficient. For an in-depth
+treatment of the effect decomposition and estimation strategy, please refer to
+that work.
 
 ---
 
@@ -58,7 +67,8 @@ To illustrate how `medoutcon` may be used to estimate the effect of applying a
 stochastic intervention to the treatment (`A`) while keeping the mediator(s)
 (`Z`) fixed, consider the following example:
 
-```{r simple_example, message=FALSE, warning=FALSE, eval=FALSE}
+```{r simple_example, message=FALSE, warning=FALSE}
+library(stringr)
 library(data.table)
 library(medoutcon)
 
@@ -140,7 +150,7 @@ After using the `medoutcon` R package, please cite the following:
             confounding affected by exposure},
           author={Rudolph, Kara E and D{\'\i}az, Iv{\'a}n and Hejazi, Nima S
             and {van der Laan}, Mark J},
-          year={2019},
+          year={2019+},
           url = {},
           doi = {},
           journal={},
@@ -152,7 +162,7 @@ After using the `medoutcon` R package, please cite the following:
 
         @manual{hejazi2019medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-          title = {{medoutcon}: Causal mediation analysis under
+          title = {{medoutcon}: Efficient causal mediation analysis under
             mediator-outcome confounding in {R}},
           year  = {2019},
           url = {https://github.com/nhejazi/medoutcon},

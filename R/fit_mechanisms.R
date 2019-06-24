@@ -44,9 +44,9 @@ fit_g_mech <- function(train_data,
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
-    # set intervention column to the first contrast
+    # set intervention column to the treatment contrast (i.e., contrast[2])
     train_data_intervene <- data.table::copy(train_data)
-    train_data_intervene[, A := contrast[1]]
+    train_data_intervene[, A := contrast[2]]
 
     # set intervention to first contrast a_prime := contrast[1]
     g_intervened_task <- sl3::sl3_Task$new(
@@ -57,10 +57,10 @@ fit_g_mech <- function(train_data,
     )
 
     # get predictions from natural propensity score model for intervened data
-    g_intervened_pred_A_prime <- g_natural_fit$predict(g_intervened_task)
+    g_intervened_pred_A_star <- g_natural_fit$predict(g_intervened_task)
 
-    # compute A = a_star = contrast[2] case by symmetry
-    g_intervened_pred_A_star <- 1 - g_intervened_pred_A_prime
+    # compute A = a_star = contrast[1] (control) case by symmetry
+    g_intervened_pred_A_prime <- 1 - g_intervened_pred_A_star
 
     # bounding to numerical precision and for positivity considerations
     out_g_mat <- cbind(
@@ -81,11 +81,11 @@ fit_g_mech <- function(train_data,
       g_fit = g_natural_fit
     )
   } else {
-    # set intervention columns to first contrast for training/validation splits
+    # set intervention columns to treatment contrast for training/validation
     train_data_intervene <- data.table::copy(train_data)
-    train_data_intervene[, A := contrast[1]]
+    train_data_intervene[, A := contrast[2]]
     valid_data_intervene <- data.table::copy(valid_data)
-    valid_data_intervene[, A := contrast[1]]
+    valid_data_intervene[, A := contrast[2]]
 
     # set intervention to first contrast a_prime := contrast[1]
     out_g_est <- lapply(
@@ -99,11 +99,11 @@ fit_g_mech <- function(train_data,
           outcome = "A"
         )
 
-        # get predictions from natural propensity score model for intervened data
-        g_intervened_pred_A_prime <- g_natural_fit$predict(g_intervened_task)
+        # get predictions from natural propensity score model on intervened data
+        g_intervened_pred_A_star <- g_natural_fit$predict(g_intervened_task)
 
         # compute A = a_star = contrast[2] case by symmetry
-        g_intervened_pred_A_star <- 1 - g_intervened_pred_A_prime
+        g_intervened_pred_A_prime <- 1 - g_intervened_pred_A_star
 
         # bounding to numerical precision and for positivity considerations
         out_g_mat <- cbind(
@@ -179,9 +179,9 @@ fit_e_mech <- function(train_data,
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
-    # set intervention to first contrast a_prime := contrast[1]
+    # set intervention to treatment contrast a_star := contrast[2]
     train_data_intervene <- data.table::copy(train_data)
-    train_data_intervene[, A := contrast[1]]
+    train_data_intervene[, A := contrast[2]]
 
     # predictions on observed data (i.e., under observed treatment status)
     e_natural_pred <- e_natural_fit$predict()
@@ -195,10 +195,10 @@ fit_e_mech <- function(train_data,
     )
 
     # predict from trained model on counterfactual data
-    e_intervened_pred_A_prime <- e_natural_fit$predict(e_intervened_task)
+    e_intervened_pred_A_star <- e_natural_fit$predict(e_intervened_task)
 
-    # get values of nuisance parameter E for A = a_star = contrast[2] by symmetry
-    e_intervened_pred_A_star <- 1 - e_intervened_pred_A_prime
+    # get values of nuisance parameter E for A = control contrast by symmetry
+    e_intervened_pred_A_prime <- 1 - e_intervened_pred_A_star
 
     # bounding to numerical precision and for positivity considerations
     out_e_mat <- cbind(
@@ -224,11 +224,11 @@ fit_e_mech <- function(train_data,
       e_fit = e_natural_fit
     )
   } else {
-    # set intervention to first contrast a_prime := contrast[1]
+    # set intervention to treatment contrast
     train_data_intervene <- data.table::copy(train_data)
-    train_data_intervene[, A := contrast[1]]
+    train_data_intervene[, A := contrast[2]]
     valid_data_intervene <- data.table::copy(valid_data)
-    valid_data_intervene[, A := contrast[1]]
+    valid_data_intervene[, A := contrast[2]]
 
     # predictions on observed data (i.e., under observed treatment status)
     e_natural_pred_train <- e_natural_fit$predict()
@@ -252,10 +252,10 @@ fit_e_mech <- function(train_data,
         )
 
         # predict from trained model on counterfactual data
-        e_intervened_pred_A_prime <- e_natural_fit$predict(e_intervened_task)
+        e_intervened_pred_A_star <- e_natural_fit$predict(e_intervened_task)
 
-        # values of nuisance parameter E for A = a_star = contrast[2] by symmetry
-        e_intervened_pred_A_star <- 1 - e_intervened_pred_A_prime
+        # values of nuisance parameter E for A = control contrast by symmetry
+        e_intervened_pred_A_prime <- 1 - e_intervened_pred_A_star
 
         # bounding to numerical precision and for positivity considerations
         out_e_mat <- cbind(

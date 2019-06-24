@@ -758,17 +758,11 @@ fit_nuisance_u <- function(train_data,
   # fit model for nuisance parameter regression on training data
   u_param_fit <- lrnr_stack$train(u_task_train)
 
-  # now, same process but for the validation set
-  u_pseudo_valid <- m_out$m_est_valid$m_pred_A_natural *
-    (q_out$moc_est_valid$moc_pred_A_natural /
-      r_out$moc_est_valid$moc_pred_A_natural) *
-    (e_out$e_est_valid$e_pred_A_star / e_out$e_est_valid$e_pred_A_natural)
-
   # construct data set and validation task for prediction
   u_data_valid <- data.table::as.data.table(cbind(
     valid_data[, ..w_names],
     valid_data$A, valid_data$Z,
-    u_pseudo_valid
+    rep(0, nrow(valid_data))
   ))
   data.table::setnames(u_data_valid, c(w_names, "A", "Z", "U_pseudo"))
   u_task_valid <- sl3::sl3_Task$new(

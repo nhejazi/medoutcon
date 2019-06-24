@@ -313,16 +313,16 @@ cv_eif <- function(fold,
 
   # create inverse probability weights and stabilize by expectation
   ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_star
-  sipw_a_prime <- ipw_a_prime / mean(ipw_a_prime)
+  #sipw_a_prime <- ipw_a_prime / mean(ipw_a_prime)
   ipw_a_star <- as.numeric(valid_data$A == contrast[2]) / g_star
-  sipw_a_star <- ipw_a_star / mean(ipw_a_star)
+  #sipw_a_star <- ipw_a_star / mean(ipw_a_star)
 
   # compute efficient influence function
   eif_p1 <- (q_prime / r_prime) * (e_star / e_prime) * (valid_data$Y - m_prime)
   eif_p2 <- u_prime - u_int_eif
   eif_p3 <- v_out$v_pseudo - v_star
-  eif <- sipw_a_prime * eif_p1 + sipw_a_prime * eif_p2 +
-    sipw_a_star * eif_p3 + v_star
+  eif <- (ipw_a_prime * eif_p1) + (ipw_a_prime * eif_p2) +
+    (ipw_a_star * eif_p3) + v_star
 
   # output list
   out <- list(data.table::data.table(

@@ -841,7 +841,7 @@ fit_nuisance_v <- function(train_data,
     # outcome regression after intervening on mediator-outcome confounder
     m_pred_train_z_interv <- m_out$m_fit$predict(m_reg_train_v_subtask)
 
-    # "q" nuisance regression after intervening on mediator-outcome confounder
+    # q nuisance regression after intervening on mediator-outcome confounder
     # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
     #       want is actually P(Z = z | ...) hence the extra bit of manipulation
     q_pred_train_z_interv <- q_out$moc_fit$predict(q_reg_train_v_subtask)
@@ -869,7 +869,7 @@ fit_nuisance_v <- function(train_data,
     # outcome regression after intervening on mediator-outcome confounder
     m_pred_valid_z_interv <- m_out$m_fit$predict(m_reg_valid_v_subtask)
 
-    # "q" nuisance regression after intervening on mediator-outcome confounder
+    # q nuisance regression after intervening on mediator-outcome confounder
     # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
     #       want is actually P(Z = z | ...) hence the extra bit of manipulation
     q_pred_valid_z_interv <- q_out$moc_fit$predict(q_reg_valid_v_subtask)

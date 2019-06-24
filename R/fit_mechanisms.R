@@ -819,10 +819,10 @@ fit_nuisance_v <- function(train_data,
                            m_names,
                            w_names) {
   # first, compute components of integral over mediation-outcome confounder
-  v_pseudo <- lapply(as.list(unique(train_data$Z)), function(mediator_val) {
+  v_pseudo <- lapply(as.list(unique(train_data$Z)), function(confounder_val) {
     # training data
     train_data_z_interv <- data.table::copy(train_data)
-    train_data_z_interv[, Z := mediator_val]
+    train_data_z_interv[, Z := confounder_val]
     train_data_z_interv[, A := contrast[1]]
 
     # tasks for predicting from trained m and q regression models
@@ -842,11 +842,15 @@ fit_nuisance_v <- function(train_data,
     m_pred_train_z_interv <- m_out$m_fit$predict(m_reg_train_v_subtask)
 
     # "q" nuisance regression after intervening on mediator-outcome confounder
+    # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
+    #       want is actually P(Z = z | ...) hence the extra bit of manipulation
     q_pred_train_z_interv <- q_out$moc_fit$predict(q_reg_train_v_subtask)
+    q_pred_train_z_natural <- (train_data$Z * q_pred_train_z_interv) +
+      ((1 - train_data$Z) * (1 - q_pred_train_z_interv))
 
     # now on validation set
     valid_data_z_interv <- data.table::copy(valid_data)
-    valid_data_z_interv[, Z := mediator_val]
+    valid_data_z_interv[, Z := confounder_val]
     valid_data_z_interv[, A := contrast[1]]
 
     # tasks for predicting from trained m and q regression models
@@ -866,11 +870,15 @@ fit_nuisance_v <- function(train_data,
     m_pred_valid_z_interv <- m_out$m_fit$predict(m_reg_valid_v_subtask)
 
     # "q" nuisance regression after intervening on mediator-outcome confounder
+    # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
+    #       want is actually P(Z = z | ...) hence the extra bit of manipulation
     q_pred_valid_z_interv <- q_out$moc_fit$predict(q_reg_valid_v_subtask)
+    q_pred_valid_z_natural <- (valid_data$Z * q_pred_valid_z_interv) +
+      ((1 - valid_data$Z) * (1 - q_pred_valid_z_interv))
 
     # return partial pseudo-outcome for v nuisance regression
-    out_train <- m_pred_train_z_interv * q_pred_train_z_interv
-    out_valid <- m_pred_valid_z_interv * q_pred_valid_z_interv
+    out_train <- m_pred_train_z_interv * q_pred_train_z_natural
+    out_valid <- m_pred_valid_z_interv * q_pred_valid_z_natural
     out <- list(training = out_train, validation = out_valid)
     return(out)
   })

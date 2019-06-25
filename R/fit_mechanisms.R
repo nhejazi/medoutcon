@@ -832,7 +832,7 @@ fit_nuisance_v <- function(train_data,
       outcome = "Y"
     )
     q_reg_train_v_subtask <- sl3::sl3_Task$new(
-      data = train_data_z_interv,
+      data = train_data,
       covariates = c("A", w_names),
       outcome_type = "binomial",
       outcome = "Z"
@@ -860,7 +860,7 @@ fit_nuisance_v <- function(train_data,
       outcome = "Y"
     )
     q_reg_valid_v_subtask <- sl3::sl3_Task$new(
-      data = valid_data_z_interv,
+      data = valid_data,
       covariates = c("A", w_names),
       outcome_type = "binomial",
       outcome = "Z"

@@ -6,13 +6,13 @@
 mediator-outcome confounders affected by exposure}
 \usage{
 medoutcon(W, A, Z, M, Y, contrast = c(0, 1),
-  g_lrnr_stack = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  e_lrnr_stack = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  m_lrnr_stack = sl3::Lrnr_glm_fast$new(),
-  q_lrnr_stack = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  r_lrnr_stack = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  u_lrnr_stack = sl3::Lrnr_glm_fast$new(),
-  v_lrnr_stack = sl3::Lrnr_glm_fast$new(), estimator = c("onestep",
+  g_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  e_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  m_learners = sl3::Lrnr_glm_fast$new(),
+  q_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  u_learners = sl3::Lrnr_glm_fast$new(),
+  v_learners = sl3::Lrnr_glm_fast$new(), estimator = c("onestep",
   "tmle", "ipw", "sub"), estimator_args = list(cv_folds = 10))
 }
 \arguments{
@@ -37,38 +37,38 @@ intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 assumes a binary intervention node \code{A}, though support for categorical
 interventions is planned for future releases.}
 
-\item{g_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{g_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, for use in fitting a model for the propensity
 score, i.e., \eqn{g = P(A | W)}.}
 
-\item{e_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{e_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, for use in fitting a cleverly parameterized
 propensity score that includes the mediators, i.e., \eqn{e = P(A | M, W)}.}
 
-\item{m_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{m_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting the outcome regression.}
 
-\item{q_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{q_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a regression involving
 the mediator-outcome confounder, i.e., \eqn{q(Z | A, W)}.}
 
-\item{r_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{r_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a regression involving
 the mediator-outcome confounder, i.e., \eqn{r(Z | A, M, W)}.}
 
-\item{u_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{u_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
 useful for computing the efficient one-step estimator, i.e.,
 \eqn{u(Z, A, W) = E[m(A, Z, M, W) * (q(Z | A, W) / r(Z | A, M, W)) *
 (e(a' | M, W) / e(A | M, W)) | Z = z, A = a, W = w]}.}
 
-\item{v_lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{v_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
 useful for computing the efficient one-step estimator, i.e.,

@@ -9,32 +9,32 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'  routines and is automatically generated as part of a call to the user-facing
 #'  wrapper function \code{\link{medoutcon}}.
 #' @param contrast ...
-#' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param g_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, for use in fitting a model for the propensity
 #'  score, i.e., \eqn{g = P(A | W)}.
-#' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param e_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a cleverly parameterized
 #'  propensity score that includes the mediators, i.e., \eqn{e = P(A | Z, W)}.
-#' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param m_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting the outcome regression.
-#' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param q_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, for use in fitting a regression involving the
 #'  mediator-outcome confounder, i.e., \eqn{q(L | A', W)}.
-#' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param r_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a regression involving
 #'  the mediator-outcome confounder, i.e., \eqn{r(L | A', M, W)}.
-#' @param u_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param u_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
 #'  useful for computing the efficient one-step estimator, i.e.,
 #'  \eqn{u(L, A, W) = E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) *
 #'  (e(a'|Z,W) / e(A|Z,W)) | L = l, A = a, W = w]}.
-#' @param v_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param v_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
 #'  useful for computing the efficient one-step estimator, i.e.,
@@ -57,13 +57,13 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'
 est_onestep <- function(data,
                         contrast,
-                        g_lrnr_stack,
-                        e_lrnr_stack,
-                        m_lrnr_stack,
-                        q_lrnr_stack,
-                        r_lrnr_stack,
-                        u_lrnr_stack,
-                        v_lrnr_stack,
+                        g_learners,
+                        e_learners,
+                        m_learners,
+                        q_learners,
+                        r_learners,
+                        u_learners,
+                        v_learners,
                         w_names,
                         m_names,
                         cv_folds = 10) {
@@ -79,13 +79,13 @@ est_onestep <- function(data,
     folds = folds,
     data_in = data,
     contrast = contrast,
-    g_lrnr_stack = g_lrnr_stack,
-    e_lrnr_stack = e_lrnr_stack,
-    m_lrnr_stack = m_lrnr_stack,
-    q_lrnr_stack = q_lrnr_stack,
-    r_lrnr_stack = r_lrnr_stack,
-    u_lrnr_stack = u_lrnr_stack,
-    v_lrnr_stack = v_lrnr_stack,
+    g_learners = g_learners,
+    e_learners = e_learners,
+    m_learners = m_learners,
+    q_learners = q_learners,
+    r_learners = r_learners,
+    u_learners = u_learners,
+    v_learners = v_learners,
     w_names = w_names,
     m_names = m_names,
     use_future = FALSE,
@@ -125,32 +125,32 @@ est_onestep <- function(data,
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
 #'  interventions is planned for future releases.
-#' @param g_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param g_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, for use in fitting a model for the propensity
 #'  score, i.e., \eqn{g = P(A | W)}.
-#' @param e_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param e_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a cleverly parameterized
 #'  propensity score that includes the mediators, i.e., \eqn{e = P(A | Z, W)}.
-#' @param m_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param m_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting the outcome regression.
-#' @param q_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param q_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a regression involving
 #'  the mediator-outcome confounder, i.e., \eqn{q(Z | A, W)}.
-#' @param r_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param r_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a regression involving
 #'  the mediator-outcome confounder, i.e., \eqn{r(Z | A, M, W)}.
-#' @param u_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param u_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
 #'  appearing in the efficient influence function, i.e.,
 #'  \eqn{u(L, A, W) = E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) * (e(a'|M,W) /
 #'  e(A|M,W)) | Z = z, A = a, W = w]}.
-#' @param v_lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param v_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a reduced regression
 #'  useful for computing the efficient one-step estimator, i.e.,
@@ -172,13 +172,13 @@ est_onestep <- function(data,
 cv_eif <- function(fold,
                    data_in,
                    contrast,
-                   g_lrnr_stack,
-                   e_lrnr_stack,
-                   m_lrnr_stack,
-                   q_lrnr_stack,
-                   r_lrnr_stack,
-                   u_lrnr_stack,
-                   v_lrnr_stack,
+                   g_learners,
+                   e_learners,
+                   m_learners,
+                   q_learners,
+                   r_learners,
+                   u_learners,
+                   v_learners,
                    w_names,
                    m_names) {
   # make training and validation data
@@ -190,7 +190,7 @@ cv_eif <- function(fold,
     train_data = train_data,
     valid_data = valid_data,
     contrast = contrast,
-    lrnr_stack = g_lrnr_stack,
+    learners = g_learners,
     w_names = w_names
   )
 
@@ -199,7 +199,7 @@ cv_eif <- function(fold,
     train_data = train_data,
     valid_data = valid_data,
     contrast = contrast,
-    lrnr_stack = e_lrnr_stack,
+    learners = e_learners,
     m_names = m_names,
     w_names = w_names
   )
@@ -209,7 +209,7 @@ cv_eif <- function(fold,
     train_data = train_data,
     valid_data = valid_data,
     contrast = contrast,
-    lrnr_stack = m_lrnr_stack,
+    learners = m_learners,
     m_names = m_names,
     w_names = w_names
   )
@@ -219,7 +219,7 @@ cv_eif <- function(fold,
     train_data = train_data,
     valid_data = valid_data,
     contrast = contrast,
-    lrnr_stack = q_lrnr_stack,
+    learners = q_learners,
     m_names = m_names,
     w_names = w_names,
     type = "q"
@@ -230,7 +230,7 @@ cv_eif <- function(fold,
     train_data = train_data,
     valid_data = valid_data,
     contrast = contrast,
-    lrnr_stack = r_lrnr_stack,
+    learners = r_learners,
     m_names = m_names,
     w_names = w_names,
     type = "r"
@@ -254,7 +254,7 @@ cv_eif <- function(fold,
   u_out <- fit_nuisance_u(
     train_data = train_data,
     valid_data = valid_data_a_prime,
-    lrnr_stack = u_lrnr_stack,
+    learners = u_learners,
     m_out = m_out,
     q_out = q_out,
     r_out = r_out,
@@ -267,7 +267,7 @@ cv_eif <- function(fold,
     train_data = train_data,
     valid_data = valid_data_a_star,
     contrast = contrast,
-    lrnr_stack = v_lrnr_stack,
+    learners = v_learners,
     m_out = m_out,
     q_out = q_out,
     m_names = m_names,

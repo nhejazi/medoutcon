@@ -4,7 +4,7 @@
 \alias{fit_g_mech}
 \title{Fit propensity score for treatment contrasts}
 \usage{
-fit_g_mech(train_data, valid_data = NULL, contrast, lrnr_stack, w_names)
+fit_g_mech(train_data, valid_data = NULL, contrast, learners, w_names)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing the observed data; columns
@@ -23,7 +23,7 @@ intervention "A" to be compared. The default value of \code{c(0, 1)} assumes
 binary intervention node "A", though support for categorical interventions
 is planned for future releases.}
 
-\item{lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{learners}{\code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a propensity score model,
 i.e., g = P(A = 1 | W).}

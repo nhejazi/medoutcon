@@ -4,8 +4,8 @@
 \alias{fit_moc_mech}
 \title{Fit mediator-outcome confounder score with(out) conditioning on mediators}
 \usage{
-fit_moc_mech(train_data, valid_data = NULL, contrast, lrnr_stack,
-  m_names, w_names, type = c("q", "r"))
+fit_moc_mech(train_data, valid_data = NULL, contrast, learners, m_names,
+  w_names, type = c("q", "r"))
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing observed data, with columns
@@ -24,7 +24,7 @@ intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 assumes a binary intervention node \code{A}, though support for categorical
 interventions is planned for future releases.}
 
-\item{lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{learners}{\code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a model for the
 propensity score, i.e., q = E[z|a',W] and r = E[z|a',m,w]).}

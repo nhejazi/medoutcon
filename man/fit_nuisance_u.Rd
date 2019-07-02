@@ -4,7 +4,7 @@
 \alias{fit_nuisance_u}
 \title{Fit pseudo-outcome regression conditioning on mediator-outcome confounder}
 \usage{
-fit_nuisance_u(train_data, valid_data, lrnr_stack, m_out, q_out, r_out,
+fit_nuisance_u(train_data, valid_data, learners, m_out, q_out, r_out,
   e_out, w_names)
 }
 \arguments{
@@ -19,18 +19,24 @@ wrapper function \code{medoutcon}.}
 appearing in the preceding argument \code{data}, to be used for estimation
 via cross-fitting. Not optional for this nuisance parameter.}
 
-\item{lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{learners}{\code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a model for this nuisance
 parameter.}
 
-\item{m_out}{...}
+\item{m_out}{Output from the internal function for fitting the outcome
+regression \code{\link{fit_m_mech}}.}
 
-\item{q_out}{...}
+\item{q_out}{Output from the internal function for fitting the mechanism of
+the mediator-outcome confounder relationship with conditioning on mediators,
+i.e., \code{\link{fit_moc_mech}}, setting \code{type = "q"}.}
 
-\item{r_out}{...}
+\item{r_out}{Output from the internal function for fitting the mechanism of
+the mediator-outcome confounder relationship without conditioning on
+mediators, i.e., \code{\link{fit_moc_mech}}, setting \code{type = "r"}.}
 
-\item{e_out}{...}
+\item{e_out}{Output from the internal function for fitting the treatment
+mechanism conditioning on the mediators \code{\link{fit_e_mech}}.}
 
 \item{w_names}{A \code{character} vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is

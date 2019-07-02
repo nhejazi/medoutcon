@@ -15,7 +15,7 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'  intervention "A" to be compared. The default value of \code{c(0, 1)} assumes
 #'  binary intervention node "A", though support for categorical interventions
 #'  is planned for future releases.
-#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param learners \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a propensity score model,
 #'  i.e., g = P(A = 1 | W).
@@ -29,7 +29,7 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 fit_g_mech <- function(train_data,
                        valid_data = NULL,
                        contrast,
-                       lrnr_stack,
+                       learners,
                        w_names) {
   # construct task for propensity score fit
   g_natural_task <- sl3::sl3_Task$new(
@@ -40,7 +40,7 @@ fit_g_mech <- function(train_data,
 
   # fit propensity score model with natural (observed) intervention values
   # NOTE: never need the non-intervened propensity score, so don't predict...
-  g_natural_fit <- lrnr_stack$train(g_natural_task)
+  g_natural_fit <- learners$train(g_natural_task)
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
@@ -147,7 +147,7 @@ fit_g_mech <- function(train_data,
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
 #'  interventions is planned for future releases.
-#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param learners \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a cleverly parameterized
 #'  propensity score that includes the mediators, i.e., e = P(A | M, W).
@@ -164,7 +164,7 @@ fit_g_mech <- function(train_data,
 fit_e_mech <- function(train_data,
                        valid_data = NULL,
                        contrast,
-                       lrnr_stack,
+                       learners,
                        m_names,
                        w_names) {
   # construct task for nuisance parameter fit
@@ -175,7 +175,7 @@ fit_e_mech <- function(train_data,
   )
 
   # fit model on observed data
-  e_natural_fit <- lrnr_stack$train(e_natural_task)
+  e_natural_fit <- learners$train(e_natural_task)
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
@@ -310,7 +310,7 @@ fit_e_mech <- function(train_data,
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
 #'  interventions is planned for future releases.
-#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param learners \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting the outcome regression,
 #'  i.e., m(A, Z, M, W).
@@ -327,7 +327,7 @@ fit_e_mech <- function(train_data,
 fit_m_mech <- function(train_data,
                        valid_data = NULL,
                        contrast,
-                       lrnr_stack,
+                       learners,
                        m_names,
                        w_names) {
   #  construct task for propensity score fit
@@ -338,7 +338,7 @@ fit_m_mech <- function(train_data,
   )
 
   # fit and predict
-  m_natural_fit <- lrnr_stack$train(m_natural_task)
+  m_natural_fit <- learners$train(m_natural_task)
   m_natural_pred <- m_natural_fit$predict()
 
   # use full data for counterfactual prediction if no validation data given
@@ -427,7 +427,8 @@ fit_m_mech <- function(train_data,
         )
 
         # predict from trained model on counterfactual data
-        m_intervened_pred_A_star <- m_natural_fit$predict(m_intervened_star_task)
+        m_intervened_pred_A_star <-
+          m_natural_fit$predict(m_intervened_star_task)
 
         # output
         out_m_est <- data.table::as.data.table(cbind(
@@ -476,7 +477,7 @@ fit_m_mech <- function(train_data,
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
 #'  interventions is planned for future releases.
-#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param learners \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a model for the
 #'  propensity score, i.e., q = E[z|a',W] and r = E[z|a',m,w]).
@@ -498,7 +499,7 @@ fit_m_mech <- function(train_data,
 fit_moc_mech <- function(train_data,
                          valid_data = NULL,
                          contrast,
-                         lrnr_stack,
+                         learners,
                          m_names,
                          w_names,
                          type = c("q", "r")) {
@@ -520,7 +521,7 @@ fit_moc_mech <- function(train_data,
   }
 
   # fit model on observed data
-  moc_natural_fit <- lrnr_stack$train(moc_natural_task)
+  moc_natural_fit <- learners$train(moc_natural_task)
 
   # use full data for counterfactual prediction if no validation data given
   if (is.null(valid_data)) {
@@ -712,14 +713,20 @@ fit_moc_mech <- function(train_data,
 #' @param valid_data A holdout data set, with columns exactly matching those
 #'  appearing in the preceding argument \code{data}, to be used for estimation
 #'  via cross-fitting. Not optional for this nuisance parameter.
-#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param learners \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a model for this nuisance
 #'  parameter.
-#' @param m_out ...
-#' @param q_out ...
-#' @param r_out ...
-#' @param e_out ...
+#' @param m_out Output from the internal function for fitting the outcome
+#'  regression \code{\link{fit_m_mech}}.
+#' @param q_out Output from the internal function for fitting the mechanism of
+#'  the mediator-outcome confounder relationship with conditioning on mediators,
+#'  i.e., \code{\link{fit_moc_mech}}, setting \code{type = "q"}.
+#' @param r_out Output from the internal function for fitting the mechanism of
+#'  the mediator-outcome confounder relationship without conditioning on
+#'  mediators, i.e., \code{\link{fit_moc_mech}}, setting \code{type = "r"}.
+#' @param e_out Output from the internal function for fitting the treatment
+#'  mechanism conditioning on the mediators \code{\link{fit_e_mech}}.
 #' @param w_names A \code{character} vector of the names of the columns that
 #'  correspond to baseline covariates (W). The input for this argument is
 #'  automatically generated by a call to the wrapper function \code{medoutcon}.
@@ -729,7 +736,7 @@ fit_moc_mech <- function(train_data,
 #
 fit_nuisance_u <- function(train_data,
                            valid_data,
-                           lrnr_stack,
+                           learners,
                            m_out,
                            q_out,
                            r_out,
@@ -756,7 +763,7 @@ fit_nuisance_u <- function(train_data,
   )
 
   # fit model for nuisance parameter regression on training data
-  u_param_fit <- lrnr_stack$train(u_task_train)
+  u_param_fit <- learners$train(u_task_train)
 
   # construct data set and validation task for prediction
   u_data_valid <- data.table::as.data.table(cbind(
@@ -799,12 +806,15 @@ fit_nuisance_u <- function(train_data,
 #'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 #'  assumes a binary intervention node \code{A}, though support for categorical
 #'  interventions is planned for future releases.
-#' @param lrnr_stack A \code{Stack} object, or other learner class (inheriting
+#' @param learners \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, to be used in fitting a model for this nuisance
 #'  parameter.
-#' @param m_out ...
-#' @param q_out ...
+#' @param m_out Output from the internal function for fitting the outcome
+#'  regression \code{\link{fit_m_mech}}.
+#' @param q_out Output from the internal function for fitting the mechanism of
+#'  the mediator-outcome confounder relationship with conditioning on mediators,
+#'  i.e., \code{\link{fit_moc_mech}}, setting \code{type = "q"}.
 #' @param m_names A \code{character} vector of the names of the columns that
 #'  correspond to mediators (M). The input for this argument is automatically
 #'  generated by a call to the wrapper function \code{medoutcon}.
@@ -818,7 +828,7 @@ fit_nuisance_u <- function(train_data,
 fit_nuisance_v <- function(train_data,
                            valid_data,
                            contrast,
-                           lrnr_stack,
+                           learners,
                            m_out,
                            q_out,
                            m_names,
@@ -909,7 +919,7 @@ fit_nuisance_v <- function(train_data,
   )
 
   # fit regression model for v on training task, get predictions on validation
-  v_param_fit <- lrnr_stack$train(v_task_train)
+  v_param_fit <- learners$train(v_task_train)
   v_valid_pred <- v_param_fit$predict(v_task_valid)
 
   # return prediction on validation set

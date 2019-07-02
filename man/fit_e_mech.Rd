@@ -4,7 +4,7 @@
 \alias{fit_e_mech}
 \title{Fit propensity score conditioning on mediators over given contrasts}
 \usage{
-fit_e_mech(train_data, valid_data = NULL, contrast, lrnr_stack, m_names,
+fit_e_mech(train_data, valid_data = NULL, contrast, learners, m_names,
   w_names)
 }
 \arguments{
@@ -24,7 +24,7 @@ intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 assumes a binary intervention node \code{A}, though support for categorical
 interventions is planned for future releases.}
 
-\item{lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{learners}{\code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a cleverly parameterized
 propensity score that includes the mediators, i.e., e = P(A | M, W).}

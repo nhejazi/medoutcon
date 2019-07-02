@@ -4,7 +4,7 @@
 \alias{fit_nuisance_v}
 \title{Fit pseudo-outcome regression conditioning on treatment and baseline}
 \usage{
-fit_nuisance_v(train_data, valid_data, contrast, lrnr_stack, m_out, q_out,
+fit_nuisance_v(train_data, valid_data, contrast, learners, m_out, q_out,
   m_names, w_names)
 }
 \arguments{
@@ -24,14 +24,17 @@ intervention \code{A} to be compared. The default value of \code{c(0, 1)}
 assumes a binary intervention node \code{A}, though support for categorical
 interventions is planned for future releases.}
 
-\item{lrnr_stack}{A \code{Stack} object, or other learner class (inheriting
+\item{learners}{\code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a model for this nuisance
 parameter.}
 
-\item{m_out}{...}
+\item{m_out}{Output from the internal function for fitting the outcome
+regression \code{\link{fit_m_mech}}.}
 
-\item{q_out}{...}
+\item{q_out}{Output from the internal function for fitting the mechanism of
+the mediator-outcome confounder relationship with conditioning on mediators,
+i.e., \code{\link{fit_moc_mech}}, setting \code{type = "q"}.}
 
 \item{m_names}{A \code{character} vector of the names of the columns that
 correspond to mediators (M). The input for this argument is automatically

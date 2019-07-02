@@ -32,15 +32,14 @@ confint.medoutcon <- function(object,
 
   # assume continuous outcome if more than two levels in outcome node
   if (length(unique(object$outcome)) > 2) {
-    # compute the EIF variance multiplier for the CI
-    # NOTE: the variance value is already scaled by length of observations
+    # NOTE: variance already scaled (i.e., Var(D)/n)
     se_eif <- sqrt(object$var)
 
     # compute the interval around the point estimate
     ci_theta <- ci_norm_bounds * se_eif + object$theta
 
-    # for binary outcomes, create CI on the logit scale and then back-transform
   } else if (length(unique(object$outcome)) == 2) {
+    # for binary outcomes, create CI on the logit scale and back-transform
     theta_ratio <- stats::qlogis(object$theta)
     grad_ratio_delta <- (1 / object$theta) + (1 / (1 - object$theta))
     se_eif_logit <- sqrt(grad_ratio_delta^2 * object$var)

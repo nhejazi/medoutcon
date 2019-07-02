@@ -774,7 +774,12 @@ fit_nuisance_u <- function(train_data,
 
   # predict from nuisance parameter regression model on validation data
   u_valid_pred <- u_param_fit$predict(u_task_valid)
-  return(as.numeric(u_valid_pred))
+
+  # return prediction on validation set
+  return(list(
+    u_fit = u_param_fit,
+    u_pred = as.numeric(u_valid_pred)
+  ))
 }
 
 ################################################################################
@@ -818,12 +823,12 @@ fit_nuisance_v <- function(train_data,
                            q_out,
                            m_names,
                            w_names) {
-  # first, compute components of integral over mediation-outcome confounder
-  v_pseudo <- lapply(as.list(unique(train_data$Z)), function(confounder_val) {
+  # first, compute components of integral over mediator-outcome confounder
+  v_pseudo <- lapply(unique(train_data$Z), function(confounder_val) {
     # training data
     train_data_z_interv <- data.table::copy(train_data)
-    train_data_z_interv[, Z := confounder_val]
-    train_data_z_interv[, A := contrast[1]]
+    train_data_z_interv[, `:=`(Z = confounder_val,
+                               A = contrast[1])]
 
     # tasks for predicting from trained m and q regression models
     m_reg_train_v_subtask <- sl3::sl3_Task$new(
@@ -832,7 +837,7 @@ fit_nuisance_v <- function(train_data,
       outcome = "Y"
     )
     q_reg_train_v_subtask <- sl3::sl3_Task$new(
-      data = train_data,
+      data = train_data_z_interv,
       covariates = c("A", w_names),
       outcome_type = "binomial",
       outcome = "Z"
@@ -845,13 +850,13 @@ fit_nuisance_v <- function(train_data,
     # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
     #       want is actually P(Z = z | ...) hence the extra bit of manipulation
     q_pred_train_z_interv <- q_out$moc_fit$predict(q_reg_train_v_subtask)
-    q_pred_train_z_natural <- (train_data$Z * q_pred_train_z_interv) +
-      ((1 - train_data$Z) * (1 - q_pred_train_z_interv))
+    q_pred_train_z_natural <- (confounder_val * q_pred_train_z_interv) +
+      ((1 - confounder_val) * (1 - q_pred_train_z_interv))
 
     # now on validation set
     valid_data_z_interv <- data.table::copy(valid_data)
-    valid_data_z_interv[, Z := confounder_val]
-    valid_data_z_interv[, A := contrast[1]]
+    valid_data_z_interv[, `:=`(Z = confounder_val,
+                               A = contrast[1])]
 
     # tasks for predicting from trained m and q regression models
     m_reg_valid_v_subtask <- sl3::sl3_Task$new(
@@ -860,7 +865,7 @@ fit_nuisance_v <- function(train_data,
       outcome = "Y"
     )
     q_reg_valid_v_subtask <- sl3::sl3_Task$new(
-      data = valid_data,
+      data = valid_data_z_interv,
       covariates = c("A", w_names),
       outcome_type = "binomial",
       outcome = "Z"
@@ -873,8 +878,8 @@ fit_nuisance_v <- function(train_data,
     # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
     #       want is actually P(Z = z | ...) hence the extra bit of manipulation
     q_pred_valid_z_interv <- q_out$moc_fit$predict(q_reg_valid_v_subtask)
-    q_pred_valid_z_natural <- (valid_data$Z * q_pred_valid_z_interv) +
-      ((1 - valid_data$Z) * (1 - q_pred_valid_z_interv))
+    q_pred_valid_z_natural <- (confounder_val * q_pred_valid_z_interv) +
+      ((1 - confounder_val) * (1 - q_pred_valid_z_interv))
 
     # return partial pseudo-outcome for v nuisance regression
     out_train <- m_pred_train_z_interv * q_pred_train_z_natural
@@ -883,29 +888,21 @@ fit_nuisance_v <- function(train_data,
     return(out)
   })
 
-  # compute pseudo-outcome and build regression task for training set
+  # compute pseudo-outcome by computing integral via discrete summation
   v_pseudo_train <- v_pseudo[[1]]$training + v_pseudo[[2]]$training
-  v_data_train <- data.table::as.data.table(cbind(
-    train_data[, ..w_names],
-    train_data$A, v_pseudo_train
-  ))
-  data.table::setnames(v_data_train, c(w_names, "A", "V_pseudo"))
+  v_pseudo_valid <- v_pseudo[[1]]$validation + v_pseudo[[2]]$validation
+
+  # build regression tasks for training and validation sets
+  train_data[, V_pseudo := v_pseudo_train]
   v_task_train <- sl3::sl3_Task$new(
-    data = v_data_train,
+    data = train_data,
     covariates = c(w_names, "A"),
     outcome_type = "continuous",
     outcome = "V_pseudo"
   )
-
-  # compute pseudo-outcome and build regression task for validation set
-  v_pseudo_valid <- v_pseudo[[1]]$validation + v_pseudo[[2]]$validation
-  v_data_valid <- data.table::as.data.table(cbind(
-    valid_data[, ..w_names],
-    valid_data$A, v_pseudo_valid
-  ))
-  data.table::setnames(v_data_valid, c(w_names, "A", "V_pseudo"))
+  valid_data[, V_pseudo := v_pseudo_valid]
   v_task_valid <- sl3::sl3_Task$new(
-    data = v_data_valid,
+    data = valid_data,
     covariates = c(w_names, "A"),
     outcome_type = "continuous",
     outcome = "V_pseudo"
@@ -917,6 +914,7 @@ fit_nuisance_v <- function(train_data,
 
   # return prediction on validation set
   return(list(
+    v_fit = v_param_fit,
     v_pred = as.numeric(v_valid_pred),
     v_pseudo = as.numeric(v_pseudo_valid)
   ))

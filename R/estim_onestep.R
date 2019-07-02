@@ -251,7 +251,7 @@ cv_eif <- function(fold,
   #       are only needed for u(z,a',w) and v(a*,w) as per the EIF
   valid_data_a_prime <- data.table::copy(valid_data)[, A := contrast[1]]
   valid_data_a_star <- data.table::copy(valid_data)[, A := contrast[2]]
-  u_prime <- fit_nuisance_u(
+  u_out <- fit_nuisance_u(
     train_data = train_data,
     valid_data = valid_data_a_prime,
     lrnr_stack = u_lrnr_stack,
@@ -261,6 +261,8 @@ cv_eif <- function(fold,
     e_out = e_out,
     w_names = w_names
   )
+  u_prime <- u_out$u_pred
+
   v_out <- fit_nuisance_v(
     train_data = train_data,
     valid_data = valid_data_a_star,
@@ -274,26 +276,21 @@ cv_eif <- function(fold,
   v_star <- v_out$v_pred
 
   # need an integral involving U over mediator-outcome confounder Z
-  u_int_eif <- lapply(as.list(unique(train_data$Z)), function(confounder_val) {
+  u_int_eif <- lapply(unique(train_data$Z), function(confounder_val) {
     # intervene on training and validation data sets
-    train_data_z_interv <- data.table::copy(train_data)
-    train_data_z_interv[, Z := confounder_val]
-    train_data_z_interv[, A := contrast[1]]
     valid_data_z_interv <- data.table::copy(valid_data)
-    valid_data_z_interv[, Z := confounder_val]
-    valid_data_z_interv[, A := contrast[1]]
+    valid_data_z_interv[, `:=`(Z = confounder_val,
+                               A = contrast[1],
+                               U_pseudo = u_prime)]
 
-    # fit u(z, a', w) using intervened data with treatment set A = a'
-    u_prime_z_interv <- fit_nuisance_u(
-      train_data = train_data_z_interv,
-      valid_data = valid_data_z_interv,
-      lrnr_stack = u_lrnr_stack,
-      m_out = m_out,
-      q_out = q_out,
-      r_out = r_out,
-      e_out = e_out,
-      w_names = w_names
+    # predict u(z, a', w) using intervened data with treatment set A = a'
+    u_task_valid_z_interv <- sl3::sl3_Task$new(
+      data = valid_data_z_interv,
+      covariates = c(w_names, "A", "Z"),
+      outcome_type = "continuous",
+      outcome = "U_pseudo"
     )
+    u_prime_z_interv <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
 
     # task for predicting from trained q regression model
     q_reg_valid_v_subtask <- sl3::sl3_Task$new(
@@ -305,10 +302,9 @@ cv_eif <- function(fold,
 
     # q nuisance regression after intervening on mediator-outcome confounder
     # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
-    #       want is actually P(Z = z | ...) hence the extra bit of manipulation
-    q_pred_valid_z_interv <- q_out$moc_fit$predict(q_reg_valid_v_subtask)
-    q_pred_valid_z_natural <- (valid_data$Z * q_pred_valid_z_interv) +
-      ((1 - valid_data$Z) * (1 - q_pred_valid_z_interv))
+    #       want is actually P(Z = z | ...)
+    q_pred_valid_z_natural <- (confounder_val * q_prime) +
+      ((1 - confounder_val) * (1 - q_prime))
 
     # return partial pseudo-outcome for v nuisance regression
     out_valid <- u_prime_z_interv * q_pred_valid_z_natural
@@ -316,18 +312,15 @@ cv_eif <- function(fold,
   })
   u_int_eif <- do.call(`+`, u_int_eif)
 
-  # create inverse probability weights and stabilize by expectation
+  # create inverse probability weights
   ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_star
-  #sipw_a_prime <- ipw_a_prime / mean(ipw_a_prime)
   ipw_a_star <- as.numeric(valid_data$A == contrast[2]) / g_star
-  #sipw_a_star <- ipw_a_star / mean(ipw_a_star)
 
   # compute efficient influence function
-  eif_p1 <- (q_prime / r_prime) * (e_star / e_prime) * (valid_data$Y - m_prime)
-  eif_p2 <- u_prime - u_int_eif
-  eif_p3 <- v_out$v_pseudo - v_star
-  eif <- (ipw_a_prime * eif_p1) + (ipw_a_prime * eif_p2) +
-    (ipw_a_star * eif_p3) + v_star
+  eif_resid_y <- (q_prime / r_prime) * (e_star / e_prime) *
+    (valid_data$Y - m_prime)
+  eif <- (ipw_a_prime * eif_resid_y) + (ipw_a_prime * (u_prime - u_int_eif)) +
+    (ipw_a_star * (v_out$v_pseudo - v_star)) + v_star
 
   # output list
   out <- list(data.table::data.table(

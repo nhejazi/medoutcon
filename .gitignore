@@ -1,2 +1,11 @@
 .Rproj.user
+.Rhistory
+.RData
 inst/doc
+*.html
+!docs/*.html
+!docs/reference/*.html
+!docs/articles/*.html
+!docs/news/*.html
+vignettes/*.html
+.ipynb_checkpoints

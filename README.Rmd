@@ -22,8 +22,7 @@ knitr::opts_chunk$set(
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis Under Mediator-Outcome Confounding
-> Affected by Exposure
+> Mediation Analysis with Mediator-Outcome Confounding by Exposure
 
 __Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -163,8 +162,8 @@ After using the `medoutcon` R package, please cite the following:
 
         @manual{hejazi2019medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-          title = {{medoutcon}: Efficient causal mediation analysis under
-            mediator-outcome confounding in {R}},
+          title = {{medoutcon}: Efficient mediation analysis with
+            mediator-outcome confounding by exposure},
           year  = {2019},
           url = {https://github.com/nhejazi/medoutcon},
           note = {R package version 0.0.1}

@@ -15,8 +15,8 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis Under Mediator-Outcome Confounding
-> Affected by Exposure
+> Efficient Mediation Analysis with Mediator-Outcome Confounding by
+> Exposure
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -113,7 +113,7 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
 #>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>     -0.315    -0.0461     0.2227     0.0188 1.1669e-16    onestep
+#>    -0.7626    -0.5818    -0.4009     0.0085 8.0336e-17    onestep
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -160,8 +160,8 @@ After using the `medoutcon` R package, please cite the following:
 
     @manual{hejazi2019medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Efficient causal mediation analysis under
-        mediator-outcome confounding in {R}},
+      title = {{medoutcon}: Efficient mediation analysis with
+        mediator-outcome confounding by exposure},
       year  = {2019},
       url = {https://github.com/nhejazi/medoutcon},
       note = {R package version 0.0.1}

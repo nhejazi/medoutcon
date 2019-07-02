@@ -1,5 +1,5 @@
 Package: medoutcon
-Title: Efficient causal mediation analysis under mediator-outcome confounding
+Title: Mediation analysis with mediator-outcome confounding by exposure
 Version: 0.0.1
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",

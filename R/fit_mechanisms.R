@@ -35,7 +35,8 @@ fit_g_mech <- function(train_data,
   g_natural_task <- sl3::sl3_Task$new(
     data = train_data,
     covariates = w_names,
-    outcome = "A"
+    outcome = "A",
+    outcome_type = "binomial"
   )
 
   # fit propensity score model with natural (observed) intervention values
@@ -52,8 +53,8 @@ fit_g_mech <- function(train_data,
     g_intervened_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
       covariates = w_names,
-      outcome_type = "binomial",
-      outcome = "A"
+      outcome = "A",
+      outcome_type = "binomial"
     )
 
     # get predictions from natural propensity score model for intervened data
@@ -95,8 +96,8 @@ fit_g_mech <- function(train_data,
         g_intervened_task <- sl3_Task$new(
           data = data_intervene,
           covariates = w_names,
-          outcome_type = "binomial",
-          outcome = "A"
+          outcome = "A",
+          outcome_type = "binomial"
         )
 
         # get predictions from natural propensity score model on intervened data
@@ -190,8 +191,8 @@ fit_e_mech <- function(train_data,
     e_intervened_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
       covariates = c(m_names, w_names),
-      outcome_type = "binomial",
-      outcome = "A"
+      outcome = "A",
+      outcome_type = "binomial"
     )
 
     # predict from trained model on counterfactual data
@@ -235,7 +236,8 @@ fit_e_mech <- function(train_data,
     e_natural_task_valid <- sl3::sl3_Task$new(
       data = valid_data,
       covariates = c(m_names, w_names),
-      outcome = "A"
+      outcome = "A",
+      outcome_type = "binomial"
     )
     e_natural_pred_valid <- e_natural_fit$predict(e_natural_task_valid)
 
@@ -247,8 +249,8 @@ fit_e_mech <- function(train_data,
         e_intervened_task <- sl3::sl3_Task$new(
           data = data_intervene,
           covariates = c(m_names, w_names),
-          outcome_type = "binomial",
-          outcome = "A"
+          outcome = "A",
+          outcome_type = "binomial"
         )
 
         # predict from trained model on counterfactual data
@@ -508,15 +510,15 @@ fit_moc_mech <- function(train_data,
     moc_natural_task <- sl3::sl3_Task$new(
       data = train_data,
       covariates = c("A", w_names),
-      outcome_type = "binomial",
-      outcome = "Z"
+      outcome = "Z",
+      outcome_type = "binomial"
     )
   } else if (type == "r") {
     moc_natural_task <- sl3::sl3_Task$new(
       data = train_data,
       covariates = c("A", m_names, w_names),
-      outcome_type = "binomial",
-      outcome = "Z"
+      outcome = "Z",
+      outcome_type = "binomial"
     )
   }
 
@@ -537,15 +539,15 @@ fit_moc_mech <- function(train_data,
       moc_intervened_prime_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", w_names),
-        outcome_type = "binomial",
-        outcome = "Z"
+        outcome = "Z",
+        outcome_type = "binomial"
       )
     } else if (type == "r") {
       moc_intervened_prime_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", m_names, w_names),
-        outcome_type = "binomial",
-        outcome = "Z"
+        outcome = "Z",
+        outcome_type = "binomial"
       )
     }
 
@@ -559,15 +561,15 @@ fit_moc_mech <- function(train_data,
       moc_intervened_star_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", w_names),
-        outcome_type = "binomial",
-        outcome = "Z"
+        outcome = "Z",
+        outcome_type = "binomial"
       )
     } else if (type == "r") {
       moc_intervened_star_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
         covariates = c("A", m_names, w_names),
-        outcome_type = "binomial",
-        outcome = "Z"
+        outcome = "Z",
+        outcome_type = "binomial"
       )
     }
 
@@ -605,15 +607,15 @@ fit_moc_mech <- function(train_data,
       moc_natural_task_valid <- sl3::sl3_Task$new(
         data = valid_data,
         covariates = c("A", w_names),
-        outcome_type = "binomial",
-        outcome = "Z"
+        outcome = "Z",
+        outcome_type = "binomial"
       )
     } else if (type == "r") {
       moc_natural_task_valid <- sl3::sl3_Task$new(
         data = valid_data,
         covariates = c("A", m_names, w_names),
-        outcome_type = "binomial",
-        outcome = "Z"
+        outcome = "Z",
+        outcome_type = "binomial"
       )
     }
 
@@ -632,15 +634,15 @@ fit_moc_mech <- function(train_data,
           moc_intervened_prime_task <- sl3::sl3_Task$new(
             data = data_intervene,
             covariates = c("A", w_names),
-            outcome_type = "binomial",
-            outcome = "Z"
+            outcome = "Z",
+            outcome_type = "binomial"
           )
         } else if (type == "r") {
           moc_intervened_prime_task <- sl3::sl3_Task$new(
             data = data_intervene,
             covariates = c("A", m_names, w_names),
-            outcome_type = "binomial",
-            outcome = "Z"
+            outcome = "Z",
+            outcome_type = "binomial"
           )
         }
 
@@ -654,15 +656,15 @@ fit_moc_mech <- function(train_data,
           moc_intervened_star_task <- sl3::sl3_Task$new(
             data = data_intervene,
             covariates = c("A", w_names),
-            outcome_type = "binomial",
-            outcome = "Z"
+            outcome = "Z",
+            outcome_type = "binomial"
           )
         } else if (type == "r") {
           moc_intervened_star_task <- sl3::sl3_Task$new(
             data = data_intervene,
             covariates = c("A", m_names, w_names),
-            outcome_type = "binomial",
-            outcome = "Z"
+            outcome = "Z",
+            outcome_type = "binomial"
           )
         }
 
@@ -758,8 +760,8 @@ fit_nuisance_u <- function(train_data,
   u_task_train <- sl3::sl3_Task$new(
     data = u_data_train,
     covariates = c(w_names, "A", "Z"),
-    outcome_type = "continuous",
-    outcome = "U_pseudo"
+    outcome = "U_pseudo",
+    outcome_type = "continuous"
   )
 
   # fit model for nuisance parameter regression on training data
@@ -775,8 +777,8 @@ fit_nuisance_u <- function(train_data,
   u_task_valid <- sl3::sl3_Task$new(
     data = u_data_valid,
     covariates = c(w_names, "A", "Z"),
-    outcome_type = "continuous",
-    outcome = "U_pseudo"
+    outcome = "U_pseudo",
+    outcome_type = "continuous"
   )
 
   # predict from nuisance parameter regression model on validation data
@@ -849,8 +851,8 @@ fit_nuisance_v <- function(train_data,
     q_reg_train_v_subtask <- sl3::sl3_Task$new(
       data = train_data_z_interv,
       covariates = c("A", w_names),
-      outcome_type = "binomial",
-      outcome = "Z"
+      outcome = "Z",
+      outcome_type = "binomial"
     )
 
     # outcome regression after intervening on mediator-outcome confounder
@@ -877,8 +879,8 @@ fit_nuisance_v <- function(train_data,
     q_reg_valid_v_subtask <- sl3::sl3_Task$new(
       data = valid_data_z_interv,
       covariates = c("A", w_names),
-      outcome_type = "binomial",
-      outcome = "Z"
+      outcome = "Z",
+      outcome_type = "binomial"
     )
 
     # outcome regression after intervening on mediator-outcome confounder
@@ -907,15 +909,15 @@ fit_nuisance_v <- function(train_data,
   v_task_train <- sl3::sl3_Task$new(
     data = train_data,
     covariates = c(w_names, "A"),
-    outcome_type = "continuous",
-    outcome = "V_pseudo"
+    outcome = "V_pseudo",
+    outcome_type = "continuous"
   )
   valid_data[, V_pseudo := v_pseudo_valid]
   v_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
     covariates = c(w_names, "A"),
-    outcome_type = "continuous",
-    outcome = "V_pseudo"
+    outcome = "V_pseudo",
+    outcome_type = "continuous"
   )
 
   # fit regression model for v on training task, get predictions on validation

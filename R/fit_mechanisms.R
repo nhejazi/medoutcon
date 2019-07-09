@@ -335,7 +335,7 @@ fit_m_mech <- function(train_data,
   #  construct task for propensity score fit
   m_natural_task <- sl3::sl3_Task$new(
     data = train_data,
-    covariates = c("A", m_names, "Z", w_names),
+    covariates = c(m_names, "Z", "A", w_names),
     outcome = "Y"
   )
 
@@ -355,7 +355,7 @@ fit_m_mech <- function(train_data,
     # create task for post-intervention outcome regression
     m_intervened_prime_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
-      covariates = c("A", m_names, "Z", w_names),
+      covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
 
@@ -366,7 +366,7 @@ fit_m_mech <- function(train_data,
     train_data_intervene[, A := contrast[2]]
     m_intervened_star_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
-      covariates = c("A", m_names, "Z", w_names),
+      covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
 
@@ -399,7 +399,7 @@ fit_m_mech <- function(train_data,
     m_natural_pred_train <- m_natural_fit$predict()
     m_natural_task_valid <- sl3::sl3_Task$new(
       data = valid_data,
-      covariates = c("A", m_names, "Z", w_names),
+      covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
     m_natural_pred_valid <- m_natural_fit$predict(m_natural_task_valid)
@@ -412,7 +412,7 @@ fit_m_mech <- function(train_data,
         data_intervene[, A := contrast[1]]
         m_intervened_prime_task <- sl3::sl3_Task$new(
           data = data_intervene,
-          covariates = c("A", m_names, "Z", w_names),
+          covariates = c(m_names, "Z", "A", w_names),
           outcome = "Y"
         )
 
@@ -424,7 +424,7 @@ fit_m_mech <- function(train_data,
         data_intervene[, A := contrast[2]]
         m_intervened_star_task <- sl3::sl3_Task$new(
           data = data_intervene,
-          covariates = c("A", m_names, "Z", w_names),
+          covariates = c(m_names, "Z", "A", w_names),
           outcome = "Y"
         )
 
@@ -516,7 +516,7 @@ fit_moc_mech <- function(train_data,
   } else if (type == "r") {
     moc_natural_task <- sl3::sl3_Task$new(
       data = train_data,
-      covariates = c("A", m_names, w_names),
+      covariates = c(m_names, "A", w_names),
       outcome = "Z",
       outcome_type = "binomial"
     )
@@ -545,7 +545,7 @@ fit_moc_mech <- function(train_data,
     } else if (type == "r") {
       moc_intervened_prime_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
-        covariates = c("A", m_names, w_names),
+        covariates = c(m_names, "A", w_names),
         outcome = "Z",
         outcome_type = "binomial"
       )
@@ -567,7 +567,7 @@ fit_moc_mech <- function(train_data,
     } else if (type == "r") {
       moc_intervened_star_task <- sl3::sl3_Task$new(
         data = train_data_intervene,
-        covariates = c("A", m_names, w_names),
+        covariates = c(m_names, "A", w_names),
         outcome = "Z",
         outcome_type = "binomial"
       )
@@ -613,7 +613,7 @@ fit_moc_mech <- function(train_data,
     } else if (type == "r") {
       moc_natural_task_valid <- sl3::sl3_Task$new(
         data = valid_data,
-        covariates = c("A", m_names, w_names),
+        covariates = c(m_names, "A", w_names),
         outcome = "Z",
         outcome_type = "binomial"
       )
@@ -640,7 +640,7 @@ fit_moc_mech <- function(train_data,
         } else if (type == "r") {
           moc_intervened_prime_task <- sl3::sl3_Task$new(
             data = data_intervene,
-            covariates = c("A", m_names, w_names),
+            covariates = c(m_names, "A", w_names),
             outcome = "Z",
             outcome_type = "binomial"
           )
@@ -662,7 +662,7 @@ fit_moc_mech <- function(train_data,
         } else if (type == "r") {
           moc_intervened_star_task <- sl3::sl3_Task$new(
             data = data_intervene,
-            covariates = c("A", m_names, w_names),
+            covariates = c(m_names, "A", w_names),
             outcome = "Z",
             outcome_type = "binomial"
           )
@@ -759,7 +759,7 @@ fit_nuisance_u <- function(train_data,
   data.table::setnames(u_data_train, c(w_names, "A", "Z", "U_pseudo"))
   u_task_train <- sl3::sl3_Task$new(
     data = u_data_train,
-    covariates = c(w_names, "A", "Z"),
+    covariates = c("Z", "A", w_names),
     outcome = "U_pseudo",
     outcome_type = "continuous"
   )
@@ -776,7 +776,7 @@ fit_nuisance_u <- function(train_data,
   data.table::setnames(u_data_valid, c(w_names, "A", "Z", "U_pseudo"))
   u_task_valid <- sl3::sl3_Task$new(
     data = u_data_valid,
-    covariates = c(w_names, "A", "Z"),
+    covariates = c("Z", "A", w_names),
     outcome = "U_pseudo",
     outcome_type = "continuous"
   )
@@ -845,7 +845,7 @@ fit_nuisance_v <- function(train_data,
     # tasks for predicting from trained m and q regression models
     m_reg_train_v_subtask <- sl3::sl3_Task$new(
       data = train_data_z_interv,
-      covariates = c(w_names, "A", "Z", m_names),
+      covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
     q_reg_train_v_subtask <- sl3::sl3_Task$new(
@@ -873,7 +873,7 @@ fit_nuisance_v <- function(train_data,
     # tasks for predicting from trained m and q regression models
     m_reg_valid_v_subtask <- sl3::sl3_Task$new(
       data = valid_data_z_interv,
-      covariates = c(w_names, "A", "Z", m_names),
+      covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
     q_reg_valid_v_subtask <- sl3::sl3_Task$new(
@@ -908,14 +908,14 @@ fit_nuisance_v <- function(train_data,
   train_data[, V_pseudo := v_pseudo_train]
   v_task_train <- sl3::sl3_Task$new(
     data = train_data,
-    covariates = c(w_names, "A"),
+    covariates = c("A", w_names),
     outcome = "V_pseudo",
     outcome_type = "continuous"
   )
   valid_data[, V_pseudo := v_pseudo_valid]
   v_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
-    covariates = c(w_names, "A"),
+    covariates = c("A", w_names),
     outcome = "V_pseudo",
     outcome_type = "continuous"
   )

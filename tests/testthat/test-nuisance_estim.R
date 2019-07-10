@@ -1,13 +1,10 @@
 library(tidyverse)
 library(data.table)
 library(sl3)
-g_learners <- Lrnr_glm_fast$new(family = stats::binomial())
-e_learners <- Lrnr_glm_fast$new(family = stats::binomial())
-m_learners <- Lrnr_glm_fast$new()
-q_learners <- Lrnr_glm_fast$new(family = stats::binomial())
-r_learners <- Lrnr_glm_fast$new(family = stats::binomial())
-u_learners <- Lrnr_glm_fast$new()
-v_learners <- Lrnr_glm_fast$new()
+g_learners <- q_learners <- r_learners <-
+  Lrnr_glm_fast$new(family = stats::binomial())
+e_learners <- m_learners <- Lrnr_hal9001$new(family = "binomial")
+u_learners <- v_learners <- Lrnr_glm_fast$new()
 
 g <- function(a, w) {
     pscore <- (rowSums(w) / 4 + 0.1)
@@ -30,7 +27,7 @@ pmaw <- function(m, a, w) {
 }
 
 pmw <-  function(m, w) {
-    pmaw(m, 1, w) * g(a, w) +
+    pmaw(m, 1, w) * g(1, w) +
         pmaw(m, 0, w) * g(0, w)
 }
 
@@ -73,7 +70,7 @@ sim_medoutcon_data <- function(n_obs = 1000) {
 
 
 # data and helper variables
-data <- sim_medoutcon_data(n_obs = 1e6)
+data <- sim_medoutcon_data(n_obs = 1e3)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
 w <- data[, ..w_names]
@@ -128,7 +125,5 @@ test_that("", {
 m_out <- fit_m_mech(train_data = data, contrast = c(0, 1),
                     learners = m_learners, m_names = m_names, w_names = w_names)
 test_that("", {
-  m_aprime <- m * m_out$m_est$m_pred_A_prime +
-    (1 - m) * m_out$m_est$m_pred_A_prime
-  expect_equal(m_aprime, my(m, z, aprime, w), tol = 3e-2)
+  expect_equal(m_out$m_est$m_pred_A_prime, my(m, z, aprime, w), tol = 3e-2)
 })

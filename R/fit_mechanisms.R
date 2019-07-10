@@ -45,9 +45,9 @@ fit_g_mech <- function(train_data,
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
-    # set intervention column to the treatment contrast (i.e., contrast[2])
+    # set intervention column to first treatment contrast
     train_data_intervene <- data.table::copy(train_data)
-    train_data_intervene[, A := contrast[2]]
+    train_data_intervene[, A := contrast[1]]
 
     # set intervention to first contrast a_prime := contrast[1]
     g_intervened_task <- sl3::sl3_Task$new(
@@ -58,10 +58,30 @@ fit_g_mech <- function(train_data,
     )
 
     # get predictions from natural propensity score model for intervened data
-    g_intervened_pred_A_star <- g_natural_fit$predict(g_intervened_task)
+    if (contrast[1] == 0) {
+      g_intervened_pred_A_prime <-
+        1 - g_natural_fit$predict(g_intervened_task)
+    } else if (contrast[1] == 1) {
+      g_intervened_pred_A_prime <- g_natural_fit$predict(g_intervened_task)
+    }
 
-    # compute A = a_star = contrast[1] (control) case by symmetry
-    g_intervened_pred_A_prime <- 1 - g_intervened_pred_A_star
+    # set intervention column to second treatment contrast
+    train_data_intervene[, A := contrast[2]]
+
+    # set intervention to first contrast a_star := contrast[2]
+    g_intervened_task <- sl3::sl3_Task$new(
+      data = train_data_intervene,
+      covariates = w_names,
+      outcome = "A",
+      outcome_type = "binomial"
+    )
+
+    # get predictions from natural propensity score model for intervened data
+    if (contrast[2] == 0) {
+      g_intervened_pred_A_star <- 1 - g_natural_fit$predict(g_intervened_task)
+    } else if (contrast[2] == 1) {
+      g_intervened_pred_A_star <- g_natural_fit$predict(g_intervened_task)
+    }
 
     # bounding to numerical precision and for positivity considerations
     out_g_mat <- cbind(
@@ -84,14 +104,15 @@ fit_g_mech <- function(train_data,
   } else {
     # set intervention columns to treatment contrast for training/validation
     train_data_intervene <- data.table::copy(train_data)
-    train_data_intervene[, A := contrast[2]]
     valid_data_intervene <- data.table::copy(valid_data)
-    valid_data_intervene[, A := contrast[2]]
 
     # set intervention to first contrast a_prime := contrast[1]
     out_g_est <- lapply(
       list(train_data_intervene, valid_data_intervene),
       function(data_intervene) {
+        # intervene on training or validation data for prediction
+        data_intervene[, A := contrast[1]]
+
         # create task to generate contrast-specific predictions
         g_intervened_task <- sl3_Task$new(
           data = data_intervene,
@@ -100,11 +121,32 @@ fit_g_mech <- function(train_data,
           outcome_type = "binomial"
         )
 
-        # get predictions from natural propensity score model on intervened data
-        g_intervened_pred_A_star <- g_natural_fit$predict(g_intervened_task)
+        # predictions from natural propensity score model on intervened data
+        if (contrast[1] == 0) {
+          g_intervened_pred_A_prime <-
+            1 - g_natural_fit$predict(g_intervened_task)
+        } else if (contrast[1] == 1) {
+          g_intervened_pred_A_prime <- g_natural_fit$predict(g_intervened_task)
+        }
 
-        # compute A = a_star = contrast[2] case by symmetry
-        g_intervened_pred_A_prime <- 1 - g_intervened_pred_A_star
+        # now, repeat for second contrast
+        data_intervene[, A := contrast[2]]
+
+        # create task to generate contrast-specific predictions
+        g_intervened_task <- sl3_Task$new(
+          data = data_intervene,
+          covariates = w_names,
+          outcome = "A",
+          outcome_type = "binomial"
+        )
+
+        # predict from natural propensity score model on intervened data
+        if (contrast[2] == 0) {
+          g_intervened_pred_A_star <-
+            1 - g_natural_fit$predict(g_intervened_task)
+        } else if (contrast[2] == 1) {
+          g_intervened_pred_A_star <- g_natural_fit$predict(g_intervened_task)
+        }
 
         # bounding to numerical precision and for positivity considerations
         out_g_mat <- cbind(
@@ -180,9 +222,9 @@ fit_e_mech <- function(train_data,
 
   # use full data for counterfactual prediction if no validation data provided
   if (is.null(valid_data)) {
-    # set intervention to treatment contrast a_star := contrast[2]
+    # set intervention to first treatment contrast
     train_data_intervene <- data.table::copy(train_data)
-    train_data_intervene[, A := contrast[2]]
+    train_data_intervene[, A := contrast[1]]
 
     # predictions on observed data (i.e., under observed treatment status)
     e_natural_pred <- e_natural_fit$predict()
@@ -196,10 +238,32 @@ fit_e_mech <- function(train_data,
     )
 
     # predict from trained model on counterfactual data
-    e_intervened_pred_A_star <- e_natural_fit$predict(e_intervened_task)
+    if (contrast[1] == 0) {
+      e_intervened_pred_A_prime <- 1 - e_natural_fit$predict(e_intervened_task)
+    } else if (contrast[1] == 1) {
+      e_intervened_pred_A_prime <- e_natural_fit$predict(e_intervened_task)
+    }
 
-    # get values of nuisance parameter E for A = control contrast by symmetry
-    e_intervened_pred_A_prime <- 1 - e_intervened_pred_A_star
+    # set intervention to second treatment contrast
+    train_data_intervene[, A := contrast[2]]
+
+    # predictions on observed data (i.e., under observed treatment status)
+    e_natural_pred <- e_natural_fit$predict()
+
+    # create task for treatment-specific propensity score for second contrast
+    e_intervened_task <- sl3::sl3_Task$new(
+      data = train_data_intervene,
+      covariates = c(m_names, w_names),
+      outcome = "A",
+      outcome_type = "binomial"
+    )
+
+    # predict from trained model on counterfactual data
+    if (contrast[2] == 0) {
+      e_intervened_pred_A_star <- 1 - e_natural_fit$predict(e_intervened_task)
+    } else if (contrast[2] == 1) {
+      e_intervened_pred_A_star <- e_natural_fit$predict(e_intervened_task)
+    }
 
     # bounding to numerical precision and for positivity considerations
     out_e_mat <- cbind(

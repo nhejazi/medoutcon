@@ -112,18 +112,18 @@ eif <- (a == aprime) / g(astar, w) * pz(z, aprime, w) / r(z, aprime, m, w) *
 g_out <- fit_g_mech(train_data = data, contrast = c(0, 1),
                     learners = g_learners, w_names = w_names)
 test_that("", {
-  expect_equal(g_out$g_est$g_pred_A_star, g(astar, w), tol = 3e-2)
+  expect_equal(g_out$g_est$g_pred_A_star, g(astar, w), tol = 5e-2)
 })
 
 e_out <- fit_e_mech(train_data = data, contrast = c(0, 1),
                     learners = e_learners, w_names = w_names,
                     m_names = m_names)
 test_that("", {
-  expect_equal(e_out$e_est$e_pred_A_prime, e(aprime, m, w), tol = 3e-2)
+  expect_equal(e_out$e_est$e_pred_A_prime, e(aprime, m, w), tol = 5e-2)
 })
 
 m_out <- fit_m_mech(train_data = data, contrast = c(0, 1),
                     learners = m_learners, m_names = m_names, w_names = w_names)
 test_that("", {
-  expect_equal(m_out$m_est$m_pred_A_prime, my(m, z, aprime, w), tol = 3e-2)
+  expect_equal(m_out$m_est$m_pred_A_prime, my(m, z, aprime, w), tol = 5e-2)
 })

@@ -169,11 +169,11 @@ q_out <- fit_moc_mech(
   type = "q"
 )
 test_that("Estimates of MOC regression q are close to the truth", {
-  expect_equal(q_out$moc_est_train$moc_pred_A_prime, pz(z, aprime, w),
+  expect_equal(q_out$moc_est_train$moc_pred_A_prime, pz(1, aprime, w),
                tol = 5e-2)
 })
 test_that("MSE of MOC regression q estimates is sufficiently low", {
-  q_mse <- mean((q_out$moc_est_train$moc_pred_A_prime - pz(z, aprime, w))^2)
+  q_mse <- mean((q_out$moc_est_train$moc_pred_A_prime - pz(1, aprime, w))^2)
   expect_lt(q_mse, 1/n_samp)
 })
 
@@ -188,11 +188,11 @@ r_out <- fit_moc_mech(
   type = "r"
 )
 test_that("Estimates of MOC regression r are close to the truth", {
-  expect_equal(r_out$moc_est_train$moc_pred_A_prime, r(z, aprime, m, w),
+  expect_equal(r_out$moc_est_train$moc_pred_A_prime, r(1, aprime, m, w),
                tol = 5e-2)
 })
 test_that("MSE of MOC regression r estimates is sufficiently low", {
-  r_mse <- mean((r_out$moc_est_train$moc_pred_A_prime - r(z, aprime, m, w))^2)
+  r_mse <- mean((r_out$moc_est_train$moc_pred_A_prime - r(1, aprime, m, w))^2)
   expect_lt(r_mse, 1/n_samp)
 })
 

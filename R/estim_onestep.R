@@ -186,22 +186,25 @@ cv_eif <- function(fold,
   valid_data <- origami::validation(data_in)
 
   # 1) fit regression for propensity score regression
-  g_out <- fit_g_mech(
+  g_out <- fit_treat_mech(
     train_data = train_data,
     valid_data = valid_data,
     contrast = contrast,
     learners = g_learners,
-    w_names = w_names
+    w_names = w_names,
+    m_names = m_names,
+    type = 'g'
   )
 
   # 2) fit clever regression for treatment, conditional on mediators
-  e_out <- fit_e_mech(
+  e_out <- fit_treat_mech(
     train_data = train_data,
     valid_data = valid_data,
     contrast = contrast,
     learners = e_learners,
+    w_names = w_names,
     m_names = m_names,
-    w_names = w_names
+    type = 'e'
   )
 
   # 3) fit outcome regression
@@ -241,9 +244,9 @@ cv_eif <- function(fold,
   m_prime <- m_out$m_est_valid$m_pred_A_prime
   q_prime <- q_out$moc_est_valid$moc_pred_A_prime
   r_prime <- r_out$moc_est_valid$moc_pred_A_prime
-  e_prime <- e_out$e_est_valid$e_pred_A_prime
-  e_star <- e_out$e_est_valid$e_pred_A_star
-  g_star <- g_out$g_est_valid$g_pred_A_star
+  e_prime <- e_out$treat_est_valid$treat_pred_A_prime
+  e_star <- e_out$treat_est_valid$treat_pred_A_star
+  g_star <- g_out$treat_est_valid$treat_pred_A_star
 
   # need pseudo-outcome regressions with intervention set to a contrast
   # NOTE: training fits of these nuisance functions must be performed using the
@@ -286,19 +289,11 @@ cv_eif <- function(fold,
     # predict u(z, a', w) using intervened data with treatment set A = a'
     u_task_valid_z_interv <- sl3::sl3_Task$new(
       data = valid_data_z_interv,
-      covariates = c(w_names, "A", "Z"),
+      covariates = c("Z", "A", w_names),
       outcome_type = "continuous",
       outcome = "U_pseudo"
     )
     u_prime_z_interv <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
-
-    # task for predicting from trained q regression model
-    q_reg_valid_v_subtask <- sl3::sl3_Task$new(
-      data = valid_data,
-      covariates = c("A", w_names),
-      outcome_type = "binomial",
-      outcome = "Z"
-    )
 
     # q nuisance regression after intervening on mediator-outcome confounder
     # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we

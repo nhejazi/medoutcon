@@ -92,11 +92,11 @@ intv <- function(m, w){
 ################################################################################
 
 # data and helper variables
-n_samp <- 1e4
+n_samp <- 1e6
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
-w <- data[, ..w_names]
+w <- as.tibble(data)[, w_names]
 a <- data$A
 z <- data$Z
 m <- data$M
@@ -110,10 +110,10 @@ astar  <- contrast[2]
 # compute parameter estimate and influence function with convenience functions
 v <- intv(1, w) * pmaw(1, astar, w) + intv(0, w) * pmaw(0, astar, w)
 
-eif <- (a == aprime) / g(astar, w) * pz(z, aprime, w) / r(z, aprime, m, w) *
-    e(astar, m, w) / e(aprime, m, w) * (y - my(m, z, aprime, w)) +
-    (a == aprime) / g(astar, w) * (u(z, w) - intu(w)) +
-    (a == astar) / g(astar, w) * (intv(m, w) - v) + v
+eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
+    pm(m, z, aprime, w) * (y - my(m, z, aprime, w)) + (a == aprime) /
+    g(aprime, w) * (u(z, w) - intu(w)) + (a == astar) / g(astar, w) *
+    (intv(m, w) - v) + v
 psi_os <- mean(eif)
 var_eif <- var(eif) / length(eif)
 

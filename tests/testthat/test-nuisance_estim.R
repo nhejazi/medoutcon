@@ -92,7 +92,7 @@ intv <- function(m, w){
 ################################################################################
 
 # data and helper variables
-n_samp <- 1e6
+n_samp <- 1e7
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
@@ -115,11 +115,21 @@ eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
     g(aprime, w) * (u(z, w) - intu(w)) + (a == astar) / g(astar, w) *
     (intv(m, w) - v) + v
 psi_os <- mean(eif)
-var_eif <- var(eif) / length(eif)
+var_eif <- var(eif)
 
 ################################################################################
 # nuisance components for one-step estimator
 ################################################################################
+
+n_samp <- 1e4
+data <- sim_medoutcon_data(n_obs = n_samp)
+w_names <- str_subset(colnames(data), "W")
+m_names <- str_subset(colnames(data), "M")
+w <- as.tibble(data)[, w_names]
+a <- data$A
+z <- data$Z
+m <- data$M
+y <- data$Y
 
 if (FALSE) {
 
@@ -305,7 +315,7 @@ eif_test <- (ipw_a_prime * eif_resid_y) +
   (ipw_a_prime * (u_prime - u_int_eif)) +
   (ipw_a_star * (v_out$v_pseudo - v_out$v_pred)) + v_out$v_pred
 psi_os_test <- mean(eif_test)
-var_eif_test <- var(eif_test) / length(eif)
+var_eif_test <- var(eif_test)
 test_that("Estimates based on influence function are close to the truth", {
   expect_equal(eif_test, eif, tol = 5e-2)
   expect_equal(psi_os_test, psi_os, tol = 5e-2)

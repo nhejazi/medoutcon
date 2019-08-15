@@ -193,7 +193,7 @@ cv_eif <- function(fold,
     learners = g_learners,
     w_names = w_names,
     m_names = m_names,
-    type = 'g'
+    type = "g"
   )
 
   # 2) fit clever regression for treatment, conditional on mediators
@@ -204,7 +204,7 @@ cv_eif <- function(fold,
     learners = e_learners,
     w_names = w_names,
     m_names = m_names,
-    type = 'e'
+    type = "e"
   )
 
   # 3) fit outcome regression
@@ -282,9 +282,11 @@ cv_eif <- function(fold,
   u_int_eif <- lapply(unique(train_data$Z), function(confounder_val) {
     # intervene on training and validation data sets
     valid_data_z_interv <- data.table::copy(valid_data)
-    valid_data_z_interv[, `:=`(Z = confounder_val,
-                               A = contrast[1],
-                               U_pseudo = u_prime)]
+    valid_data_z_interv[, `:=`(
+      Z = confounder_val,
+      A = contrast[1],
+      U_pseudo = u_prime
+    )]
 
     # predict u(z, a', w) using intervened data with treatment set A = a'
     u_task_valid_z_interv <- sl3::sl3_Task$new(

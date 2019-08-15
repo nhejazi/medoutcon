@@ -36,7 +36,7 @@ the mediator-outcome confounder relationship without conditioning on
 mediators, i.e., \code{\link{fit_moc_mech}}, setting \code{type = "r"}.}
 
 \item{e_out}{Output from the internal function for fitting the treatment
-mechanism conditioning on the mediators \code{\link{fit_e_mech}}.}
+mechanism conditioning on the mediators \code{\link{fit_treat_mech}}.}
 
 \item{w_names}{A \code{character} vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is

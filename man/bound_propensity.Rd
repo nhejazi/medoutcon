@@ -4,7 +4,7 @@
 \alias{bound_propensity}
 \title{Bounding Propensity Scores}
 \usage{
-bound_propensity(vals, bounds = c(0.01, 0.99))
+bound_propensity(vals, bounds = c(0.001, 0.999))
 }
 \arguments{
 \item{vals}{A \code{numeric} vector of values in the interval [0, 1].}

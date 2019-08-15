@@ -65,14 +65,15 @@ m_names <- str_subset(colnames(data), "m")
 theta_os <- medoutcon(
   W = data[, ..w_names], A = data$a, Z = data$z,
   M = data[, ..m_names], Y = data$y,
+  #effect = "direct",
   contrast = c(0, 1),
-  g_lrnr_stack = hal_binary_lrnr,
-  e_lrnr_stack = hal_binary_lrnr,
-  m_lrnr_stack = hal_binary_lrnr,
-  q_lrnr_stack = hal_binary_lrnr,
-  r_lrnr_stack = hal_binary_lrnr,
-  u_lrnr_stack = hal_contin_lrnr,
-  v_lrnr_stack = hal_contin_lrnr,
+  g_learners = hal_binary_lrnr,
+  e_learners = hal_binary_lrnr,
+  m_learners = hal_binary_lrnr,
+  q_learners = hal_binary_lrnr,
+  r_learners = hal_binary_lrnr,
+  u_learners = hal_contin_lrnr,
+  v_learners = hal_contin_lrnr,
   estimator = "onestep",
   estimator_args = list(cv_folds = 2)
 )

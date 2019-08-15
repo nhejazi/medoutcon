@@ -1,6 +1,6 @@
 utils::globalVariables(c("..w_names", "A", "Z"))
 
-#' Fit propensity score for treatment contrasts
+#' Fit propensity scores for treatment contrasts
 #'
 #' @param train_data A \code{data.table} containing the observed data; columns
 #'  are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
@@ -26,7 +26,6 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #' @importFrom data.table as.data.table copy setnames ":="
 #' @importFrom sl3 sl3_Task
 #'
-
 fit_treat_mech <- function(train_data,
                            valid_data = NULL,
                            contrast,
@@ -108,7 +107,8 @@ fit_treat_mech <- function(train_data,
           return(x_bounded)
         })
         out_treat_est <- data.table::as.data.table(out_treat_est)
-        data.table::setnames(out_treat_est, c("treat_pred_A_prime", "treat_pred_A_star"))
+        data.table::setnames(out_treat_est, c("treat_pred_A_prime",
+                                              "treat_pred_A_star"))
       }
     )
 

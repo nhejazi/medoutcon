@@ -5,10 +5,10 @@
 \title{Efficient estimation of stochastic (in)direct effects in the presence of
 mediator-outcome confounders affected by exposure}
 \usage{
-medoutcon(W, A, Z, M, Y, contrast = c(0, 1),
-  g_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  e_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  m_learners = sl3::Lrnr_glm_fast$new(),
+medoutcon(W, A, Z, M, Y, effect = c("direct", "indirect"),
+  contrast = NULL, g_learners = sl3::Lrnr_glm_fast$new(family =
+  stats::binomial()), e_learners = sl3::Lrnr_glm_fast$new(family =
+  stats::binomial()), m_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_learners = sl3::Lrnr_glm_fast$new(),
@@ -16,8 +16,8 @@ medoutcon(W, A, Z, M, Y, contrast = c(0, 1),
   "tmle", "ipw", "sub"), estimator_args = list(cv_folds = 10))
 }
 \arguments{
-\item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
-set of baseline covariates.}
+\item{W}{A \code{matrix}, \code{data.frame}, or similar object corresponding
+to a set of baseline covariates.}
 
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.}
@@ -32,10 +32,15 @@ the intervention A and the outcome Y).}
 
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
+\item{effect}{A \code{character} indicating whether to compute the direct
+effect or the indirect effect as discussed in CITE PAPER. Note that this is
+ignored when the argument \code{contrast} is provided.}
+
 \item{contrast}{A \code{numeric} double indicating the two values of the
-intervention \code{A} to be compared. The default value of \code{c(0, 1)}
-assumes a binary intervention node \code{A}, though support for categorical
-interventions is planned for future releases.}
+intervention \code{A} to be compared. The default value of \code{NULL} has
+no effect, as the value of the argument \code{effect} is instead used to
+define the contrasts. To override \code{effect}, provide a \code{numeric}
+double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.}
 
 \item{g_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
@@ -75,12 +80,16 @@ useful for computing the efficient one-step estimator, i.e.,
 \eqn{v(A, W) = E[\int_z m(a', z, M, W) * q(z | a', W) d \nu(z) |
 A = a, W = w)]}.}
 
-\item{estimator}{...}
+\item{estimator}{The desired estimator of the direct or indirect effect (or
+contrast-specific parameter) to be computed. Currently, the singular option
+is an efficient one-step estimator, though support is planned for classical
+estimators (substitution; inverse probability weighted) and an efficient
+targeted maximum likelihood estimator.}
 
 \item{estimator_args}{A \code{list} of extra arguments to be passed (via
 \code{...}) to the function call for the specified estimator. The default
 is so chosen as to allow the number of folds used in computing the one-step
-estimator to be easily tweaked.}
+estimator to be easily adjusted.}
 }
 \description{
 Efficient estimation of stochastic (in)direct effects in the presence of

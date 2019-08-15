@@ -96,14 +96,14 @@ n_samp <- 1e7
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
-w <- as.tibble(data)[, w_names]
+w <- as_tibble(data)[, w_names]
 a <- data$A
 z <- data$Z
 m <- data$M
 y <- data$Y
 
 # contrasts
-contrast <- c(0, 1)
+contrast <- c(1, 0)
 aprime <- contrast[1]
 astar <- contrast[2]
 
@@ -125,7 +125,7 @@ n_samp <- 1e4
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
-w <- as.tibble(data)[, w_names]
+w <- as_tibble(data)[, w_names]
 a <- data$A
 z <- data$Z
 m <- data$M
@@ -134,35 +134,38 @@ y <- data$Y
 if (FALSE) {
 
   ## fit propensity score
-  g_out <- fit_g_mech(
-    train_data = data, valid_data = data, contrast = c(0, 1),
-    learners = g_learners, w_names = w_names
+  g_out <- fit_treat_mech(
+    train_data = data, valid_data = data, contrast = c(aprime, astar),
+    learners = g_learners, w_names = w_names, type = "g"
   )
-  test_that("Estimates of propensity score g are close to the truth", {
-    expect_equal(g_out$g_est_train$g_pred_A_star, g(astar, w), tol = 5e-2)
+  test_that("Estimates of propensity score are close to the truth", {
+    expect_equal(g_out$treat_est_train$treat_pred_A_star, g(astar, w),
+                 tol = 5e-2)
   })
   test_that("MSE of propensity score g estimates is sufficiently low", {
-    g_mse <- mean((g_out$g_est_train$g_pred_A_star - g(astar, w))^2)
-    expect_lt(g_mse, 1 / n_samp)
+    g_mse <- mean((g_out$treat_est_train$treat_pred_A_star - g(astar, w))^2)
+    expect_lt(g_mse, 10/n_samp)
   })
 
   ## fit propensity score conditioning on mediators
-  e_out <- fit_e_mech(
-    train_data = data, valid_data = data, contrast = c(0, 1),
+  e_out <- fit_treat_mech(
+    train_data = data, valid_data = data, contrast = c(aprime, astar),
     learners = e_learners, w_names = w_names,
-    m_names = m_names
+    m_names = m_names, type = "e"
   )
-  test_that("Estimates of mediator propensity score e are close to the truth", {
-    expect_equal(e_out$e_est_train$e_pred_A_prime, e(aprime, m, w), tol = 5e-2)
+  test_that("Estimates of mediator propensity score are close to the truth", {
+    expect_equal(e_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
+                 tol = 5e-2)
   })
-  test_that("MSE of mediator propensity score e estimates is sufficiently low", {
-    e_mse <- mean((e_out$e_est_train$e_pred_A_prime - e(aprime, m, w))^2)
-    expect_lt(e_mse, 1 / n_samp)
+  test_that("MSE of mediator propensity score estimates is sufficiently low", {
+    e_mse <- mean((e_out$treat_est_train$treat_pred_A_prime -
+                   e(aprime, m, w))^2)
+    expect_lt(e_mse, 10 / n_samp)
   })
 
   ## fit outcome regression
   m_out <- fit_m_mech(
-    train_data = data, valid_data = data, contrast = c(0, 1),
+    train_data = data, valid_data = data, contrast = c(aprime, astar),
     learners = m_learners, m_names = m_names, w_names = w_names
   )
   test_that("Estimates of outcome regression m are close to the truth", {
@@ -212,12 +215,12 @@ if (FALSE) {
   })
   test_that("MSE of MOC regression r estimates is sufficiently low", {
     r_mse <- mean((r_out$moc_est_train$moc_pred_A_prime - r(1, aprime, m, w))^2)
-    expect_lt(r_mse, 1 / n_samp)
+    expect_lt(r_mse, 10 / n_samp)
   })
 
   ## fit u
-  data_a_prime <- data.table::copy(data)[, A := contrast[1]]
-  data_a_star <- data.table::copy(data)[, A := contrast[2]]
+  data_a_prime <- data.table::copy(data)[, A := aprime]
+  data_a_star <- data.table::copy(data)[, A := astar]
   u_out <- fit_nuisance_u(
     train_data = data,
     valid_data = data_a_prime,
@@ -229,12 +232,12 @@ if (FALSE) {
     w_names = w_names
   )
   u_prime <- u_out$u_pred
-  test_that("Estimates of pseudo-outcome regression u are close to the truth", {
+  test_that("Estimates of pseudo-outcome regression are close to the truth", {
     expect_equal(u_prime, u(z, w), tol = 5e-2)
   })
-  test_that("MSE of pseudo-outcome regression u estimates is sufficiently low", {
+  test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
     u_mse <- mean((u_prime - u(z, w))^2)
-    expect_lt(u_mse, 1 / n_samp)
+    expect_lt(u_mse, 10 / n_samp)
   })
 
   ## fit v
@@ -248,13 +251,13 @@ if (FALSE) {
     m_names = m_names,
     w_names = w_names
   )
-  test_that("Estimates of pseudo-outcome regression v are close to the truth", {
+  test_that("Estimates of pseudo-outcome regression are close to the truth", {
     v_star <- intv(1, w) * pmaw(1, astar, w) + intv(0, w) * pmaw(0, astar, w)
     expect_equal(v_out$v_pred, v_star, tol = 5e-2)
   })
-  test_that("MSE of pseudo-outcome regression v estimates is sufficiently low", {
+  test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
     v_mse <- mean((v_out$v_pred - v_star)^2)
-    expect_lt(v_mse, 1 / n_samp)
+    expect_lt(v_mse, 10 / n_samp)
   })
   test_that("Estimates of pseudo-outcome used in v are close to the truth", {
     expect_equal(v_out$v_pseudo, intv(m, w), tol = 5e-2)
@@ -268,9 +271,9 @@ if (FALSE) {
   m_prime <- m_out$m_est_valid$m_pred_A_prime
   q_prime <- q_out$moc_est_valid$moc_pred_A_prime
   r_prime <- r_out$moc_est_valid$moc_pred_A_prime
-  e_prime <- e_out$e_est_valid$e_pred_A_prime
-  e_star <- e_out$e_est_valid$e_pred_A_star
-  g_star <- g_out$g_est_valid$g_pred_A_star
+  e_prime <- e_out$treat_est_valid$treat_pred_A_prime
+  e_star <- e_out$treat_est_valid$treat_pred_A_star
+  g_star <- g_out$treat_est_valid$treat_pred_A_star
 
   ## ad-hoc function to compute integral over Z for nuisance parameter u
   u_int_eif <- lapply(unique(data$Z), function(confounder_val) {
@@ -319,8 +322,8 @@ if (FALSE) {
   })
 
   ## finally, compute un-centered influence function for one-step
-  ipw_a_prime <- as.numeric(data$A == contrast[1]) / g_star
-  ipw_a_star <- as.numeric(data$A == contrast[2]) / g_star
+  ipw_a_prime <- as.numeric(data$A == aprime) / g_star
+  ipw_a_star <- as.numeric(data$A == astar) / g_star
   eif_resid_y <- (q_prime / r_prime) * (e_star / e_prime) * (data$Y - m_prime)
   eif_test <- (ipw_a_prime * eif_resid_y) +
     (ipw_a_prime * (u_prime - u_int_eif)) +

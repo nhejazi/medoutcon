@@ -23,10 +23,6 @@ sim_medoutcon_data <- function(n_obs = 1000) {
 
   ## mediator (possibly multivariate)
   m <- rbinom(n_obs, 1, pm(1, z, a, w))
-  ## m_2_prob <- plogis(log(10) * w[, 1] + a - z - 0.1)
-  ## m_2 <- runif(n_obs, min(m_2_prob), max(m_2_prob))
-  ## m <- cbind(m_1, m_2)
-  ## m_names <- paste("M", seq_len(ncol(m)), sep = "_")
   m_names <- "M"
 
   ## outcome
@@ -103,7 +99,7 @@ m <- data$M
 y <- data$Y
 
 # contrasts
-contrast <- c(1, 0)
+contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
 

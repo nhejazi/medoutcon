@@ -531,6 +531,7 @@ fit_nuisance_u <- function(train_data,
         (1 - r_out$moc_est_train$moc_pred_A_prime) * (1 - train_data$Z)) *
     (e_out$treat_est_train$treat_pred_A_star / e_out$treat_est_train$treat_pred_A_prime)
 
+  if(sd(u_pseudo_train) < .Machine$double.eps) learners <- Lrnr_mean$new()
   ## construct data set and training task
   u_data_train <- data.table::as.data.table(cbind(
     train_data[, ..w_names],
@@ -688,6 +689,8 @@ fit_nuisance_v <- function(train_data,
   ## compute pseudo-outcome by computing integral via discrete summation
   v_pseudo_train <- v_pseudo[[1]]$training + v_pseudo[[2]]$training
   v_pseudo_valid <- v_pseudo[[1]]$validation + v_pseudo[[2]]$validation
+
+  if(sd(v_pseudo_train) < .Machine$double.eps) learners <- Lrnr_mean$new()
 
   ## build regression tasks for training and validation sets
   train_data[, V_pseudo := v_pseudo_train]

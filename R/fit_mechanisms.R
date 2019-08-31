@@ -529,7 +529,8 @@ fit_nuisance_u <- function(train_data,
       r_out$moc_est_train$moc_pred_A_prime * train_data$Z +
       (1 - q_out$moc_est_train$moc_pred_A_prime) /
         (1 - r_out$moc_est_train$moc_pred_A_prime) * (1 - train_data$Z)) *
-    (e_out$treat_est_train$treat_pred_A_star / e_out$treat_est_train$treat_pred_A_prime)
+    (e_out$treat_est_train$treat_pred_A_star /
+     e_out$treat_est_train$treat_pred_A_prime)
 
   ## construct data set and training task
   u_data_train <- data.table::as.data.table(cbind(

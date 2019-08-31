@@ -32,14 +32,14 @@ confint.medoutcon <- function(object,
 
   # assume continuous outcome if more than two levels in outcome node
   if (length(unique(object$outcome)) > 2 ||
-      object$param %in% c("direct_effect", "indirect_effect")) {
+    object$param %in% c("direct_effect", "indirect_effect")) {
     # NOTE: variance already scaled (i.e., Var(D)/n)
     se_eif <- sqrt(object$var)
 
     # compute the interval around the point estimate
     ci_theta <- ci_norm_bounds * se_eif + object$theta
   } else if (length(unique(object$outcome)) == 2 &&
-             !(object$param %in% c("direct_effect", "indirect_effect"))) {
+    !(object$param %in% c("direct_effect", "indirect_effect"))) {
     # for binary outcomes, create CI on the logit scale and back-transform
     theta_ratio <- stats::qlogis(object$theta)
     grad_ratio_delta <- (1 / object$theta) + (1 / (1 - object$theta))
@@ -84,8 +84,10 @@ summary.medoutcon <- function(object,
     eif_mean <- formatC(mean(object$eif), digits = 4, format = "e")
 
     # create output table from input object and confidence interval results
-    out <- c(round(c(ci, object$var), digits = 4), eif_mean, object$type,
-             object$param)
+    out <- c(
+      round(c(ci, object$var), digits = 4), eif_mean, object$type,
+      object$param
+    )
     names(out) <- c(
       "lwr_ci", "param_est", "upr_ci", "param_var", "eif_mean", "estimator",
       "param"

@@ -65,7 +65,7 @@ m_names <- str_subset(colnames(data), "m")
 theta_os <- medoutcon(
   W = data[, ..w_names], A = data$a, Z = data$z,
   M = data[, ..m_names], Y = data$y,
-  #effect = "direct",
+  # effect = "direct",
   contrast = c(0, 1),
   g_learners = hal_binary_lrnr,
   e_learners = hal_binary_lrnr,

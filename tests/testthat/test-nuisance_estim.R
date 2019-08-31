@@ -136,11 +136,12 @@ if (FALSE) {
   )
   test_that("Estimates of propensity score are close to the truth", {
     expect_equal(g_out$treat_est_train$treat_pred_A_star, g(astar, w),
-                 tol = 5e-2)
+      tol = 5e-2
+    )
   })
   test_that("MSE of propensity score g estimates is sufficiently low", {
     g_mse <- mean((g_out$treat_est_train$treat_pred_A_star - g(astar, w))^2)
-    expect_lt(g_mse, 10/n_samp)
+    expect_lt(g_mse, 10 / n_samp)
   })
 
   ## fit propensity score conditioning on mediators
@@ -151,11 +152,12 @@ if (FALSE) {
   )
   test_that("Estimates of mediator propensity score are close to the truth", {
     expect_equal(e_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
-                 tol = 5e-2)
+      tol = 5e-2
+    )
   })
   test_that("MSE of mediator propensity score estimates is sufficiently low", {
     e_mse <- mean((e_out$treat_est_train$treat_pred_A_prime -
-                   e(aprime, m, w))^2)
+      e(aprime, m, w))^2)
     expect_lt(e_mse, 10 / n_samp)
   })
 

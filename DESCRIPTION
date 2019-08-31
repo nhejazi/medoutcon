@@ -1,6 +1,6 @@
 Package: medoutcon
 Title: Mediation analysis with mediator-outcome confounding by exposure
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),

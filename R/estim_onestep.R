@@ -243,9 +243,9 @@ cv_eif <- function(fold,
   # NOTE: we only do this for observations in the validation set
   m_prime <- m_out$m_est_valid$m_pred_A_prime
   q_prime <- q_out$moc_est_valid$moc_pred_A_prime * valid_data$Z +
-      (1 - q_out$moc_est_valid$moc_pred_A_prime) * (1 - valid_data$Z)
+    (1 - q_out$moc_est_valid$moc_pred_A_prime) * (1 - valid_data$Z)
   r_prime <- r_out$moc_est_valid$moc_pred_A_prime * valid_data$Z +
-      (1 - r_out$moc_est_valid$moc_pred_A_prime) * (1 - valid_data$Z)
+    (1 - r_out$moc_est_valid$moc_pred_A_prime) * (1 - valid_data$Z)
   e_prime <- e_out$treat_est_valid$treat_pred_A_prime
   e_star <- e_out$treat_est_valid$treat_pred_A_star
   g_star <- g_out$treat_est_valid$treat_pred_A_star

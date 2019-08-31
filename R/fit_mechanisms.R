@@ -107,8 +107,10 @@ fit_treat_mech <- function(train_data,
           return(x_bounded)
         })
         out_treat_est <- data.table::as.data.table(out_treat_est)
-        data.table::setnames(out_treat_est, c("treat_pred_A_prime",
-                                              "treat_pred_A_star"))
+        data.table::setnames(out_treat_est, c(
+          "treat_pred_A_prime",
+          "treat_pred_A_star"
+        ))
       }
     )
 
@@ -530,7 +532,7 @@ fit_nuisance_u <- function(train_data,
       (1 - q_out$moc_est_train$moc_pred_A_prime) /
         (1 - r_out$moc_est_train$moc_pred_A_prime) * (1 - train_data$Z)) *
     (e_out$treat_est_train$treat_pred_A_star /
-     e_out$treat_est_train$treat_pred_A_prime)
+      e_out$treat_est_train$treat_pred_A_prime)
 
   ## override choice of learner with intercept model if constant
   if (sd(u_pseudo_train) < .Machine$double.eps) {

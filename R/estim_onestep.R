@@ -242,10 +242,8 @@ cv_eif <- function(fold,
   # extract components and re-name for ease of generating influence function
   # NOTE: we only do this for observations in the validation set
   m_prime <- m_out$m_est_valid$m_pred_A_prime
-  q_prime <- q_out$moc_est_valid$moc_pred_A_prime * valid_data$Z +
-    (1 - q_out$moc_est_valid$moc_pred_A_prime) * (1 - valid_data$Z)
-  r_prime <- r_out$moc_est_valid$moc_pred_A_prime * valid_data$Z +
-    (1 - r_out$moc_est_valid$moc_pred_A_prime) * (1 - valid_data$Z)
+  q_prime <- q_out$moc_est_valid$moc_pred_A_prime
+  r_prime <- r_out$moc_est_valid$moc_pred_A_prime
   e_prime <- e_out$treat_est_valid$treat_pred_A_prime
   e_star <- e_out$treat_est_valid$treat_pred_A_star
   g_star <- g_out$treat_est_valid$treat_pred_A_star
@@ -315,8 +313,12 @@ cv_eif <- function(fold,
   ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_star
   ipw_a_star <- as.numeric(valid_data$A == contrast[2]) / g_star
 
+  # compute q and r at natural value of Z
+  q_prime_nat <- q_prime * valid_data$Z + (1 - q_prime) * (1 - valid_data$Z)
+  r_prime_nat <- r_prime * valid_data$Z + (1 - r_prime) * (1 - valid_data$Z)
+
   # compute efficient influence function
-  eif_resid_y <- (q_prime / r_prime) * (e_star / e_prime) *
+  eif_resid_y <- (q_prime_nat / r_prime_nat) * (e_star / e_prime) *
     (valid_data$Y - m_prime)
   eif <- (ipw_a_prime * eif_resid_y) + (ipw_a_prime * (u_prime - u_int_eif)) +
     (ipw_a_star * (v_out$v_pseudo - v_star)) + v_star

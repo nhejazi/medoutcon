@@ -341,7 +341,7 @@ fit_moc_mech <- function(train_data,
     cov_names <- c(m_names, w_names)
   }
 
-  moc_natural_task <- sl3::sl3_Task$new(
+  moc_task <- sl3::sl3_Task$new(
     data = train_data,
     covariates = c("A", cov_names),
     outcome = "Z",
@@ -349,7 +349,7 @@ fit_moc_mech <- function(train_data,
   )
 
   ## fit model on observed data
-  moc_natural_fit <- learners$train(moc_natural_task)
+  moc_fit <- learners$train(moc_task)
 
   ## use full data for counterfactual prediction if no validation data given
   if (is.null(valid_data)) {
@@ -358,10 +358,10 @@ fit_moc_mech <- function(train_data,
     train_data_intervene[, A := contrast[1]]
 
     ## predictions on observed data (i.e., under observed treatment status)
-    moc_natural_pred <- moc_natural_fit$predict()
+    moc_pred_A_natural <- moc_fit$predict()
 
     ## create task for post-intervention outcome regression
-    moc_intervened_prime_task <- sl3::sl3_Task$new(
+    moc_prime_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
       covariates = c("A", cov_names),
       outcome = "Z",
@@ -369,12 +369,11 @@ fit_moc_mech <- function(train_data,
     )
 
     ## predict from trained model on counterfactual data
-    moc_intervened_pred_A_prime <-
-      moc_natural_fit$predict(moc_intervened_prime_task)
+    moc_pred_A_prime <- moc_fit$predict(moc_prime_task)
 
     ## set intervention to second contrast a_star := contrast[2] and create task
     train_data_intervene[, A := contrast[2]]
-    moc_intervened_star_task <- sl3::sl3_Task$new(
+    moc_star_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
       covariates = c("A", cov_names),
       outcome = "Z",
@@ -382,14 +381,13 @@ fit_moc_mech <- function(train_data,
     )
 
     ## predict from trained model on counterfactual data
-    moc_intervened_pred_A_star <-
-      moc_natural_fit$predict(moc_intervened_star_task)
+    moc_pred_A_star <- moc_fit$predict(moc_star_task)
 
     ## output
     out_moc_est <- data.table::as.data.table(cbind(
-      moc_natural_pred,
-      moc_intervened_pred_A_prime,
-      moc_intervened_pred_A_star
+      moc_pred_A_natural,
+      moc_pred_A_prime,
+      moc_pred_A_star
     ))
     data.table::setnames(out_moc_est, c(
       "moc_pred_A_natural",
@@ -400,7 +398,7 @@ fit_moc_mech <- function(train_data,
     ## output
     out <- list(
       moc_est = out_moc_est,
-      moc_fit = moc_natural_fit
+      moc_fit = moc_fit
     )
   } else {
     ## copy both training and validation data, once for each contrast
@@ -408,10 +406,10 @@ fit_moc_mech <- function(train_data,
     valid_data_intervene <- data.table::copy(valid_data)
 
     ## predictions on observed data (i.e., under observed treatment status)
-    moc_natural_pred_train <- moc_natural_fit$predict()
+    moc_pred_A_natural_train <- moc_fit$predict()
 
     ## create task for post-intervention outcome regression
-    moc_natural_task_valid <- sl3::sl3_Task$new(
+    moc_task_valid <- sl3::sl3_Task$new(
       data = valid_data,
       covariates = c("A", cov_names),
       outcome = "Z",
@@ -419,7 +417,7 @@ fit_moc_mech <- function(train_data,
     )
 
     ## prediction on observed data, in validation set
-    moc_natural_pred_valid <- moc_natural_fit$predict(moc_natural_task_valid)
+    moc_pred_A_natural_valid <- moc_fit$predict(moc_task_valid)
 
     ## set intervention to first contrast a_prime := contrast[1]
     out_moc_est <- lapply(
@@ -429,7 +427,7 @@ fit_moc_mech <- function(train_data,
         data_intervene[, A := contrast[1]]
 
         ## create task for post-intervention outcome regression
-        moc_intervened_prime_task <- sl3::sl3_Task$new(
+        moc_prime_task <- sl3::sl3_Task$new(
           data = data_intervene,
           covariates = c("A", cov_names),
           outcome = "Z",
@@ -437,12 +435,11 @@ fit_moc_mech <- function(train_data,
         )
 
         ## predict from trained model on counterfactual data
-        moc_intervened_pred_A_prime <-
-          moc_natural_fit$predict(moc_intervened_prime_task)
+        moc_pred_A_prime <-  moc_fit$predict(moc_prime_task)
 
         ## set intervention to second contrast a_star := contrast[2]; create task
         data_intervene[, A := contrast[2]]
-        moc_intervened_star_task <- sl3::sl3_Task$new(
+        moc_star_task <- sl3::sl3_Task$new(
           data = data_intervene,
           covariates = c("A", cov_names),
           outcome = "Z",
@@ -450,21 +447,20 @@ fit_moc_mech <- function(train_data,
         )
 
         ## predict from trained model on counterfactual data
-        moc_intervened_pred_A_star <-
-          moc_natural_fit$predict(moc_intervened_star_task)
+        moc_pred_A_star <- moc_fit$predict(moc_star_task)
 
         ## output
         out_moc_est <-
           data.table::as.data.table(cbind(
-            moc_intervened_pred_A_prime,
-            moc_intervened_pred_A_star
+            moc_pred_A_prime,
+            moc_pred_A_star
           ))
       }
     )
 
     ## add natural treatment estimates to post-intervention predictions
-    out_moc_est[[1]] <- cbind(moc_natural_pred_train, out_moc_est[[1]])
-    out_moc_est[[2]] <- cbind(moc_natural_pred_valid, out_moc_est[[2]])
+    out_moc_est[[1]] <- cbind(moc_pred_A_natural_train, out_moc_est[[1]])
+    out_moc_est[[2]] <- cbind(moc_pred_A_natural_valid, out_moc_est[[2]])
     lapply(out_moc_est, function(x) {
       data.table::setnames(x, c(
         "moc_pred_A_natural",
@@ -475,9 +471,13 @@ fit_moc_mech <- function(train_data,
 
     ## output
     out <- list(
-      moc_est_train = out_moc_est[[1]],
-      moc_est_valid = out_moc_est[[2]],
-      moc_fit = moc_natural_fit
+      moc_est_train_Z_one = out_moc_est[[1]],
+      moc_est_valid_Z_one = out_moc_est[[2]],
+      moc_est_train_Z_natural = out_moc_est[[1]] * train_data$Z +
+          (1 - out_moc_est[[1]]) * (1 - train_data$Z),
+      moc_est_valid_Z_natural = out_moc_est[[2]] * valid_data$Z +
+          (1 - out_moc_est[[2]]) * (1 - valid_data$Z),
+      moc_fit = moc_fit
     )
   }
   return(out)
@@ -521,18 +521,24 @@ fit_nuisance_u <- function(train_data,
                            valid_data,
                            learners,
                            m_out,
+                           g_out,
                            q_out,
                            r_out,
                            e_out,
                            w_names) {
   ## create pseudo-outcome based on training data
-  u_pseudo_train <- m_out$m_est_train$m_pred_A_prime *
-    (q_out$moc_est_train$moc_pred_A_prime /
-      r_out$moc_est_train$moc_pred_A_prime * train_data$Z +
-      (1 - q_out$moc_est_train$moc_pred_A_prime) /
-        (1 - r_out$moc_est_train$moc_pred_A_prime) * (1 - train_data$Z)) *
-    (e_out$treat_est_train$treat_pred_A_star /
-      e_out$treat_est_train$treat_pred_A_prime)
+  m_prime <- m_out$m_est_train$m_pred_A_prime
+  e_star <- e_out$treat_est_train$treat_pred_A_star
+  g_star <- g_out$treat_est_train$treat_pred_A_star
+  e_prime <- e_out$treat_est_train$treat_pred_A_prime
+  g_prime <- g_out$treat_est_valid$treat_pred_A_prime
+  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime
+  r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
+
+  h_star <- g_prime / g_star * q_prime_Z_natural / r_prime_Z_natural *
+    e_star / e_prime
+
+  u_pseudo_train <- m_prime * h_star
 
   ## override choice of learner with intercept model if constant
   if (sd(u_pseudo_train) < .Machine$double.eps) {
@@ -625,12 +631,17 @@ fit_nuisance_v <- function(train_data,
                            q_out,
                            m_names,
                            w_names) {
+
+  q_train_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime
+  q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime
+
   ## first, compute components of integral over mediator-outcome confounder
-  v_pseudo <- lapply(unique(train_data$Z), function(confounder_val) {
+  ## assuming Z in {0,1}, other cases not supported yet
+  v_pseudo <- lapply(c(0, 1), function(z_val) {
     ## training data
     train_data_z_interv <- data.table::copy(train_data)
     train_data_z_interv[, `:=`(
-      Z = confounder_val,
+      Z = z_val,
       A = contrast[1]
     )]
 
@@ -640,27 +651,17 @@ fit_nuisance_v <- function(train_data,
       covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
-    q_reg_train_v_subtask <- sl3::sl3_Task$new(
-      data = train_data_z_interv,
-      covariates = c("A", w_names),
-      outcome = "Z",
-      outcome_type = "binomial"
-    )
 
     ## outcome regression after intervening on mediator-outcome confounder
     m_pred_train_z_interv <- m_out$m_fit$predict(m_reg_train_v_subtask)
 
-    ## q nuisance regression after intervening on mediator-outcome confounder
-    ## NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
-    ##       want is actually P(Z = z | ...) hence the extra bit of manipulation
-    q_pred_train_z_interv <- q_out$moc_fit$predict(q_reg_train_v_subtask)
-    q_pred_train_z_natural <- (confounder_val * q_pred_train_z_interv) +
-      ((1 - confounder_val) * (1 - q_pred_train_z_interv))
+    q_train_prime_z_val <- (z_val * q_train_prime_Z_one) +
+      (1 - z_val) * (1 - q_train_prime_Z_one)
 
     ## now on validation set
     valid_data_z_interv <- data.table::copy(valid_data)
     valid_data_z_interv[, `:=`(
-      Z = confounder_val,
+      Z = z_val,
       A = contrast[1]
     )]
 
@@ -670,26 +671,16 @@ fit_nuisance_v <- function(train_data,
       covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
-    q_reg_valid_v_subtask <- sl3::sl3_Task$new(
-      data = valid_data_z_interv,
-      covariates = c("A", w_names),
-      outcome = "Z",
-      outcome_type = "binomial"
-    )
 
     ## outcome regression after intervening on mediator-outcome confounder
     m_pred_valid_z_interv <- m_out$m_fit$predict(m_reg_valid_v_subtask)
 
-    ## q nuisance regression after intervening on mediator-outcome confounder
-    ## NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
-    ##       want is actually P(Z = z | ...) hence the extra bit of manipulation
-    q_pred_valid_z_interv <- q_out$moc_fit$predict(q_reg_valid_v_subtask)
-    q_pred_valid_z_natural <- (confounder_val * q_pred_valid_z_interv) +
-      ((1 - confounder_val) * (1 - q_pred_valid_z_interv))
+    q_valid_prime_z_val <- (z_val * q_valid_prime_Z_one) +
+      (1 - z_val) * (1 - q_valid_prime_Z_one)
 
     ## return partial pseudo-outcome for v nuisance regression
-    out_train <- m_pred_train_z_interv * q_pred_train_z_natural
-    out_valid <- m_pred_valid_z_interv * q_pred_valid_z_natural
+    out_train <- m_pred_train_z_interv * q_train_prime_z_val
+    out_valid <- m_pred_valid_z_interv * q_valid_prime_z_val
     out <- list(training = out_train, validation = out_valid)
     return(out)
   })

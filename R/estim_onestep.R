@@ -242,11 +242,14 @@ cv_eif <- function(fold,
   # extract components and re-name for ease of generating influence function
   # NOTE: we only do this for observations in the validation set
   m_prime <- m_out$m_est_valid$m_pred_A_prime
-  q_prime <- q_out$moc_est_valid$moc_pred_A_prime
-  r_prime <- r_out$moc_est_valid$moc_pred_A_prime
-  e_prime <- e_out$treat_est_valid$treat_pred_A_prime
   e_star <- e_out$treat_est_valid$treat_pred_A_star
   g_star <- g_out$treat_est_valid$treat_pred_A_star
+  e_prime <- e_out$treat_est_valid$treat_pred_A_prime
+  g_prime <- g_out$treat_est_valid$treat_pred_A_prime
+  q_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime
+  r_prime_Z_one <- r_out$moc_est_valid_Z_one$moc_pred_A_prime
+  q_prime_Z_natural <- q_out$moc_est_valid_Z_natural$moc_pred_A_prime
+  r_prime_Z_natural <- r_out$moc_est_valid_Z_natural$moc_pred_A_prime
 
   # need pseudo-outcome regressions with intervention set to a contrast
   # NOTE: training fits of these nuisance functions must be performed using the
@@ -259,6 +262,7 @@ cv_eif <- function(fold,
     valid_data = valid_data_a_prime,
     learners = u_learners,
     m_out = m_out,
+    g_out = g_out,
     q_out = q_out,
     r_out = r_out,
     e_out = e_out,
@@ -279,11 +283,12 @@ cv_eif <- function(fold,
   v_star <- v_out$v_pred
 
   # need an integral involving U over mediator-outcome confounder Z
-  u_int_eif <- lapply(unique(train_data$Z), function(confounder_val) {
+  # assuming Z in {0,1}, other cases not supported yet
+  u_int_eif <- lapply(c(0, 1), function(z_val) {
     # intervene on training and validation data sets
     valid_data_z_interv <- data.table::copy(valid_data)
     valid_data_z_interv[, `:=`(
-      Z = confounder_val,
+      Z = z_val,
       A = contrast[1],
       U_pseudo = u_prime
     )]
@@ -292,36 +297,33 @@ cv_eif <- function(fold,
     u_task_valid_z_interv <- sl3::sl3_Task$new(
       data = valid_data_z_interv,
       covariates = c("Z", "A", w_names),
-      outcome_type = "continuous",
-      outcome = "U_pseudo"
+      outcome = "U_pseudo",
+      outcome_type = "continuous"
     )
     u_prime_z_interv <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
 
-    # q nuisance regression after intervening on mediator-outcome confounder
-    # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
-    #       want is actually P(Z = z | ...)
-    q_pred_valid_z_natural <- (confounder_val * q_prime) +
-      ((1 - confounder_val) * (1 - q_prime))
+    q_pred_valid_z_val <- (z_val * q_prime_Z_one) +
+      (1 - z_val) * (1 - q_prime_Z_one)
 
     # return partial pseudo-outcome for v nuisance regression
-    out_valid <- u_prime_z_interv * q_pred_valid_z_natural
+    out_valid <- u_prime_z_interv * q_pred_valid_z_val
     return(out_valid)
   })
   u_int_eif <- do.call(`+`, u_int_eif)
 
   # create inverse probability weights
-  ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_star
-  ipw_a_star <- as.numeric(valid_data$A == contrast[2]) / g_star
+  ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_prime
+  ipw_a_star  <- as.numeric(valid_data$A == contrast[2]) / g_star
 
-  # compute q and r at natural value of Z
-  q_prime_nat <- q_prime * valid_data$Z + (1 - q_prime) * (1 - valid_data$Z)
-  r_prime_nat <- r_prime * valid_data$Z + (1 - r_prime) * (1 - valid_data$Z)
+  h_star <- g_prime / g_star * q_prime_Z_natural / r_prime_Z_natural *
+    e_star / e_prime
 
-  # compute efficient influence function
-  eif_resid_y <- (q_prime_nat / r_prime_nat) * (e_star / e_prime) *
-    (valid_data$Y - m_prime)
-  eif <- (ipw_a_prime * eif_resid_y) + (ipw_a_prime * (u_prime - u_int_eif)) +
-    (ipw_a_star * (v_out$v_pseudo - v_star)) + v_star
+  # compute uncentered efficient influence function
+  eif_y <- ipw_a_prime * h_star / mean(ipw_a_prime * h_star) * (valid_data$Y - m_prime)
+  eif_u <- ipw_a_prime / mean(ipw_a_prime) * (u_prime - u_int_eif)
+  eif_v <- ipw_a_star / mean(ipw_a_star) * (v_out$v_pseudo - v_star)
+
+  eif <- eif_y + eif_u + eif_v + v_star
 
   # output list
   out <- list(data.table::data.table(

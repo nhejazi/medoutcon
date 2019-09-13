@@ -268,6 +268,7 @@ cv_eif <- function(fold,
     e_out = e_out,
     w_names = w_names
   )
+
   u_prime <- u_out$u_pred
 
   v_out <- fit_nuisance_v(
@@ -282,9 +283,8 @@ cv_eif <- function(fold,
   )
   v_star <- v_out$v_pred
 
-  # need an integral involving U over mediator-outcome confounder Z
   # assuming Z in {0,1}, other cases not supported yet
-  u_int_eif <- lapply(c(0, 1), function(z_val) {
+  u_int_eif <- lapply(c(1, 0), function(z_val) {
     # intervene on training and validation data sets
     valid_data_z_interv <- data.table::copy(valid_data)
     valid_data_z_interv[, `:=`(
@@ -300,16 +300,13 @@ cv_eif <- function(fold,
       outcome = "U_pseudo",
       outcome_type = "continuous"
     )
-    u_prime_z_interv <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
-
-    q_pred_valid_z_val <- (z_val * q_prime_Z_one) +
-      (1 - z_val) * (1 - q_prime_Z_one)
 
     # return partial pseudo-outcome for v nuisance regression
-    out_valid <- u_prime_z_interv * q_pred_valid_z_val
+    out_valid <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
+
     return(out_valid)
   })
-  u_int_eif <- do.call(`+`, u_int_eif)
+  u_int_eif <- do.call(`-`, u_int_eif)
 
   # create inverse probability weights
   ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_prime
@@ -320,7 +317,7 @@ cv_eif <- function(fold,
 
   # compute uncentered efficient influence function
   eif_y <- ipw_a_prime * h_star / mean(ipw_a_prime * h_star) * (valid_data$Y - m_prime)
-  eif_u <- ipw_a_prime / mean(ipw_a_prime) * (u_prime - u_int_eif)
+  eif_u <- ipw_a_prime / mean(ipw_a_prime) * u_int_eif * (valid_data$Z - q_prime_Z_one)
   eif_v <- ipw_a_star / mean(ipw_a_star) * (v_out$v_pseudo - v_star)
 
   eif <- eif_y + eif_u + eif_v + v_star

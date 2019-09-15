@@ -15,8 +15,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis with
-> \_\_Med\_\_iator-\_\_Out\_\_come \_\_Con\_\_founding
+> Efficient Causal Mediation Analysis with Mediator-Outcome Confounding
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -29,15 +28,22 @@ Rudolph](http://biostat.jhsph.edu/~krudolph/)
 The `medoutcon` R package provides facilities for efficient estimation
 of stochastic (in)direct effects that measure the impact of a treatment
 variable \(A\) on an outcome variable \(Y\), through a direct path
-(through \(A\) only) and an indirect path (only through a set of
-mediators \(M\)), in the presence of a binary intermediate confounder
-\(Z\) of the mediator-outcome relationship, itself affected by exposure
-\(A\). While the proposed approach is similar to appearing in
-VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al. (2017), and
-Zheng and van der Laan (2017), `medoutcon` is designed as a software
-implementation to accompany the methodology proposed in Díaz et al.
-(n.d.). For an in-depth treatment of the effect decomposition and
-estimation strategy, please refer to that work.
+(through \(A\) only) and an indirect path (through a set of mediators
+\(M\) only), in the presence of an intermediate
+<b>med</b>iator-<b>out</b>come <b>con</b>founder \(Z\), itself affected
+by the treatment \(A\). While the proposed approach is similar to those
+appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et
+al. (2017), and Zheng and van der Laan (2017), `medoutcon` is designed
+as a software implementation to accompany the methodology proposed in
+Díaz et al. (n.d.). Both an efficient one-step bias-corrected estimator
+with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
+2011; Chernozhukov et al. 2018) and a one-step cross-validated targeted
+minimum loss (TML) estimator (van der Laan and Rose 2011; Zheng and van
+der Laan 2011) are made available. `medoutcon` integrates with the
+[`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to
+leverage statistical machine learning in the estimation procedure and
+expands on the architecture exposed by the [`tmle3` R
+package](https://github.com/tlverse/tmle3) for TML estimation.
 
 -----
 
@@ -202,11 +208,38 @@ See below for details:
 
 <div id="refs" class="references">
 
+<div id="ref-chernozhukov2018double">
+
+Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
+Christian Hansen, Whitney Newey, and James Robins. 2018.
+“Double/Debiased Machine Learning for Treatment and Structural
+Parameters.” *The Econometrics Journal* 21 (1).
+<https://doi.org/10.1111/ectj.12097>.
+
+</div>
+
+<div id="ref-coyle2019sl3">
+
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
+“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+<https://github.com/tlverse/sl3>.
+<https://doi.org/10.5281/zenodo.3251138>.
+
+</div>
+
 <div id="ref-diaz2019nonparametric">
 
 Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan. n.d.
 “Non-Parametric Efficient Causal Mediation with Intermediate
 Confounders.”
+
+</div>
+
+<div id="ref-pfanzagl1985contributions">
+
+Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General
+Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
+379–88.
 
 </div>
 
@@ -219,6 +252,14 @@ Proposed Method and Example in a Randomized Trial Setting.”
 
 </div>
 
+<div id="ref-vdl2011targeted">
+
+van der Laan, Mark J, and Sherri Rose. 2011. *Targeted Learning: Causal
+Inference for Observational and Experimental Data*. Springer Science &
+Business Media.
+
+</div>
+
 <div id="ref-vanderweele2014effect">
 
 VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014.
@@ -228,11 +269,19 @@ NIH Public Access: 300.
 
 </div>
 
+<div id="ref-zheng2011cross">
+
+Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted
+Minimum-Loss-Based Estimation.” In *Targeted Learning*, 459–74.
+Springer.
+
+</div>
+
 <div id="ref-zheng2017longitudinal">
 
-Zheng, Wenjing, and Mark J van der Laan. 2017. “Longitudinal Mediation
-Analysis with Time-Varying Mediators and Exposures, with Application to
-Survival Outcomes.” *Journal of Causal Inference* 5 (2). De Gruyter.
+———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators
+and Exposures, with Application to Survival Outcomes.” *Journal of
+Causal Inference* 5 (2). De Gruyter.
 
 </div>
 

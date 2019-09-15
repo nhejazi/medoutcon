@@ -22,8 +22,7 @@ knitr::opts_chunk$set(
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis with __Med__iator-__Out__come
-> __Con__founding
+> Efficient Causal Mediation Analysis with Mediator-Outcome Confounding
 
 __Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -36,13 +35,20 @@ Rudolph](http://biostat.jhsph.edu/~krudolph/)
 The `medoutcon` R package provides facilities for efficient estimation of
 stochastic (in)direct effects that measure the impact of a treatment variable
 $A$ on an outcome variable $Y$, through a direct path (through $A$ only) and
-an indirect path (only through a set of mediators $M$), in the presence of a
-binary intermediate confounder $Z$ of the mediator-outcome relationship, itself
-affected by exposure $A$. While the proposed approach is similar to appearing in
-@vanderweele2014effect, @rudolph2017robust, and @zheng2017longitudinal,
-`medoutcon` is designed as a software implementation to accompany the
-methodology proposed in @diaz2019nonparametric. For an in-depth treatment of the
-effect decomposition and estimation strategy, please refer to that work.
+an indirect path (through a set of mediators $M$ only), in the presence of an
+intermediate <b>med</b>iator-<b>out</b>come <b>con</b>founder $Z$, itself
+affected by the treatment $A$. While the proposed approach is similar to those
+appearing in @vanderweele2014effect, @rudolph2017robust, and
+@zheng2017longitudinal, `medoutcon` is designed as a software implementation to
+accompany the methodology proposed in @diaz2019nonparametric. Both an efficient
+one-step bias-corrected estimator with cross-fitting
+[@pfanzagl1985contributions; @zheng2011cross; @chernozhukov2018double] and a
+one-step cross-validated targeted minimum loss (TML) estimator
+[@vdl2011targeted; @zheng2011cross] are made available. `medoutcon` integrates
+with the [`sl3` R package](https://github.com/tlverse/sl3) [@coyle2019sl3] to
+leverage statistical machine learning in the estimation procedure and expands on
+the architecture exposed by the [`tmle3` R
+package](https://github.com/tlverse/tmle3) for TML estimation.
 
 ---
 

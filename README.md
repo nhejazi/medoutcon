@@ -15,8 +15,8 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Mediation Analysis with Mediator-Outcome Confounding by
-> Exposure
+> Efficient Causal Mediation Analysis with
+> \_\_Med\_\_iator-\_\_Out\_\_come \_\_Con\_\_founding
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -26,21 +26,18 @@ Rudolph](http://biostat.jhsph.edu/~krudolph/)
 
 ## What’s `medoutcon`?
 
-The `medoutcon` R package is designed to provide facilities for
-estimating a parameter formulated to compare two user-given values of a
-treatment variable A on an outcome variable Y, allowing for the effect
-of the treatment on the outcome, through a direct path (i.e., through A
-only) as well as an indirect path through a set of mediators M, to be
-evaluated in the presence of a binary mediator-outcome confounder Z,
-itself affected by exposure A. The approach makes use of a static
-intervention on the treatment A and a stochastic intervention on the
-mediators M, thus deriving stochastic (in)direct effects in the presence
-of mediator-outcome confounding. While the proposed approach is similar
-to those proposed in VanderWeele, Vansteelandt, and Robins (2014),
-Rudolph et al. (2017), and Zheng and van der Laan (2017), `medoutcon` is
-designed as a software implementation to accompany the methodology
-described in Rudolph et al. (n.d.). For an in-depth treatment of the
-effect decomposition and estimation strategy, please refer to that work.
+The `medoutcon` R package provides facilities for efficient estimation
+of stochastic (in)direct effects that measure the impact of a treatment
+variable \(A\) on an outcome variable \(Y\), through a direct path
+(through \(A\) only) and an indirect path (only through a set of
+mediators \(M\)), in the presence of a binary intermediate confounder
+\(Z\) of the mediator-outcome relationship, itself affected by exposure
+\(A\). While the proposed approach is similar to appearing in
+VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al. (2017), and
+Zheng and van der Laan (2017), `medoutcon` is designed as a software
+implementation to accompany the methodology proposed in Díaz et al.
+(n.d.). For an in-depth treatment of the effect decomposition and
+estimation strategy, please refer to that work.
 
 -----
 
@@ -113,7 +110,7 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
 #>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>    -0.7626    -0.5818    -0.4009     0.0085 8.0336e-17    onestep
+#>    -0.4902    -0.2861     -0.082     0.0108 4.6404e-17    onestep
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -143,10 +140,10 @@ prior to submitting a pull request.
 After using the `medoutcon` R package, please cite the following:
 
 ``` 
-    @article{rudolph2019efficient,
-      title={Efficient mediation analysis under mediator-outcome
-        confounding affected by exposure},
-      author={Rudolph, Kara E and D{\'\i}az, Iv{\'a}n and Hejazi, Nima S
+    @article{diaz2019nonparametric,
+      title={Non-parametric efficient causal mediation with intermediate
+        confounders},
+      author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
         and {van der Laan}, Mark J},
       year={2019+},
       url = {},
@@ -164,7 +161,7 @@ After using the `medoutcon` R package, please cite the following:
         mediator-outcome confounding by exposure},
       year  = {2019},
       url = {https://github.com/nhejazi/medoutcon},
-      note = {R package version 0.0.1}
+      note = {R package version 0.0.4}
     }
 ```
 
@@ -205,11 +202,11 @@ See below for details:
 
 <div id="refs" class="references">
 
-<div id="ref-rudolph2019efficient">
+<div id="ref-diaz2019nonparametric">
 
-Rudolph, Kara E, Iván Díaz, Nima S Hejazi, and Mark J van der Laan. n.d.
-“Efficient Mediation Analysis Under Mediator-Outcome Confounding
-Affected by Exposure.”
+Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan. n.d.
+“Non-Parametric Efficient Causal Mediation with Intermediate
+Confounders.”
 
 </div>
 

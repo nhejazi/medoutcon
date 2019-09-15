@@ -1,5 +1,5 @@
 Package: medoutcon
-Title: Mediation analysis with mediator-outcome confounding by exposure
+Title: Efficient causal mediation analysis with intermediate confounding
 Version: 0.0.4
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
@@ -16,18 +16,16 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: Estimators of a parameter formulated to compare two user-given
-    values of a treatment variable A on an outcome variable Y, allowing for the
-    effect of the treatment on the outcome, through a direct path (i.e., through
-    A only) as well as an indirect path through a set of mediators M, to be
-    evaluated in the presence of a binary mediator-outcome confounder Z. The
-    approach imposes a static intervention on the treatment and a stochastic
-    intervention on the mediators M, thus deriving stochastic (in)direct effects
-    in the presence of mediator-outcome confounding. Currently supported are a
-    substitution (G-computation) and one-step (AIPW) estimator. Support for IPW
-    and targeted minimum loss (TML) estimators are planned for future releases.
-    For an in-depth treatment of the methodology, see Rudolph, Díaz, Hejazi,
-    and van der Laan; 2019+ (preprint); <https://arxiv.org/abs/XXXX.YYYYY>.
+Description: Efficient estimators of a stochastic (in)direct effects in the
+    presence of mediator-outcome confounding affected by exposure. The effects
+    estimated allow for the impact of the treatment on the outcome through a
+    direct path to be disentangled from that through mediators, even in the
+    presence of intermediate confounders that complicate this relationship.
+    Currently supported are an efficient one-step (AIPW) estimator and a
+    targeted minimum loss (TML) estimator. Support for classical estimators
+    (g-computation, IPW) are planned for future releases. For an in-depth
+    treatment of the methodology, see Díaz, Hejazi, Rudolph, and van der Laan;
+    2019+ (preprint); <https://arxiv.org/abs/XXXX.YYYYY>.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -50,8 +48,6 @@ Suggests:
     simcausal,
     condensier
 Remotes:
-    github::osofr/simcausal@master,
-    github::osofr/condensier@master,
     github::tlverse/hal9001@master,
     github::tlverse/origami@master,
     github::tlverse/sl3@master,

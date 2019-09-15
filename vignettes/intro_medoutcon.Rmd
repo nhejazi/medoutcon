@@ -1,11 +1,10 @@
 ---
-title: "Efficient mediation analysis under mediator-outcome confounding
-  affected by exposure"
-author: "[Nima Hejazi](https://nimahejazi.org), [Iván
-  Díaz](https://www.idiaz.xyz/), and [Kara Rudolph](http://biostat.jhsph.edu/~krudolph/)"
+title: "Efficient causal mediation analysis with intermediate confounding"
+author: "[Nima Hejazi](https://nimahejazi.org) and [Iván
+  Díaz](https://www.idiaz.xyz/)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: vignette-refs.bib
+bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteIndexEntry{Efficient mediation analysis with intermediate confounding}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,6 +13,6 @@ vignette: >
 
 # Background
 
-Forthcoming
+[TODO]
 
 ## References

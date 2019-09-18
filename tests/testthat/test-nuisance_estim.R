@@ -1,5 +1,6 @@
 context("Estimators of nuisance parameters match EIF-based analogs")
 
+# packages and options
 library(data.table)
 library(stringr)
 library(hal9001)
@@ -9,10 +10,11 @@ source("data_utils.R")
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
+set.seed(7128816)
+
 
 # set up learners for each nuisance parameter
-g_learners <- Lrnr_glm_fast$new(family = stats::binomial())
-e_learners <- m_learners <- q_learners <- r_learners <-
+g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
   Lrnr_hal9001$new(family = "binomial")
 u_learners <- v_learners <- Lrnr_hal9001$new(family = "gaussian")
 
@@ -49,213 +51,143 @@ m <- data$M
 y <- data$Y
 
 # compute estimates of nuisance parameters
-if (FALSE) {
-  ## fit propensity score
-  g_out <- fit_treat_mech(
-    train_data = data, valid_data = data, contrast = c(aprime, astar),
-    learners = g_learners, w_names = w_names, type = "g"
+## fit propensity score
+g_out <- fit_treat_mech(
+  train_data = data, valid_data = data, contrast = c(aprime, astar),
+  learners = g_learners, w_names = w_names, type = "g"
+)
+test_that("Estimates of propensity score are close to the truth", {
+  expect_equal(g_out$treat_est_train$treat_pred_A_star, g(astar, w),
+    tol = 0.05
   )
-  test_that("Estimates of propensity score are close to the truth", {
-    expect_equal(g_out$treat_est_train$treat_pred_A_star, g(astar, w),
-      tol = 5e-2
-    )
-  })
-  test_that("MSE of propensity score g estimates is sufficiently low", {
-    g_mse <- mean((g_out$treat_est_train$treat_pred_A_star - g(astar, w))^2)
-    expect_lt(g_mse, 10 / n_samp)
-  })
+})
+test_that("MSE of propensity score g estimates is sufficiently low", {
+  g_mse <- mean((g_out$treat_est_train$treat_pred_A_star - g(astar, w))^2)
+  expect_lt(g_mse, 0.001)
+})
 
-  ## fit propensity score conditioning on mediators
-  e_out <- fit_treat_mech(
-    train_data = data, valid_data = data, contrast = c(aprime, astar),
-    learners = e_learners, w_names = w_names,
-    m_names = m_names, type = "e"
+## fit propensity score conditioning on mediators
+e_out <- fit_treat_mech(
+  train_data = data, valid_data = data, contrast = c(aprime, astar),
+  learners = e_learners, w_names = w_names,
+  m_names = m_names, type = "e"
+)
+test_that("Estimates of mediator propensity score are close to the truth", {
+  expect_equal(e_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
+    tol = 0.05
   )
-  test_that("Estimates of mediator propensity score are close to the truth", {
-    expect_equal(e_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
-      tol = 5e-2
-    )
-  })
-  test_that("MSE of mediator propensity score estimates is sufficiently low", {
-    e_mse <- mean((e_out$treat_est_train$treat_pred_A_prime -
-      e(aprime, m, w))^2)
-    expect_lt(e_mse, 10 / n_samp)
-  })
+})
+test_that("MSE of mediator propensity score estimates is sufficiently low", {
+  e_mse <- mean((e_out$treat_est_train$treat_pred_A_prime -
+    e(aprime, m, w))^2)
+  expect_lt(e_mse, 0.001)
+})
 
-  ## fit outcome regression
-  m_out <- fit_m_mech(
-    train_data = data, valid_data = data, contrast = c(aprime, astar),
-    learners = m_learners, m_names = m_names, w_names = w_names
+## fit outcome regression
+m_out <- fit_m_mech(
+  train_data = data, valid_data = data, contrast = c(aprime, astar),
+  learners = m_learners, m_names = m_names, w_names = w_names
+)
+test_that("Estimates of outcome regression m are close to the truth", {
+  expect_equal(m_out$m_est_train$m_pred_A_prime, my(m, z, aprime, w),
+    tol = 0.05
   )
-  test_that("Estimates of outcome regression m are close to the truth", {
-    expect_equal(m_out$m_est_train$m_pred_A_prime, my(m, z, aprime, w),
-      tol = 5e-2
-    )
-  })
-  test_that("MSE of outcome regression m estimates is sufficiently low", {
-    m_mse <- mean((m_out$m_est_train$m_pred_A_prime - my(m, z, aprime, w))^2)
-    expect_lt(m_mse, 1 / n_samp)
-  })
+})
+test_that("MSE of outcome regression m estimates is sufficiently low", {
+  m_mse <- mean((m_out$m_est_train$m_pred_A_prime - my(m, z, aprime, w))^2)
+  expect_lt(m_mse, 0.005)
+})
 
-  ## fit mediator-outcome confounder regression, excluding mediator(s)
-  q_out <- fit_moc_mech(
-    train_data = data,
-    valid_data = data,
-    contrast = contrast,
-    learners = q_learners,
-    m_names = m_names,
-    w_names = w_names,
-    type = "q"
+## fit mediator-outcome confounder regression, excluding mediator(s)
+q_out <- fit_moc_mech(
+  train_data = data,
+  valid_data = data,
+  contrast = contrast,
+  learners = q_learners,
+  m_names = m_names,
+  w_names = w_names,
+  type = "q"
+)
+test_that("Estimates of MOC regression q are close to the truth", {
+  expect_equal(q_out$moc_est_train_Z_one$moc_pred_A_prime, pz(1, aprime, w),
+    tol = 0.05
   )
-  test_that("Estimates of MOC regression q are close to the truth", {
-    expect_equal(q_out$moc_est_train$moc_pred_A_prime, pz(1, aprime, w),
-      tol = 5e-2
-    )
-  })
-  test_that("MSE of MOC regression q estimates is sufficiently low", {
-    q_mse <- mean((q_out$moc_est_train$moc_pred_A_prime - pz(1, aprime, w))^2)
-    expect_lt(q_mse, 1 / n_samp)
-  })
+})
+test_that("MSE of MOC regression q estimates is sufficiently low", {
+  q_mse <- mean((q_out$moc_est_train_Z_one$moc_pred_A_prime -
+                 pz(1, aprime, w))^2)
+  expect_lt(q_mse, 0.001)
+})
 
-  ## fit mediator-outcome confounder regression, conditioning on mediator(s)
-  r_out <- fit_moc_mech(
-    train_data = data,
-    valid_data = data,
-    contrast = contrast,
-    learners = r_learners,
-    m_names = m_names,
-    w_names = w_names,
-    type = "r"
+## fit mediator-outcome confounder regression, conditioning on mediator(s)
+r_out <- fit_moc_mech(
+  train_data = data,
+  valid_data = data,
+  contrast = contrast,
+  learners = r_learners,
+  m_names = m_names,
+  w_names = w_names,
+  type = "r"
+)
+test_that("Estimates of MOC regression r are close to the truth", {
+  expect_equal(r_out$moc_est_train_Z_one$moc_pred_A_prime,
+               r(1, aprime, m, w),
+    tol = 0.05
   )
-  test_that("Estimates of MOC regression r are close to the truth", {
-    expect_equal(r_out$moc_est_train$moc_pred_A_prime, r(1, aprime, m, w),
-      tol = 5e-2
-    )
-  })
-  test_that("MSE of MOC regression r estimates is sufficiently low", {
-    r_mse <- mean((r_out$moc_est_train$moc_pred_A_prime - r(1, aprime, m, w))^2)
-    expect_lt(r_mse, 10 / n_samp)
-  })
+})
+test_that("MSE of MOC regression r estimates is sufficiently low", {
+  r_mse <- mean((r_out$moc_est_train_Z_one$moc_pred_A_prime -
+                 r(1, aprime, m, w))^2)
+  expect_lt(r_mse, 0.001)
+})
 
-  ## fit u
-  data_a_prime <- data.table::copy(data)[, A := aprime]
-  data_a_star <- data.table::copy(data)[, A := astar]
-  u_out <- fit_nuisance_u(
-    train_data = data,
-    valid_data = data_a_prime,
-    learners = u_learners,
-    m_out = m_out,
-    q_out = q_out,
-    r_out = r_out,
-    e_out = e_out,
-    w_names = w_names
-  )
-  u_prime <- u_out$u_pred
-  test_that("Estimates of pseudo-outcome regression are close to the truth", {
-    expect_equal(u_prime, u(z, w), tol = 5e-2)
-  })
-  test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
-    u_mse <- mean((u_prime - u(z, w))^2)
-    expect_lt(u_mse, 10 / n_samp)
-  })
+## fit u
+data_a_prime <- data.table::copy(data)[, A := aprime]
+data_a_star <- data.table::copy(data)[, A := astar]
+u_out <- fit_nuisance_u(
+  train_data = data,
+  valid_data = data_a_prime,
+  learners = u_learners,
+  m_out = m_out,
+  q_out = q_out,
+  r_out = r_out,
+  e_out = e_out,
+  g_out = g_out,
+  w_names = w_names
+)
+u_prime <- u_out$u_pred
+test_that("Estimates of pseudo-outcome regression are close to the truth", {
+  expect_equal(u_prime, u(z, w), tol = 0.05)
+})
+test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
+  u_mse <- mean((u_prime - u(z, w))^2)
+  expect_lt(u_mse, 0.003)
+})
 
-  ## fit v
-  v_out <- fit_nuisance_v(
-    train_data = data,
-    valid_data = data_a_star,
-    contrast = contrast,
-    learners = v_learners,
-    m_out = m_out,
-    q_out = q_out,
-    m_names = m_names,
-    w_names = w_names
-  )
-  test_that("Estimates of pseudo-outcome regression are close to the truth", {
-    v_star <- intv(1, w) * pmaw(1, astar, w) + intv(0, w) * pmaw(0, astar, w)
-    expect_equal(v_out$v_pred, v_star, tol = 5e-2)
-  })
-  test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
-    v_mse <- mean((v_out$v_pred - v_star)^2)
-    expect_lt(v_mse, 10 / n_samp)
-  })
-  test_that("Estimates of pseudo-outcome used in v are close to the truth", {
-    expect_equal(v_out$v_pseudo, intv(m, w), tol = 5e-2)
-  })
-  test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
-    v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w))^2)
-    expect_lt(v_pseudo_mse, 1 / n_samp)
-  })
+## fit v
+v_out <- fit_nuisance_v(
+  train_data = data,
+  valid_data = data_a_star,
+  contrast = contrast,
+  learners = v_learners,
+  m_out = m_out,
+  q_out = q_out,
+  m_names = m_names,
+  w_names = w_names
+)
+test_that("Estimates of pseudo-outcome regression are close to the truth", {
+  v_star <- intv(1, w) * pmaw(1, astar, w) + intv(0, w) * pmaw(0, astar, w)
+  expect_equal(v_out$v_pred, v_star, tol = 0.05)
+})
+test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
+  v_mse <- mean((v_out$v_pred - v_star)^2)
+  expect_lt(v_mse, 0.001)
+})
+test_that("Estimates of pseudo-outcome used in v are close to the truth", {
+  expect_equal(v_out$v_pseudo, intv(m, w), tol = 0.05)
+})
+test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
+  v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w))^2)
+  expect_lt(v_pseudo_mse, 0.001)
+})
 
-  ## extract pre-computed components from nuisance function estimates
-  m_prime <- m_out$m_est_valid$m_pred_A_prime
-  q_prime <- q_out$moc_est_valid$moc_pred_A_prime
-  r_prime <- r_out$moc_est_valid$moc_pred_A_prime
-  e_prime <- e_out$treat_est_valid$treat_pred_A_prime
-  e_star <- e_out$treat_est_valid$treat_pred_A_star
-  g_star <- g_out$treat_est_valid$treat_pred_A_star
-
-  ## ad-hoc function to compute integral over Z for nuisance parameter u
-  u_int_eif <- lapply(unique(data$Z), function(confounder_val) {
-    # intervene on training and validation data sets
-    data_z_interv <- data.table::copy(data)
-    data_z_interv[, `:=`(
-      Z = confounder_val,
-      A = contrast[1],
-      U_pseudo = u_prime
-    )]
-
-    # predict u(z, a', w) using intervened data with treatment set A = a'
-    u_task_z_interv <- sl3::sl3_Task$new(
-      data = data_z_interv,
-      covariates = c(w_names, "A", "Z"),
-      outcome_type = "continuous",
-      outcome = "U_pseudo"
-    )
-    u_prime_z_interv <- u_out[["u_fit"]]$predict(u_task_z_interv)
-
-    # task for predicting from trained q regression model
-    q_reg_v_subtask <- sl3::sl3_Task$new(
-      data = data,
-      covariates = c("A", w_names),
-      outcome_type = "binomial",
-      outcome = "Z"
-    )
-
-    # q nuisance regression after intervening on mediator-outcome confounder
-    # NOTE: for binary Z, this returns P(Z = 1 | ...) by definition but what we
-    #       want is actually P(Z = z | ...)
-    q_pred_z_natural <- (confounder_val * q_prime) +
-      ((1 - confounder_val) * (1 - q_prime))
-
-    # return partial pseudo-outcome for v nuisance regression
-    out <- u_prime_z_interv * q_pred_z_natural
-    return(out)
-  })
-  u_int_eif <- do.call(`+`, u_int_eif)
-  test_that("Estimates of u-q integral (over z) are close to the truth", {
-    expect_equal(u_int_eif, intu(w), tol = 5e-2)
-  })
-  test_that("MSE of u-q integral (over z) is sufficiently low", {
-    intu_mse <- mean((u_int_eif - intu(w))^2)
-    expect_lt(intu_mse, 1 / n_samp)
-  })
-
-  ## finally, compute un-centered influence function for one-step
-  ipw_a_prime <- as.numeric(data$A == aprime) / g_star
-  ipw_a_star <- as.numeric(data$A == astar) / g_star
-  eif_resid_y <- (q_prime / r_prime) * (e_star / e_prime) * (data$Y - m_prime)
-  eif_test <- (ipw_a_prime * eif_resid_y) +
-    (ipw_a_prime * (u_prime - u_int_eif)) +
-    (ipw_a_star * (v_out$v_pseudo - v_out$v_pred)) + v_out$v_pred
-  psi_os_test <- mean(eif_test)
-  var_eif_test <- var(eif_test)
-  test_that("Estimates based on influence function are close to the truth", {
-    expect_equal(eif_test, eif, tol = 5e-2)
-    expect_equal(psi_os_test, psi_os, tol = 5e-2)
-    expect_equal(var_eif_test, var_eif, tol = 5e-2)
-  })
-  test_that("MSE of estimated influence function  is sufficiently low", {
-    eif_mse <- mean((eif_test - eif)^2)
-    expect_lt(eif_mse, 1 / n_samp)
-  })
-}

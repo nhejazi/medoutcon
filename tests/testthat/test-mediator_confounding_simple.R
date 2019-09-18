@@ -1,14 +1,20 @@
 context("Estimators show agreeable performance in simple example setting")
 
+# packages and options
 library(data.table)
 library(stringr)
 library(hal9001)
 library(sl3)
-library(caret)
-library(SuperLearner)
+#library(caret)
+#library(SuperLearner)
 set.seed(7128816)
 source("eif_utils.R")
 source("data_utils.R")
+contrast <- c(0, 1)
+aprime <- contrast[1]
+astar <- contrast[2]
+n_obs <- 1000
+
 
 # 1) setup learners for the nuisance parameters
 ## caret hyperparameter-tuning model for random forest
@@ -61,30 +67,27 @@ sl_binary_lrnr <- Lrnr_sl$new(learners = stack_lrnrs_binary,
                               metalearner = logistic_metalearner,
                               keep_extra = TRUE)
 
+
 # 2) get data and column names for sl3 tasks (for convenience)
-data <- sim_medoutcon_data()
+data <- sim_medoutcon_data(n_obs = n_obs)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
 
+
 # 3) set up learners for nuisance parameters
+
 ## use SL including HAL for analyzing data
-g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  sl_binary_lrnr
-u_learners <- v_learners <- sl_contin_lrnr
+#g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+  #sl_binary_lrnr
+#u_learners <- v_learners <- sl_contin_lrnr
+
 ## use HAL by itself for testing functionality
-#g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  #hal_binary_lrnr
-#u_learners <- v_learners <- hal_contin_lrnr
+g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+  hal_binary_lrnr
+u_learners <- v_learners <- hal_contin_lrnr
 
-## test caret-based learners
-#g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  #xgb_caret_lrnr
-#u_learners <- v_learners <- xgb_caret_lrnr
-#g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  #rf_caret_lrnr
-#u_learners <- v_learners <- rf_caret_lrnr
 
-# test different estimators
+# 4) test different estimators
 theta_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = data$Z,
   M = data[, ..m_names], Y = data$Y,
@@ -100,4 +103,36 @@ theta_os <- medoutcon(
   estimator = "onestep",
   estimator_args = list(cv_folds = 2)
 )
-theta_os
+summary(theta_os)
+
+
+# 5) compute efficient influence function based on observed data
+w <- as_tibble(data)[, w_names]
+a <- data$A
+z <- data$Z
+m <- data$M
+y <- data$Y
+
+# compute parameter estimate and influence function with convenience functions
+v <- intv(1, w) * pmaw(1, astar, w) + intv(0, w) * pmaw(0, astar, w)
+eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
+  pm(m, z, aprime, w) * (y - my(m, z, aprime, w)) + (a == aprime) /
+    g(aprime, w) * (u(z, w) - intu(w)) + (a == astar) / g(astar, w) *
+    (intv(m, w) - v) + v
+psi_os <- mean(eif)
+var_eif <- var(eif) / n_obs
+
+
+# 6) testing
+test_that("Parameter estimate close to independent EIF estimates", {
+  expect_equal(theta_os$theta, psi_os, tol = 0.03)
+})
+
+test_that("Variance estimate close to independent EIF variance", {
+  expect_equal(theta_os$var, var_eif, tol = 0.01)
+})
+
+test_that("Mean of estimated EIF close to that of independent EIF", {
+  expect_equal(abs(mean(theta_os$eif)), abs(mean(eif - psi_os)), tol = 0.001)
+})
+

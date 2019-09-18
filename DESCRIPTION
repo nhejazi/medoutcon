@@ -44,12 +44,9 @@ Suggests:
     nnls,
     methods,
     stringr,
-    hal9001,
-    simcausal,
-    condensier
+    hal9001
 Remotes:
     github::tlverse/hal9001@master,
-    github::tlverse/origami@master,
     github::tlverse/sl3@master,
     github::tlverse/tmle3@master
 License: MIT + file LICENSE

@@ -25,14 +25,13 @@ r_packages:
   - sessioninfo
   - covr
   - data.table
+  - origami
 
 r_github_packages:
-  - r-lib/covr
   - r-lib/sessioninfo
+  - r-lib/covr
   - osofr/simcausal
   - osofr/condensier
-  - tlverse/delayed
-  - tlverse/origami
   - tlverse/hal9001
   - tlverse/sl3
   - tlverse/tmle3

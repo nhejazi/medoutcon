@@ -29,15 +29,9 @@ environment:
 
 build_script:
   - travis-tool.sh install_deps
-  - travis-tool.sh install_github r-lib/covr
-  - travis-tool.sh install_github r-lib/sessioninfo
-  - travis-tool.sh install_github osofr/simcausal
-  - travis-tool.sh install_github osofr/condensier
-  - travis-tool.sh install_github tlverse/delayed
-  - travis-tool.sh install_github tlverse/origami
-  - travis-tool.sh install_github tlverse/hal9001
-  - travis-tool.sh install_github tlverse/sl3
-  - travis-tool.sh install_github tlverse/tmle3
+  - travis-tool.sh install_github r-lib/sessioninfo r-lib/covr
+  - travis-tool.sh install_github tlverse/hal9001 tlverse/origami
+  - travis-tool.sh install_github tlverse/sl3 tlverse/tmle3
 
 test_script:
   - travis-tool.sh run_tests

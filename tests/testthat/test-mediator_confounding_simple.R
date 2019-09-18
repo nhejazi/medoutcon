@@ -125,7 +125,7 @@ var_eif <- var(eif) / n_obs
 
 # 6) testing
 test_that("Parameter estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_os, tol = 0.03)
+  expect_equal(theta_os$theta, psi_os, tol = 0.04)
 })
 
 test_that("Variance estimate close to independent EIF variance", {
@@ -135,4 +135,3 @@ test_that("Variance estimate close to independent EIF variance", {
 test_that("Mean of estimated EIF close to that of independent EIF", {
   expect_equal(abs(mean(theta_os$eif)), abs(mean(eif - psi_os)), tol = 0.001)
 })
-

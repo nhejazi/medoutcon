@@ -163,8 +163,8 @@ After using the `medoutcon` R package, please cite the following:
 
     @manual{hejazi2019medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Efficient mediation analysis with
-        mediator-outcome confounding by exposure},
+      title = {{medoutcon}: Efficient causal mediation analysis with
+        intermediate confounding},
       year  = {2019},
       url = {https://github.com/nhejazi/medoutcon},
       note = {R package version 0.0.4}

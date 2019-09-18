@@ -4,81 +4,100 @@ library(data.table)
 library(stringr)
 library(hal9001)
 library(sl3)
+library(caret)
+library(SuperLearner)
 set.seed(7128816)
+source("eif_utils.R")
+source("data_utils.R")
 
-################################################################################
-# setup learners for the nuisance parameters
-################################################################################
+# 1) setup learners for the nuisance parameters
+## caret hyperparameter-tuning model for random forest
+SL.caretRF <- function(Y, X, newX, family, obsWeights, ...) {
+  SL.caret(Y, X, newX, family, obsWeights, method = 'rf',  tuneLength = 3,
+           trControl =  caret::trainControl(method = "LGOCV", search = 'random',
+                                            verboseIter = TRUE), ...)
+}
+rf_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretRF")
 
-# instantiate some learners
+## caret hyperparameter-tuning model for xgboost
+SL.caretXGB <- function(Y, X, newX, family, obsWeights, ...) {
+  SL.caret(Y, X, newX, family, obsWeights, method = 'xgbTree', tuneLength = 3,
+           trControl =  caret::trainControl(method = "LGOCV", search = 'random',
+                                            verboseIter = TRUE), ...)
+}
+xgb_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretXGB")
+
+## instantiate learners and SL for continuous outcomes
 mean_lrnr <- Lrnr_mean$new()
 fglm_contin_lrnr <- Lrnr_glm_fast$new()
-fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
 hal_contin_lrnr <- Lrnr_hal9001$new(
   fit_type = "glmnet", n_folds = 5
 )
+stack_lrnrs_contin <- make_learner(Stack,
+                                   mean_lrnr,
+                                   fglm_contin_lrnr,
+                                   hal_contin_lrnr,
+                                   rf_caret_lrnr,
+                                   xgb_caret_lrnr)
+sl_contin_lrnr <- Lrnr_sl$new(learners = stack_lrnrs_contin,
+                              metalearner = Lrnr_nnls$new(),
+                              keep_extra = TRUE)
+
+## instantiate learners and SL for binary outcomes
+fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
 hal_binary_lrnr <- Lrnr_hal9001$new(
   fit_type = "glmnet", n_folds = 5,
   family = "binomial"
 )
+logistic_metalearner <- make_learner(Lrnr_solnp, metalearner_logistic_binomial,
+                                     loss_loglik_binomial)
+stack_lrnrs_binary <- make_learner(Stack,
+                                   mean_lrnr,
+                                   fglm_binary_lrnr,
+                                   hal_binary_lrnr,
+                                   rf_caret_lrnr,
+                                   xgb_caret_lrnr)
+sl_binary_lrnr <- Lrnr_sl$new(learners = stack_lrnrs_binary,
+                              metalearner = logistic_metalearner,
+                              keep_extra = TRUE)
 
-################################################################################
-# setup data and simulate to test with estimators
-################################################################################
-sim_medoutcon_data <- function(n_obs = 1000) {
-  # baseline covariate -- simple, binary
-  w_1 <- rbinom(n_obs, 1, prob = 0.6)
-  w_2 <- rbinom(n_obs, 1, prob = 0.3)
-  w_3 <- rbinom(n_obs, 1, prob = pmin(0.2 + (w_1 + w_2) / 3, 1))
-  w <- cbind(w_1, w_2, w_3)
-
-  # exposure/treatment
-  a <- as.numeric(rbinom(n_obs, 1, prob = (rowSums(w) / 4 + 0.1)))
-
-  # mediator-outcome confounder affected by treatment
-  z_0 <- rbinom(n_obs, 1, plogis(rowMeans(-log(2) + w - a) + 0.2))
-  z_1 <- rbinom(n_obs, 1, plogis(rowMeans(log(3) - w[, -3] * 0.1 + a) / 3))
-  z <- as.numeric(ifelse(a == 1, z_1, z_0))
-
-  # mediator (possibly multivariate)
-  m_0 <- rbinom(n_obs, 1, plogis(rowSums(-log(3) * w[, -3] - a + z)))
-  m_1 <- rbinom(n_obs, 1, plogis(log(10) * w[, 1] + a - z - 0.1))
-  m <- cbind(m_0, m_1)
-  # m <- ifelse(z == 1, m_1, m_0)
-
-  # outcome
-  y <- rbinom(n_obs, 1, plogis(1 / (log(7) * rowSums(w) - z * a + rowSums(m))))
-
-  # construct data for output
-  dat <- as.data.table(cbind(w = w, a = a, z = z, m = m, y = y))
-  return(dat)
-}
-
-# get data and column names for sl3 tasks (for convenience)
+# 2) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data()
-w_names <- str_subset(colnames(data), "w")
-m_names <- str_subset(colnames(data), "m")
+w_names <- str_subset(colnames(data), "W")
+m_names <- str_subset(colnames(data), "M")
 
-################################################################################
+# 3) set up learners for nuisance parameters
+## use SL including HAL for analyzing data
+g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+  sl_binary_lrnr
+u_learners <- v_learners <- sl_contin_lrnr
+## use HAL by itself for testing functionality
+#g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+  #hal_binary_lrnr
+#u_learners <- v_learners <- hal_contin_lrnr
+
+## test caret-based learners
+#g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+  #xgb_caret_lrnr
+#u_learners <- v_learners <- xgb_caret_lrnr
+#g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+  #rf_caret_lrnr
+#u_learners <- v_learners <- rf_caret_lrnr
+
 # test different estimators
-################################################################################
 theta_os <- medoutcon(
-  W = data[, ..w_names], A = data$a, Z = data$z,
-  M = data[, ..m_names], Y = data$y,
+  W = data[, ..w_names], A = data$A, Z = data$Z,
+  M = data[, ..m_names], Y = data$Y,
   # effect = "direct",
   contrast = c(0, 1),
-  g_learners = hal_binary_lrnr,
-  e_learners = hal_binary_lrnr,
-  m_learners = hal_binary_lrnr,
-  q_learners = hal_binary_lrnr,
-  r_learners = hal_binary_lrnr,
-  u_learners = hal_contin_lrnr,
-  v_learners = hal_contin_lrnr,
+  g_learners = g_learners,
+  e_learners = e_learners,
+  m_learners = m_learners,
+  q_learners = q_learners,
+  r_learners = r_learners,
+  u_learners = u_learners,
+  v_learners = v_learners,
   estimator = "onestep",
   estimator_args = list(cv_folds = 2)
 )
 theta_os
-
-# test_that("IPW and efficient one-step estimator agree", {
-# expect_equal(theta_ipw$theta, theta_aipw$theta, tol = 1e-2)
-# })

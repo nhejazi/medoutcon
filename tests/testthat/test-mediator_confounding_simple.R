@@ -123,14 +123,14 @@ m <- data$M
 y <- data$Y
 
 # compute parameter estimate and influence function with convenience functions
-v <- intv(1, w) * pmaw(1, astar, w) + intv(0, w) * pmaw(0, astar, w)
+v <- intv(1, w, aprime) * pmaw(1, astar, w) + intv(0, w, aprime) *
+  pmaw(0, astar, w)
 eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
   pm(m, z, aprime, w) * (y - my(m, z, aprime, w)) + (a == aprime) /
-    g(aprime, w) * (u(z, w) - intu(w)) + (a == astar) / g(astar, w) *
-    (intv(m, w) - v) + v
+    g(aprime, w) * (u(z, w, aprime, astar) - intu(w, aprime, astar)) +
+    (a == astar) / g(astar, w) * (intv(m, w, aprime) - v) + v
 psi_os <- mean(eif)
 var_eif <- var(eif) / n_obs
-
 
 # 6) testing
 test_that("Parameter estimate close to independent EIF estimates", {

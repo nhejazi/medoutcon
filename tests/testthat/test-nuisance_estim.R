@@ -3,6 +3,7 @@ context("Estimators of nuisance parameters match EIF-based analogs")
 # packages and options
 library(data.table)
 library(stringr)
+library(tibble)
 library(hal9001)
 library(sl3)
 source("eif_utils.R")

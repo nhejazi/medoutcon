@@ -296,6 +296,7 @@ cv_eif <- function(fold,
     # predict u(z, a', w) using intervened data with treatment set A = a'
     u_task_valid_z_interv <- sl3::sl3_Task$new(
       data = valid_data_z_interv,
+      weights = "weights",
       covariates = c("Z", "A", w_names),
       outcome = "U_pseudo",
       outcome_type = "continuous"
@@ -316,8 +317,10 @@ cv_eif <- function(fold,
     e_star / e_prime
 
   # compute uncentered efficient influence function
-  eif_y <- ipw_a_prime * h_star / mean(ipw_a_prime * h_star) * (valid_data$Y - m_prime)
-  eif_u <- ipw_a_prime / mean(ipw_a_prime) * u_int_eif * (valid_data$Z - q_prime_Z_one)
+  eif_y <- ipw_a_prime * h_star / mean(ipw_a_prime * h_star) *
+    (valid_data$Y - m_prime)
+  eif_u <- ipw_a_prime / mean(ipw_a_prime) * u_int_eif *
+    (valid_data$Z - q_prime_Z_one)
   eif_v <- ipw_a_star / mean(ipw_a_star) * (v_out$v_pseudo - v_star)
 
   eif <- eif_y + eif_u + eif_v + v_star

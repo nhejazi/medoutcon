@@ -5,7 +5,7 @@
 \title{Fit pseudo-outcome regression conditioning on mediator-outcome confounder}
 \usage{
 fit_nuisance_u(train_data, valid_data, learners, m_out, q_out, r_out,
-  e_out, w_names)
+  g_out, e_out, w_names)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing observed data, with columns
@@ -34,6 +34,9 @@ i.e., \code{\link{fit_moc_mech}}, setting \code{type = "q"}.}
 \item{r_out}{Output from the internal function for fitting the mechanism of
 the mediator-outcome confounder relationship without conditioning on
 mediators, i.e., \code{\link{fit_moc_mech}}, setting \code{type = "r"}.}
+
+\item{g_out}{Output from the internal function for fitting the treatment
+mechanism without conditioning on mediators \code{\link{fit_treat_mech}}.}
 
 \item{e_out}{Output from the internal function for fitting the treatment
 mechanism conditioning on the mediators \code{\link{fit_treat_mech}}.}

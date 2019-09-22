@@ -1,6 +1,6 @@
 Package: medoutcon
 Title: Efficient causal mediation analysis with intermediate confounding
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -44,6 +44,7 @@ Suggests:
     nnls,
     methods,
     stringr,
+    tibble,
     hal9001
 Remotes:
     github::tlverse/hal9001@master,

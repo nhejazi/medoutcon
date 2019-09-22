@@ -24,23 +24,30 @@ pmw <- function(m, w) {
     pmaw(m, 0, w) * g(0, w)
 }
 
-r <- function(z, a, m, w) pm(m, z, a, w) * pz(z, a, w) / pmaw(m, a, w)
+r <- function(z, a, m, w) {
+  pm(m, z, a, w) * pz(z, a, w) / pmaw(m, a, w)
+}
 
-e <- function(a, m, w) pmaw(m, a, w) * g(a, w) / pmw(m, w)
+e <- function(a, m, w) {
+  pmaw(m, a, w) * g(a, w) / pmw(m, w)
+}
 
-my <- function(m, z, a, w) plogis(1 / (rowSums(w) - z + a - m))
+my <- function(m, z, a, w) {
+  plogis(1 / (rowSums(w) - z + a - m))
+}
 
 # compute nuisance functions by their definitions
-u <- function(z, w) {
+u <- function(z, w, aprime, astar) {
   my(1, z, aprime, w) * pmaw(1, astar, w) +
     my(0, z, aprime, w) * pmaw(0, astar, w)
 }
 
-intu <- function(w) {
-  u(1, w) * pz(1, aprime, w) + u(0, w) * pz(0, aprime, w)
+intu <- function(w, aprime, astar) {
+  u(1, w, aprime, astar) * pz(1, aprime, w) + u(0, w, aprime, astar) *
+    pz(0, aprime, w)
 }
 
-intv <- function(m, w) {
+intv <- function(m, w, aprime) {
   my(m, 1, aprime, w) * pz(1, aprime, w) + my(m, 0, aprime, w) *
     pz(0, aprime, w)
 }

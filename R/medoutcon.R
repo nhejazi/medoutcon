@@ -12,6 +12,9 @@
 #'  similar corresponding to a set of mediators (on the causal pathway between
 #'  the intervention A and the outcome Y).
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
+#' @param weights A \code{numeric} vector of observation-level weights to be
+#'  incorporated in all procedures estimating nuisance parameters. The default
+#'  is to give all observations equal weighting.
 #' @param effect A \code{character} indicating whether to compute the direct
 #'  effect or the indirect effect as discussed in CITE PAPER. Note that this is
 #'  ignored when the argument \code{contrast} is provided.
@@ -72,6 +75,7 @@ medoutcon <- function(W,
                       Z,
                       M,
                       Y,
+                      weights = rep(1, length(Y)),
                       effect = c("direct", "indirect"),
                       contrast = NULL,
                       g_learners =
@@ -98,14 +102,14 @@ medoutcon <- function(W,
   estimator_args <- unlist(estimator_args, recursive = FALSE)
 
   # construct input data structure
-  data <- data.table::as.data.table(cbind(Y, M, Z, A, W))
+  data <- data.table::as.data.table(cbind(Y, M, Z, A, W, weights))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
   )
   m_names <- paste("M", seq_len(dim(data.table::as.data.table(M))[2]),
     sep = "_"
   )
-  data.table::setnames(data, c("Y", m_names, "Z", "A", w_names))
+  data.table::setnames(data, c("Y", m_names, "Z", "A", w_names, "weights"))
 
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {

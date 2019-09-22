@@ -3,6 +3,7 @@ context("Estimators of nuisance parameters match EIF-based analogs")
 # packages and options
 library(data.table)
 library(stringr)
+library(tibble)
 library(hal9001)
 library(sl3)
 source("eif_utils.R")
@@ -11,7 +12,6 @@ contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
 set.seed(7128816)
-
 
 # set up learners for each nuisance parameter
 g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
@@ -23,6 +23,7 @@ n_samp <- 5000
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
+data[, weights := 1]
 w <- as_tibble(data)[, w_names]
 a <- data$A
 z <- data$Z
@@ -158,7 +159,9 @@ v_out <- fit_nuisance_v(
   m_names = m_names,
   w_names = w_names
 )
-v_star <- intv(1, w) * pmaw(1, astar, w) + intv(0, w) * pmaw(0, astar, w)
+v_star <- intv(1, w, aprime) * pmaw(1, astar, w) + intv(0, w, aprime) *
+  pmaw(0, astar, w)
+
 test_that("Estimates of pseudo-outcome regression are close to the truth", {
   expect_equal(v_out$v_pred, v_star, tol = 0.05)
 })
@@ -167,10 +170,9 @@ test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   expect_lt(v_mse, 0.002)
 })
 test_that("Estimates of pseudo-outcome used in v are close to the truth", {
-  expect_equal(v_out$v_pseudo, intv(m, w), tol = 0.05)
+  expect_equal(v_out$v_pseudo, intv(m, w, aprime), tol = 0.05)
 })
 test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
-  v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w))^2)
+  v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w, aprime))^2)
   expect_lt(v_pseudo_mse, 0.002)
 })
-

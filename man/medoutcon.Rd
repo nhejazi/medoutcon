@@ -5,10 +5,11 @@
 \title{Efficient estimation of stochastic (in)direct effects in the presence of
 mediator-outcome confounders affected by exposure}
 \usage{
-medoutcon(W, A, Z, M, Y, effect = c("direct", "indirect"),
-  contrast = NULL, g_learners = sl3::Lrnr_glm_fast$new(family =
-  stats::binomial()), e_learners = sl3::Lrnr_glm_fast$new(family =
-  stats::binomial()), m_learners = sl3::Lrnr_glm_fast$new(),
+medoutcon(W, A, Z, M, Y, weights = rep(1, length(Y)),
+  effect = c("direct", "indirect"), contrast = NULL,
+  g_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  e_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  m_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_learners = sl3::Lrnr_glm_fast$new(),
@@ -31,6 +32,10 @@ similar corresponding to a set of mediators (on the causal pathway between
 the intervention A and the outcome Y).}
 
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
+
+\item{weights}{A \code{numeric} vector of observation-level weights to be
+incorporated in all procedures estimating nuisance parameters. The default
+is to give all observations equal weighting.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct
 effect or the indirect effect as discussed in CITE PAPER. Note that this is

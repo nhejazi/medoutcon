@@ -5,11 +5,11 @@
 \title{Efficient estimation of stochastic (in)direct effects in the presence of
 mediator-outcome confounders affected by exposure}
 \usage{
-medoutcon(W, A, Z, M, Y, weights = rep(1, length(Y)),
-  effect = c("direct", "indirect"), contrast = NULL,
-  g_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  e_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  m_learners = sl3::Lrnr_glm_fast$new(),
+medoutcon(W, A, Z, M, Y, obs_weights = rep(1, length(Y)),
+  ext_weights = NULL, effect = c("direct", "indirect"),
+  contrast = NULL, g_learners = sl3::Lrnr_glm_fast$new(family =
+  stats::binomial()), e_learners = sl3::Lrnr_glm_fast$new(family =
+  stats::binomial()), m_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_learners = sl3::Lrnr_glm_fast$new(),
@@ -33,9 +33,16 @@ the intervention A and the outcome Y).}
 
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
-\item{weights}{A \code{numeric} vector of observation-level weights to be
+\item{obs_weights}{A \code{numeric} vector of observation-level weights to be
 incorporated in all procedures estimating nuisance parameters. The default
 is to give all observations equal weighting.}
+
+\item{ext_weights}{A \code{numeric} vector of observation-level weights that
+have been computed externally. Such weights are used in the construction of
+a re-weighted one-step estimator or in solving a re-weighted estimating
+equation in the case of the TML estimator. Note that, unlike the argument
+\code{obs_weights}, these weights are not incorporated in the estimation of
+nuisance parameters. Input weights should be normalized. Use with caution.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct
 effect or the indirect effect as discussed in CITE PAPER. Note that this is

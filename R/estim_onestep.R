@@ -53,9 +53,7 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #' @param ext_weights A \code{numeric} vector of observation-level weights that
 #'  have been computed externally. Such weights are used in the construction of
 #'  a re-weighted one-step estimator or in solving a re-weighted estimating
-#'  equation in the case of the TML estimator. Note that, unlike the argument
-#'  \code{obs_weights}, these weights are not incorporated in the estimation of
-#'  nuisance parameters. Input weights should be normalized. Use with caution.
+#'  equation in the case of the TML estimator. Use with caution.
 #' @param cv_folds A \code{numeric} integer value specifying the number of folds
 #'  to be created for cross-validation. Use of cross-validation / cross-fitting
 #'  allows for entropy conditions on the one-step estimator to be relaxed. Note:

@@ -1,13 +1,15 @@
-context("Estimators of nuisance parameters match EIF-based analogs")
+context("Estimators of nuisance parameters match manual analogs closely")
+source("eif_utils.R")
+source("data_utils.R")
 
-# packages and options
+# packages
 library(data.table)
 library(stringr)
 library(tibble)
 library(hal9001)
 library(sl3)
-source("eif_utils.R")
-source("data_utils.R")
+
+# options
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
@@ -23,7 +25,7 @@ n_samp <- 5000
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
-data[, weights := 1]
+data[, obs_weights := 1]
 w <- as_tibble(data)[, w_names]
 a <- data$A
 z <- data$Z

@@ -48,7 +48,7 @@ fit_treat_mech <- function(train_data,
   ## construct task for treatment mechanism fit
   treat_task <- sl3::sl3_Task$new(
     data = train_data,
-    weights = "weights",
+    weights = "obs_weights",
     covariates = cov_names,
     outcome = "A",
     outcome_type = "binomial"

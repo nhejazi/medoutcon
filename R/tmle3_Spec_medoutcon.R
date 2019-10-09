@@ -125,27 +125,35 @@ tmle_medoutcon <- function(shift_type = "exptilt",
 
 ################################################################################
 
-#' Stochastic Mediation NPSEM
+#' NPSEM for Stochastic Mediation Effects with Mediator-Outcome Confounding
 #'
 #' @param node_list A \code{list} object specifying the different nodes in the
-#'  nonparametric structural equation model.
+#'  non-parametric structural equation model.
 #' @param variable_types Used to define how variables are handled. Optional.
 #'
 #' @importFrom tmle3 define_node
 #'
 #' @keywords internal
 #
-stochastic_mediation_npsem <- function(node_list, variable_types = NULL) {
-  # make tmle_task
+medoutcon_npsem <- function(node_list, variable_types = NULL) {
+  # make non-parametric structural equation model
   npsem <- list(
+    # baseline covariates
     tmle3::define_node("W", node_list$W, variable_type = variable_types$W),
+    # treatment
     tmle3::define_node("A", node_list$A, c("W"),
       variable_type = variable_types$A
     ),
+    # mediator-outcome confounder
     tmle3::define_node("Z", node_list$Z, c("A", "W"),
       variable_type = variable_types$Z
     ),
-    tmle3::define_node("Y", node_list$Y, c("Z", "A", "W"),
+    # mediator(s)
+    tmle3::define_node("M", node_list$M, c("Z", "A", "W"),
+      variable_type = variable_types$M
+    ),
+    # outcome
+    tmle3::define_node("Y", node_list$Y, c("M", "Z", "A", "W"),
       variable_type = variable_types$Y, scale = TRUE
     )
   )
@@ -165,7 +173,7 @@ stochastic_mediation_npsem <- function(node_list, variable_types = NULL) {
 #'
 #' @keywords internal
 #
-stochastic_mediation_likelihood <- function(tmle_task, learner_list) {
+medoutcon_likelihood <- function(tmle_task, learner_list) {
   # covariates
   W_factor <- tmle3::define_lf(tmle3::LF_emp, "W")
 
@@ -185,6 +193,22 @@ stochastic_mediation_likelihood <- function(tmle_task, learner_list) {
     bound = A_bound
   )
 
+  # mediator-outcome confounder (bound likelihood away from 0 (and 1 if binary))
+  Z_type <- tmle_task$npsem[["Z"]]$variable_type
+  if (Z_type$type == "continuous") {
+    Z_bound <- c(1 / tmle_task$nrow, Inf)
+  } else if (Z_type$type %in% c("binomial", "categorical")) {
+    Z_bound <- 0.025
+  } else {
+    Z_bound <- NULL
+  }
+
+  # mediator-outcome confounder
+  Z_factor <- tmle3::define_lf(tmle3::LF_fit, "Z",
+    learner = learner_list[["Z"]],
+    bound = Z_bound
+  )
+
   # outcome
   Y_factor <- tmle3::define_lf(tmle3::LF_fit, "Y",
     learner = learner_list[["Y"]],
@@ -192,7 +216,7 @@ stochastic_mediation_likelihood <- function(tmle_task, learner_list) {
   )
 
   # construct and train likelihood
-  factor_list <- list(W_factor, A_factor, Y_factor)
+  factor_list <- list(W_factor, A_factor, Z_factor, Y_factor)
 
   likelihood_def <- tmle3::Likelihood$new(factor_list)
   likelihood <- likelihood_def$train(tmle_task)
@@ -201,7 +225,7 @@ stochastic_mediation_likelihood <- function(tmle_task, learner_list) {
 
 ################################################################################
 
-#' Make task for derived likelihood factor e(A,W)
+#' Make task for derived likelihood factor e(a | m, w)
 #'
 #' @param tmle_task A \code{tmle3_Task} object specifying the data and the
 #'   NPSEM for use in constructing elements of TML estimator.
@@ -218,11 +242,38 @@ make_e_task <- function(tmle_task, likelihood) {
     data = e_data,
     outcome = tmle_task$npsem[["A"]]$variables,
     covariates = c(
-      tmle_task$npsem[["Z"]]$variables,
+      tmle_task$npsem[["M"]]$variables,
       tmle_task$npsem[["W"]]$variables
     )
   )
   return(e_task)
+}
+
+################################################################################
+
+#' Make task for derived likelihood factor r(z | a', m, w)
+#'
+#' @param tmle_task A \code{tmle3_Task} object specifying the data and the
+#'   NPSEM for use in constructing elements of TML estimator.
+#' @param likelihood A trained \code{Likelihood} object from \code{tmle3},
+#'  constructed via the helper function \code{stochastic_mediation_likelihood}.
+#'
+#' @importFrom sl3 sl3_Task
+#'
+#' @keywords internal
+#
+make_r_task <- function(tmle_task, likelihood) {
+  m_data <- tmle_task$internal_data
+  m_task <- sl3::sl3_Task$new(
+    data = m_data,
+    outcome = tmle_task$npsem[["Z"]]$variables,
+    covariates = c(
+      tmle_task$npsem[["A"]]$variables,
+      tmle_task$npsem[["M"]]$variables,
+      tmle_task$npsem[["W"]]$variables
+    )
+  )
+  return(r_task)
 }
 
 ################################################################################

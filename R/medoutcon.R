@@ -149,8 +149,22 @@ medoutcon <- function(W,
       )
       est_out <- do.call(est_onestep, onestep_est_args)
     } else if (estimator == "tmle") {
-      # TARGETED MAXIMUM LIKELIHOOD ESTIMATOR
-      stop("The TML estimator is currently under development.")
+      # TARGETED MINIMUM LOSS ESTIMATOR
+      tmle_est_args <- list(
+        data = data,
+        contrast = contrast,
+        g_learners = g_learners,
+        e_learners = e_learners,
+        m_learners = m_learners,
+        q_learners = q_learners,
+        r_learners = r_learners,
+        u_learners = u_learners,
+        v_learners = v_learners,
+        w_names = w_names,
+        m_names = m_names,
+        estimator_args
+      )
+      est_out <- do.call(est_tml, tmle_est_args)
     }
 
     # lazily create output as classed list

@@ -12,9 +12,15 @@
 #'  similar corresponding to a set of mediators (on the causal pathway between
 #'  the intervention A and the outcome Y).
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
-#' @param weights A \code{numeric} vector of observation-level weights to be
+#' @param obs_weights A \code{numeric} vector of observation-level weights to be
 #'  incorporated in all procedures estimating nuisance parameters. The default
 #'  is to give all observations equal weighting.
+#' @param ext_weights A \code{numeric} vector of observation-level weights that
+#'  have been computed externally. Such weights are used in the construction of
+#'  a re-weighted one-step estimator or in solving a re-weighted estimating
+#'  equation in the case of the TML estimator. Note that, unlike the argument
+#'  \code{obs_weights}, these weights are not incorporated in the estimation of
+#'  nuisance parameters. Input weights should be normalized. Use with caution.
 #' @param effect A \code{character} indicating whether to compute the direct
 #'  effect or the indirect effect as discussed in CITE PAPER. Note that this is
 #'  ignored when the argument \code{contrast} is provided.
@@ -75,7 +81,8 @@ medoutcon <- function(W,
                       Z,
                       M,
                       Y,
-                      weights = rep(1, length(Y)),
+                      obs_weights = rep(1, length(Y)),
+                      ext_weights = NULL,
                       effect = c("direct", "indirect"),
                       contrast = NULL,
                       g_learners =
@@ -102,14 +109,14 @@ medoutcon <- function(W,
   estimator_args <- unlist(estimator_args, recursive = FALSE)
 
   # construct input data structure
-  data <- data.table::as.data.table(cbind(Y, M, Z, A, W, weights))
+  data <- data.table::as.data.table(cbind(Y, M, Z, A, W, obs_weights))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
   )
   m_names <- paste("M", seq_len(dim(data.table::as.data.table(M))[2]),
     sep = "_"
   )
-  data.table::setnames(data, c("Y", m_names, "Z", "A", w_names, "weights"))
+  data.table::setnames(data, c("Y", m_names, "Z", "A", w_names, "obs_weights"))
 
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {
@@ -145,6 +152,7 @@ medoutcon <- function(W,
         v_learners = v_learners,
         w_names = w_names,
         m_names = m_names,
+        ext_weights = ext_weights,
         estimator_args
       )
       est_out <- do.call(est_onestep, onestep_est_args)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tmle3_Spec_medoutcon.R
 \name{medoutcon_likelihood}
 \alias{medoutcon_likelihood}
-\title{Stochastic Mediation Likelihood Factors}
+\title{Likelihood Factors for Stochastic Mediation with Intermediate Confounding}
 \usage{
 medoutcon_likelihood(tmle_task, learner_list)
 }
@@ -14,6 +14,6 @@ NPSEM for use in constructing elements of TML estimator.}
 for each of the regression tasks required for the TML estimator.}
 }
 \description{
-Stochastic Mediation Likelihood Factors
+Likelihood Factors for Stochastic Mediation with Intermediate Confounding
 }
 \keyword{internal}

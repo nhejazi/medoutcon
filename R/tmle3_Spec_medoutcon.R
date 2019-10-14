@@ -125,7 +125,7 @@ tmle_medoutcon <- function(shift_type = "exptilt",
 
 ################################################################################
 
-#' NPSEM for Stochastic Mediation Effects with Mediator-Outcome Confounding
+#' NPSEM for Stochastic Mediation Effects with Intermediate Confounding
 #'
 #' @param node_list A \code{list} object specifying the different nodes in the
 #'  non-parametric structural equation model.
@@ -162,7 +162,7 @@ medoutcon_npsem <- function(node_list, variable_types = NULL) {
 
 ################################################################################
 
-#' Stochastic Mediation Likelihood Factors
+#' Likelihood Factors for Stochastic Mediation with Intermediate Confounding
 #'
 #' @param tmle_task A \code{tmle3_Task} object specifying the data and the
 #'  NPSEM for use in constructing elements of TML estimator.

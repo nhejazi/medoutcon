@@ -12,9 +12,10 @@ cv_eif_os(fold, data_in, contrast, g_learners, e_learners, m_learners,
 to \code{origami::make_folds}.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
-intervention \code{A} to be compared. The default value of \code{c(0, 1)}
-assumes a binary intervention node \code{A}, though support for categorical
-interventions is planned for future releases.}
+intervention \code{A} to be compared. The default value of \code{NULL} has
+no effect, as the value of the argument \code{effect} is instead used to
+define the contrasts. To override \code{effect}, provide a \code{numeric}
+double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.}
 
 \item{g_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners

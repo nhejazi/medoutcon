@@ -2,7 +2,7 @@
 % Please edit documentation in R/tmle3_Spec_medoutcon.R
 \name{medoutcon_npsem}
 \alias{medoutcon_npsem}
-\title{NPSEM for Stochastic Mediation Effects with Mediator-Outcome Confounding}
+\title{NPSEM for Stochastic Mediation Effects with Intermediate Confounding}
 \usage{
 medoutcon_npsem(node_list, variable_types = NULL)
 }
@@ -13,6 +13,6 @@ non-parametric structural equation model.}
 \item{variable_types}{Used to define how variables are handled. Optional.}
 }
 \description{
-NPSEM for Stochastic Mediation Effects with Mediator-Outcome Confounding
+NPSEM for Stochastic Mediation Effects with Intermediate Confounding
 }
 \keyword{internal}

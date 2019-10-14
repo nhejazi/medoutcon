@@ -91,6 +91,7 @@ est_tml <- function(data,
     use_future = FALSE,
     .combine = FALSE
   )
+  browser()
 
   # get estimated observation-level values of efficient influence function
   eif_est <- do.call(c, lapply(cv_eif_results[[1]], `[[`, 1))
@@ -327,11 +328,14 @@ cv_eif_tml <- function(fold,
   # uncentered efficient influence function
   eif <- eif_y + eif_u + eif_v
 
+  browser()
   # output list
   out <- list(data.table::data.table(
     # components necessary for fluctuation/tilting step of TMLE
-    g_prime = g_prime, h_star = h_star, u_diff = u_int_eif,
+    g_prime = g_prime, g_star = g_star,
     q_prime_Z_one = q_prime_Z_one,
+
+    u_diff = u_int_eif,
     ipw_a_prime = ipw_a_prime, ipw_a_star = ipw_a_star,
     # efficient influence function and fold-level observation IDs
     D_star = eif, fold = origami::fold_index()

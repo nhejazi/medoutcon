@@ -1,6 +1,8 @@
-context("Estimators show agreeable performance in simple example setting")
+context("Estimators of parameter and EIF match manual analogs closely")
+source("eif_utils.R")
+source("data_utils.R")
 
-# packages and options
+# packages
 library(data.table)
 library(stringr)
 library(tibble)
@@ -8,9 +10,9 @@ library(hal9001)
 library(sl3)
 #library(caret)
 #library(SuperLearner)
+
+# options
 set.seed(7128816)
-source("eif_utils.R")
-source("data_utils.R")
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]

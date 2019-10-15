@@ -1,6 +1,6 @@
 utils::globalVariables(c("..w_names", "A", "Z"))
 
-#' One-step estimator: mediation parameter under mediator-outcome confounding
+#' One-step for stochastic (in)direct effects under intermediate confounding
 #'
 #' @param data A \code{data.table} containing the observed data, with columns
 #'  in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
@@ -330,8 +330,8 @@ cv_eif_os <- function(fold,
   ipw_a_star  <- as.numeric(valid_data$A == contrast[2]) / g_star
 
   # residual term for outcome componenet of EIF
-  h_star <- g_prime / g_star * q_prime_Z_natural / r_prime_Z_natural *
-    e_star / e_prime
+  h_star <- (g_prime / g_star) * (q_prime_Z_natural / r_prime_Z_natural) *
+    (e_star / e_prime)
 
   # compute uncentered efficient influence function components
   eif_y <- ipw_a_prime * h_star / mean(ipw_a_prime * h_star) *

@@ -550,18 +550,18 @@ fit_nuisance_u <- function(train_data,
                            g_out,
                            e_out,
                            w_names) {
-  ## create pseudo-outcome based on training data
+  ## extract nuisance estimates necessary for constructing pseudo-outcome
   m_prime <- m_out$m_est_train$m_pred_A_prime
   e_star <- e_out$treat_est_train$treat_pred_A_star
   g_star <- g_out$treat_est_train$treat_pred_A_star
   e_prime <- e_out$treat_est_train$treat_pred_A_prime
-  g_prime <- g_out$treat_est_valid$treat_pred_A_prime
+  g_prime <- g_out$treat_est_train$treat_pred_A_prime
   q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime
   r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
 
-  h_star <- g_prime / g_star * q_prime_Z_natural / r_prime_Z_natural *
-    e_star / e_prime
-
+  ## create multiplier for pseudo-outcome and then pseudo-outcome
+  h_star <- (g_prime / g_star) * (q_prime_Z_natural / r_prime_Z_natural) *
+    (e_star / e_prime)
   u_pseudo_train <- m_prime * h_star
 
   ## override choice of learner with intercept model if constant
@@ -663,6 +663,7 @@ fit_nuisance_v <- function(train_data,
                            m_names,
                            w_names) {
 
+  ## extract nuisance estimates necessary for this routrine
   q_train_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime
   q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime
 
@@ -714,13 +715,19 @@ fit_nuisance_v <- function(train_data,
     ## return partial pseudo-outcome for v nuisance regression
     out_train <- m_pred_train_z_interv * q_train_prime_z_val
     out_valid <- m_pred_valid_z_interv * q_valid_prime_z_val
-    out <- list(training = out_train, validation = out_valid)
+    out <- list(training = out_train, validation = out_valid,
+                m_train = m_pred_train_z_interv,
+                m_valid = m_pred_valid_z_interv)
     return(out)
   })
 
   ## compute pseudo-outcome by computing integral via discrete summation
   v_pseudo_train <- v_pseudo[[1]]$training + v_pseudo[[2]]$training
   v_pseudo_valid <- v_pseudo[[1]]$validation + v_pseudo[[2]]$validation
+
+  ## extract outcome model predictions with intervened Z for TMLE fluctuation
+  m_pred_A_prime_Z_zero <- v_pseudo[[1]]$m_valid
+  m_pred_A_prime_Z_one <- v_pseudo[[2]]$m_valid
 
   ## override choice of learner with intercept model if constant
   if (stats::sd(v_pseudo_train) < .Machine$double.eps) {
@@ -737,7 +744,12 @@ fit_nuisance_v <- function(train_data,
     outcome = "V_pseudo",
     outcome_type = "continuous"
   )
+  # NOTE: independent implementation from ID sets A to a* as done below
   valid_data[, V_pseudo := v_pseudo_valid]
+  #valid_data[, `:=`(
+    #V_pseudo = v_pseudo_valid,
+    #A = contrast[2]
+  #)]
   v_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
     weights = "obs_weights",
@@ -754,6 +766,8 @@ fit_nuisance_v <- function(train_data,
   return(list(
     v_fit = v_param_fit,
     v_pred = as.numeric(v_valid_pred),
-    v_pseudo = as.numeric(v_pseudo_valid)
+    v_pseudo = as.numeric(v_pseudo_valid),
+    m_A_prime_Z_zero = as.numeric(m_pred_A_prime_Z_zero),
+    m_A_prime_Z_one = as.numeric(m_pred_A_prime_Z_one)
   ))
 }

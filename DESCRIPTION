@@ -1,5 +1,5 @@
 Package: medoutcon
-Title: Efficient causal mediation analysis with intermediate confounding
+Title: Efficient Causal Mediation Analysis Under Intermediate Confounding
 Version: 0.0.6
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
@@ -21,11 +21,10 @@ Description: Efficient estimators of a stochastic (in)direct effects in the
     estimated allow for the impact of the treatment on the outcome through a
     direct path to be disentangled from that through mediators, even in the
     presence of intermediate confounders that complicate this relationship.
-    Currently supported are an efficient one-step (AIPW) estimator and a
-    targeted minimum loss (TML) estimator. Support for classical estimators
-    (g-computation, IPW) are planned for future releases. For an in-depth
-    treatment of the methodology, see Díaz, Hejazi, Rudolph, and van der Laan;
-    2019+ (preprint); <https://arxiv.org/abs/TBA>.
+    Currently supported are an efficient one-step estimator and a targeted
+    minimum loss (TML) estimator. For an in-depth treatment of the methodology,
+    see Díaz, Hejazi, Rudolph, and van der Laan; 2019+ (preprint);
+    <https://arxiv.org/abs/TBA>.
 Depends: R (>= 3.2.0)
 Imports:
     stats,

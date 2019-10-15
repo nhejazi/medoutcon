@@ -138,7 +138,7 @@ print.medoutcon <- function(x, ...) {
 #' @keywords internal
 #
 bound_precision <- function(vals) {
-  assertthat::assert_that(!(max(vals) >= 1 | min(vals) <= 0))
+  assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
   vals[vals == 0] <- .Machine$double.neg.eps
   vals[vals == 1] <- 1 - .Machine$double.neg.eps
   return(vals)
@@ -160,7 +160,7 @@ bound_precision <- function(vals) {
 #' @keywords internal
 #
 bound_propensity <- function(vals, bounds = c(0.001, 0.999)) {
-  assertthat::assert_that(!(max(vals) >= 1 | min(vals) <= 0))
+  assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
   vals[vals < bounds[1]] <- bounds[1]
   vals[vals > bounds[2]] <- bounds[2]
   return(vals)

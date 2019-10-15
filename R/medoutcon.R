@@ -102,7 +102,7 @@ medoutcon <- function(W,
                         "ipw",
                         "sub"
                       ),
-                      estimator_args = list(cv_folds = 10)) {
+                      estimator_args = list(cv_folds = 10, max_iter = 5)) {
   # set defaults
   effect <- match.arg(effect)
   estimator <- match.arg(estimator)
@@ -170,6 +170,7 @@ medoutcon <- function(W,
         v_learners = v_learners,
         w_names = w_names,
         m_names = m_names,
+        ext_weights = ext_weights,
         estimator_args
       )
       est_out <- do.call(est_tml, tmle_est_args)

@@ -58,7 +58,8 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken for the iterative procedure to construct a TML estimator.
 #'
-#' @importFrom stats var
+#' @importFrom dplyr "%>%"
+#' @importFrom stats var glm as.formula qlogis plogis coef weighted.mean
 #' @importFrom origami make_folds cross_validate folds_vfold
 #'
 est_tml <- function(data,
@@ -134,7 +135,7 @@ est_tml <- function(data,
       bound_precision() %>%
       stats::qlogis()
     m_prime_Z_zero_logit <- m_prime_Z_zero %>%
-      bound_precision %>%
+      bound_precision() %>%
       stats::qlogis()
 
     # first fluctuation/tilting step
@@ -187,7 +188,7 @@ est_tml <- function(data,
     m_prime <- stats::plogis(m_prime_logit + m_coef * h_star)
     m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit + m_coef * h_star_Z_one)
     m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit + m_coef *
-                                    h_star_Z_zero)
+      h_star_Z_zero)
 
     # iterate the iterator
     n_iter <- n_iter + 1
@@ -200,7 +201,7 @@ est_tml <- function(data,
   v_pseudo <- (m_prime_Z_one * q_prime_Z_one) + m_prime_Z_zero * (1 - q_prime)
   v_star_logit <- cv_est$v_star %>%
     scale_to_unit() %>%
-    bound_precision %>%
+    bound_precision() %>%
     stats::qlogis()
 
   # fit fluctuation/tilting model
@@ -227,7 +228,7 @@ est_tml <- function(data,
   m_prime <- stats::plogis(m_prime_logit + m_coef * h_star)
   m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit + m_coef * h_star_Z_one)
   m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit + m_coef *
-                                  h_star_Z_zero)
+    h_star_Z_zero)
 
   # update pseudo-outcomes and weights for efficient influence function
   u_pseudo <- m_prime * h_star
@@ -464,7 +465,7 @@ cv_eif_tml <- function(fold,
 
   # create inverse probability weights
   ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_prime
-  ipw_a_star  <- as.numeric(valid_data$A == contrast[2]) / g_star
+  ipw_a_star <- as.numeric(valid_data$A == contrast[2]) / g_star
 
   # residual term for outcome component of efficient influence function
   h_star <- (g_prime / g_star) * (q_prime_Z_natural / r_prime_Z_natural) *
@@ -486,7 +487,7 @@ cv_eif_tml <- function(fold,
     g_prime = g_prime, g_star = g_star, e_prime = e_prime, e_star = e_star,
     q_prime_Z_natural = q_prime_Z_natural, q_prime_Z_one = q_prime_Z_one,
     r_prime_Z_natural = r_prime_Z_natural, r_prime_Z_one = r_prime_Z_one,
-    v_star = v_star,  u_diff = u_prime_diff, m_prime = m_prime,
+    v_star = v_star, u_diff = u_prime_diff, m_prime = m_prime,
     m_prime_Z_zero = v_out$m_A_prime_Z_zero,
     m_prime_Z_one = v_out$m_A_prime_Z_one,
     # efficient influence function and fold-level observation IDs

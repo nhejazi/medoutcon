@@ -41,19 +41,19 @@ with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
 minimum loss (TML) estimator (van der Laan and Rose 2011; Zheng and van
 der Laan 2011) are made available. `medoutcon` integrates with the
 [`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to
-leverage statistical machine learning in the estimation procedure and
-expands on the architecture exposed by the [`tmle3` R
+leverage statistical machine learning in the estimation procedure. <!--
+and expands on
+the architecture exposed by the [`tmle3` R
 package](https://github.com/tlverse/tmle3) for TML estimation.
-
------
+--> —
 
 ## Installation
 
 Install the most recent *stable release* from GitHub via
-[`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
+[`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ``` r
-devtools::install_github("nhejazi/medoutcon")
+remotes::install_github("nhejazi/medoutcon")
 ```
 
 -----
@@ -115,8 +115,24 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
-#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>    -0.4902    -0.2861     -0.082     0.0108 4.6404e-17    onestep
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>        0.9908        1.1001        1.2093        0.0031    1.7535e-17 
+#>     estimator         param 
+#>       onestep direct_effect
+
+# compute targeted minimum loss estimate
+tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
+                            A = example_data$A,
+                            Z = example_data$Z,
+                            M = example_data[, ..m_names],
+                            Y = example_data$Y,
+                            estimator = "tmle",
+                            estimator_args = list(cv_folds = 3))
+summary(tmle_medoutcon)
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>        0.5852        0.7948        1.0044        0.0114   -1.5132e-17 
+#>     estimator         param 
+#>          tmle direct_effect
 ```
 
 For details on how to use data adaptive regression (machine learning)

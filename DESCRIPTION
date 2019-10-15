@@ -28,20 +28,22 @@ Description: Efficient estimators of a stochastic (in)direct effects in the
 Depends: R (>= 3.2.0)
 Imports:
     stats,
+    methods,
     data.table,
     assertthat,
     origami,
+    dplyr,
+    R6,
+    uuid,
     sl3,
     tmle3
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    dplyr,
     covr,
     Rsolnp,
     nnls,
-    methods,
     stringr,
     tibble,
     hal9001

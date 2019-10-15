@@ -76,8 +76,10 @@ fit_treat_mech <- function(train_data,
       return(x_bounded)
     })
     out_treat_est <- data.table::as.data.table(out_treat_est)
-    data.table::setnames(out_treat_est, c("treat_pred_A_prime",
-                                          "treat_pred_A_star"))
+    data.table::setnames(out_treat_est, c(
+      "treat_pred_A_prime",
+      "treat_pred_A_star"
+    ))
 
     ## output
     out <- list(
@@ -455,7 +457,7 @@ fit_moc_mech <- function(train_data,
         )
 
         ## predict from trained model on counterfactual data
-        moc_pred_A_prime <-  moc_fit$predict(moc_prime_task)
+        moc_pred_A_prime <- moc_fit$predict(moc_prime_task)
 
         ## set intervention to second contrast a_star := contrast[2]; create task
         data_intervene[, A := contrast[2]]
@@ -495,9 +497,9 @@ fit_moc_mech <- function(train_data,
       moc_est_train_Z_one = out_moc_est[[1]],
       moc_est_valid_Z_one = out_moc_est[[2]],
       moc_est_train_Z_natural = out_moc_est[[1]] * train_data$Z +
-          (1 - out_moc_est[[1]]) * (1 - train_data$Z),
+        (1 - out_moc_est[[1]]) * (1 - train_data$Z),
       moc_est_valid_Z_natural = out_moc_est[[2]] * valid_data$Z +
-          (1 - out_moc_est[[2]]) * (1 - valid_data$Z),
+        (1 - out_moc_est[[2]]) * (1 - valid_data$Z),
       moc_fit = moc_fit
     )
   }
@@ -577,8 +579,10 @@ fit_nuisance_u <- function(train_data,
     u_pseudo_train,
     train_data$obs_weights
   ))
-  data.table::setnames(u_data_train, c(w_names, "A", "Z", "U_pseudo",
-                                       "obs_weights"))
+  data.table::setnames(u_data_train, c(
+    w_names, "A", "Z", "U_pseudo",
+    "obs_weights"
+  ))
   u_task_train <- sl3::sl3_Task$new(
     data = u_data_train,
     weights = "obs_weights",
@@ -597,8 +601,10 @@ fit_nuisance_u <- function(train_data,
     rep(0, nrow(valid_data)),
     valid_data$obs_weights
   ))
-  data.table::setnames(u_data_valid, c(w_names, "A", "Z", "U_pseudo",
-                                       "obs_weights"))
+  data.table::setnames(u_data_valid, c(
+    w_names, "A", "Z", "U_pseudo",
+    "obs_weights"
+  ))
   u_task_valid <- sl3::sl3_Task$new(
     data = u_data_valid,
     weights = "obs_weights",
@@ -715,9 +721,11 @@ fit_nuisance_v <- function(train_data,
     ## return partial pseudo-outcome for v nuisance regression
     out_train <- m_pred_train_z_interv * q_train_prime_z_val
     out_valid <- m_pred_valid_z_interv * q_valid_prime_z_val
-    out <- list(training = out_train, validation = out_valid,
-                m_train = m_pred_train_z_interv,
-                m_valid = m_pred_valid_z_interv)
+    out <- list(
+      training = out_train, validation = out_valid,
+      m_train = m_pred_train_z_interv,
+      m_valid = m_pred_valid_z_interv
+    )
     return(out)
   })
 
@@ -746,10 +754,10 @@ fit_nuisance_v <- function(train_data,
   )
   # NOTE: independent implementation from ID sets A to a* as done below
   valid_data[, V_pseudo := v_pseudo_valid]
-  #valid_data[, `:=`(
-    #V_pseudo = v_pseudo_valid,
-    #A = contrast[2]
-  #)]
+  # valid_data[, `:=`(
+  # V_pseudo = v_pseudo_valid,
+  # A = contrast[2]
+  # )]
   v_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
     weights = "obs_weights",

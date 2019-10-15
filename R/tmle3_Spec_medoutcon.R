@@ -6,7 +6,7 @@
 #'
 #' @export
 #
-tmle3_Spec_medshift <- R6::R6Class(
+tmle3_Spec_medoutcon <- R6::R6Class(
   classname = "tmle3_Spec_medoutcon",
   portable = TRUE,
   class = TRUE,
@@ -263,9 +263,9 @@ make_e_task <- function(tmle_task, likelihood) {
 #' @keywords internal
 #
 make_r_task <- function(tmle_task, likelihood) {
-  m_data <- tmle_task$internal_data
-  m_task <- sl3::sl3_Task$new(
-    data = m_data,
+  r_data <- tmle_task$internal_data
+  r_task <- sl3::sl3_Task$new(
+    data = r_data,
     outcome = tmle_task$npsem[["Z"]]$variables,
     covariates = c(
       tmle_task$npsem[["A"]]$variables,

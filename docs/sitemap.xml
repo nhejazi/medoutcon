@@ -4,6 +4,9 @@
     <loc>https://code.nimahejazi.org/medoutcon/index.html</loc>
   </url>
   <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/Param_medshift.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/bound_precision.html</loc>
   </url>
   <url>
@@ -13,16 +16,16 @@
     <loc>https://code.nimahejazi.org/medoutcon/reference/confint.medoutcon.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medoutcon/reference/cv_eif.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/cv_eif_os.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/cv_eif_tml.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/est_onestep.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_e_mech.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_g_mech.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/est_tml.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/fit_m_mech.html</loc>
@@ -37,7 +40,25 @@
     <loc>https://code.nimahejazi.org/medoutcon/reference/fit_nuisance_v.html</loc>
   </url>
   <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_treat_mech.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/make_e_task.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/make_phi_task.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/make_r_task.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/medoutcon.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/medoutcon_likelihood.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/medoutcon_npsem.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/print.medoutcon.html</loc>
@@ -50,6 +71,12 @@
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/summary.medoutcon.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/tmle3_Spec_medoutcon.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/tmle_medoutcon.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/articles/intro_medoutcon.html</loc>

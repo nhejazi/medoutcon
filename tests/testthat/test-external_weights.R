@@ -33,7 +33,7 @@ data <- sim_medoutcon_data(n_obs = n_obs)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
 ext_wts <- runif(n_obs)
-ext_wts_norm <- ext_wts / sum(ext_wts)   # should we use normalized weights?
+ext_wts_norm <- ext_wts / sum(ext_wts) # should we use normalized weights?
 
 # 3) test different estimators
 theta_os <- medoutcon(
@@ -67,7 +67,7 @@ v <- intv(1, w, aprime) * pmaw(1, astar, w) + intv(0, w, aprime) *
 eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
   pm(m, z, aprime, w) * (y - my(m, z, aprime, w)) + (a == aprime) /
     g(aprime, w) * (u(z, w, aprime, astar) - intu(w, aprime, astar)) +
-    (a == astar) / g(astar, w) * (intv(m, w, aprime) - v) + v
+  (a == astar) / g(astar, w) * (intv(m, w, aprime) - v) + v
 psi_os <- weighted.mean(eif, ext_wts)
 eif_est <- eif * ext_wts
 var_eif <- var(eif_est) / n_obs
@@ -83,5 +83,6 @@ test_that("Variance estimate close to independent EIF variance", {
 
 test_that("Mean of estimated EIF close to that of independent EIF", {
   expect_equal(abs(mean(theta_os$eif)), abs(mean(eif_est - psi_os)),
-               tol = 0.02)
+    tol = 0.02
+  )
 })

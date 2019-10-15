@@ -8,8 +8,8 @@ library(stringr)
 library(tibble)
 library(hal9001)
 library(sl3)
-#library(caret)
-#library(SuperLearner)
+# library(caret)
+# library(SuperLearner)
 
 # options
 set.seed(7128816)
@@ -21,23 +21,23 @@ n_obs <- 1000
 # 1) set up learners for nuisance parameters
 if (FALSE) {
   ## caret hyperparameter-tuning model for random forest
-  #SL.caretRF <- function(Y, X, newX, family, obsWeights, ...) {
-    #SL.caret(Y, X, newX, family, obsWeights, method = 'rf',  tuneLength = 3,
-             #trControl =  caret::trainControl(method = "LGOCV",
-                                              #search = 'random',
-                                              #verboseIter = TRUE), ...)
-  #}
-  #rf_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretRF")
+  # SL.caretRF <- function(Y, X, newX, family, obsWeights, ...) {
+  # SL.caret(Y, X, newX, family, obsWeights, method = 'rf',  tuneLength = 3,
+  # trControl =  caret::trainControl(method = "LGOCV",
+  # search = 'random',
+  # verboseIter = TRUE), ...)
+  # }
+  # rf_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretRF")
 
   ## caret hyperparameter-tuning model for xgboost
-  #SL.caretXGB <- function(Y, X, newX, family, obsWeights, ...) {
-    #SL.caret(Y, X, newX, family, obsWeights, method = 'xgbTree',
-             #tuneLength = 3,
-             #trControl =  caret::trainControl(method = "LGOCV",
-                                              #search = 'random',
-                                              #verboseIter = TRUE), ...)
-  #}
-  #xgb_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretXGB")
+  # SL.caretXGB <- function(Y, X, newX, family, obsWeights, ...) {
+  # SL.caret(Y, X, newX, family, obsWeights, method = 'xgbTree',
+  # tuneLength = 3,
+  # trControl =  caret::trainControl(method = "LGOCV",
+  # search = 'random',
+  # verboseIter = TRUE), ...)
+  # }
+  # xgb_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretXGB")
 
   ## instantiate learners and SL for continuous outcomes
   mean_lrnr <- Lrnr_mean$new()
@@ -45,15 +45,19 @@ if (FALSE) {
   hal_contin_lrnr <- Lrnr_hal9001$new(
     fit_type = "glmnet", n_folds = 5
   )
-  stack_lrnrs_contin <- make_learner(Stack,
-                                     mean_lrnr,
-                                     fglm_contin_lrnr,
-                                     hal_contin_lrnr,
-                                     rf_caret_lrnr,
-                                     xgb_caret_lrnr)
-  sl_contin_lrnr <- Lrnr_sl$new(learners = stack_lrnrs_contin,
-                                metalearner = Lrnr_nnls$new(),
-                                keep_extra = TRUE)
+  stack_lrnrs_contin <- make_learner(
+    Stack,
+    mean_lrnr,
+    fglm_contin_lrnr,
+    hal_contin_lrnr,
+    rf_caret_lrnr,
+    xgb_caret_lrnr
+  )
+  sl_contin_lrnr <- Lrnr_sl$new(
+    learners = stack_lrnrs_contin,
+    metalearner = Lrnr_nnls$new(),
+    keep_extra = TRUE
+  )
 
   ## instantiate learners and SL for binary outcomes
   fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
@@ -61,18 +65,24 @@ if (FALSE) {
     fit_type = "glmnet", n_folds = 5,
     family = "binomial"
   )
-  logistic_metalearner <- make_learner(Lrnr_solnp,
-                                       metalearner_logistic_binomial,
-                                       loss_loglik_binomial)
-  stack_lrnrs_binary <- make_learner(Stack,
-                                     mean_lrnr,
-                                     fglm_binary_lrnr,
-                                     hal_binary_lrnr,
-                                     rf_caret_lrnr,
-                                     xgb_caret_lrnr)
-  sl_binary_lrnr <- Lrnr_sl$new(learners = stack_lrnrs_binary,
-                                metalearner = logistic_metalearner,
-                                keep_extra = TRUE)
+  logistic_metalearner <- make_learner(
+    Lrnr_solnp,
+    metalearner_logistic_binomial,
+    loss_loglik_binomial
+  )
+  stack_lrnrs_binary <- make_learner(
+    Stack,
+    mean_lrnr,
+    fglm_binary_lrnr,
+    hal_binary_lrnr,
+    rf_caret_lrnr,
+    xgb_caret_lrnr
+  )
+  sl_binary_lrnr <- Lrnr_sl$new(
+    learners = stack_lrnrs_binary,
+    metalearner = logistic_metalearner,
+    keep_extra = TRUE
+  )
 
   ## use SL including HAL for analyzing data
   g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
@@ -130,7 +140,7 @@ v <- intv(1, w, aprime) * pmaw(1, astar, w) + intv(0, w, aprime) *
 eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
   pm(m, z, aprime, w) * (y - my(m, z, aprime, w)) + (a == aprime) /
     g(aprime, w) * (u(z, w, aprime, astar) - intu(w, aprime, astar)) +
-    (a == astar) / g(astar, w) * (intv(m, w, aprime) - v) + v
+  (a == astar) / g(astar, w) * (intv(m, w, aprime) - v) + v
 psi_os <- mean(eif)
 var_eif <- var(eif) / n_obs
 

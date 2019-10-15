@@ -327,7 +327,7 @@ cv_eif_os <- function(fold,
 
   # create inverse probability weights
   ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_prime
-  ipw_a_star  <- as.numeric(valid_data$A == contrast[2]) / g_star
+  ipw_a_star <- as.numeric(valid_data$A == contrast[2]) / g_star
 
   # residual term for outcome componenet of EIF
   h_star <- (g_prime / g_star) * (q_prime_Z_natural / r_prime_Z_natural) *

@@ -97,7 +97,7 @@ test_that("Estimates of MOC regression q are close to the truth", {
 })
 test_that("MSE of MOC regression q estimates is sufficiently low", {
   q_mse <- mean((q_out$moc_est_train_Z_one$moc_pred_A_prime -
-                 pz(1, aprime, w))^2)
+    pz(1, aprime, w))^2)
   expect_lt(q_mse, 0.002)
 })
 
@@ -113,13 +113,13 @@ r_out <- fit_moc_mech(
 )
 test_that("Estimates of MOC regression r are close to the truth", {
   expect_equal(r_out$moc_est_train_Z_one$moc_pred_A_prime,
-               r(1, aprime, m, w),
+    r(1, aprime, m, w),
     tol = 0.06
   )
 })
 test_that("MSE of MOC regression r estimates is sufficiently low", {
   r_mse <- mean((r_out$moc_est_train_Z_one$moc_pred_A_prime -
-                 r(1, aprime, m, w))^2)
+    r(1, aprime, m, w))^2)
   expect_lt(r_mse, 0.001)
 })
 
@@ -129,25 +129,25 @@ data_a_star <- data.table::copy(data)[, A := astar]
 
 # the nuisance parameter u is poorly estimated in this example
 if (FALSE) {
-## fit u
-u_out <- fit_nuisance_u(
-  train_data = data,
-  valid_data = data_a_prime,
-  learners = u_learners,
-  m_out = m_out,
-  q_out = q_out,
-  r_out = r_out,
-  e_out = e_out,
-  g_out = g_out,
-  w_names = w_names
-)
-test_that("Estimates of pseudo-outcome regression are close to the truth", {
-  expect_equal(u_out$u_pred, u(z, w), tol = 0.05)
-})
-test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
-  u_mse <- mean((u_out$u_pred - u(z, w))^2)
-  expect_lt(u_mse, 0.003)
-})
+  ## fit u
+  u_out <- fit_nuisance_u(
+    train_data = data,
+    valid_data = data_a_prime,
+    learners = u_learners,
+    m_out = m_out,
+    q_out = q_out,
+    r_out = r_out,
+    e_out = e_out,
+    g_out = g_out,
+    w_names = w_names
+  )
+  test_that("Estimates of pseudo-outcome regression are close to the truth", {
+    expect_equal(u_out$u_pred, u(z, w), tol = 0.05)
+  })
+  test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
+    u_mse <- mean((u_out$u_pred - u(z, w))^2)
+    expect_lt(u_mse, 0.003)
+  })
 }
 
 ## fit v

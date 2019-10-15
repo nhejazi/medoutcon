@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bounding Propensity Scores — bound_propensity • medoutcon</title>
+<title>Defines a TML Estimator for Outcome under Joint Stochastic Intervention on
+Treatment and Mediator — tmle3_Spec_medoutcon • medoutcon</title>
 
 
 <!-- jquery -->
@@ -35,8 +36,10 @@
 
 
 
-<meta property="og:title" content="Bounding Propensity Scores — bound_propensity" />
-<meta property="og:description" content="Bounds estimated propensity score values to be within a specified range." />
+<meta property="og:title" content="Defines a TML Estimator for Outcome under Joint Stochastic Intervention on
+Treatment and Mediator — tmle3_Spec_medoutcon" />
+<meta property="og:description" content="Defines a TML Estimator for Outcome under Joint Stochastic Intervention on
+Treatment and Mediator" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -117,38 +120,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Bounding Propensity Scores</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>bound_propensity.Rd</code></div>
+    <h1>Defines a TML Estimator for Outcome under Joint Stochastic Intervention on
+Treatment and Mediator</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/tmle3_Spec_medoutcon.R'><code>R/tmle3_Spec_medoutcon.R</code></a></small>
+    <div class="hidden name"><code>tmle3_Spec_medoutcon.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Bounds estimated propensity score values to be within a specified range.</p>
+    <p>Defines a TML Estimator for Outcome under Joint Stochastic Intervention on
+Treatment and Mediator</p>
     </div>
 
-    <pre class="usage"><span class='fu'>bound_propensity</span>(<span class='no'>vals</span>, <span class='kw'>bounds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.001</span>, <span class='fl'>0.999</span>))</pre>
+    <pre class="usage"><span class='no'>tmle3_Spec_medoutcon</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>vals</th>
-      <td><p>A <code>numeric</code> vector of values in the interval [0, 1].</p></td>
-    </tr>
-    <tr>
-      <th>bounds</th>
-      <td><p>A <code>numeric</code> vector containing two values, the first being
-the minimum allowable value and the second being the maximum allowable for
-values appearing in the vector <code>vals</code> (the previous argument).</p></td>
-    </tr>
-    </table>
 
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>An object of class <code>R6ClassGenerator</code> of length 24.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#format">Format</a></li>
     </ul>
 
   </div>

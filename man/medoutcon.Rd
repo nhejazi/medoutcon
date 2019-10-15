@@ -14,7 +14,8 @@ medoutcon(W, A, Z, M, Y, obs_weights = rep(1, length(Y)),
   r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_learners = sl3::Lrnr_glm_fast$new(),
   v_learners = sl3::Lrnr_glm_fast$new(), estimator = c("onestep",
-  "tmle", "ipw", "sub"), estimator_args = list(cv_folds = 10))
+  "tmle", "ipw", "sub"), estimator_args = list(cv_folds = 10, max_iter =
+  5))
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar object corresponding

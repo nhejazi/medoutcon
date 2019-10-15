@@ -194,7 +194,7 @@ medoutcon <- function(W,
       theta = de_theta_est,
       var = de_var_est,
       eif = de_eif_est,
-      type = "onestep",
+      type = estimator,
       param = "direct_effect",
       outcome = as.numeric(Y)
     )
@@ -211,7 +211,7 @@ medoutcon <- function(W,
       theta = ie_theta_est,
       var = ie_var_est,
       eif = ie_eif_est,
-      type = "onestep",
+      type = estimator,
       param = "indirect_effect",
       outcome = as.numeric(Y)
     )

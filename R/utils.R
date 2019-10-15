@@ -23,9 +23,8 @@ confint.medoutcon <- function(object,
                               parm = seq_len(object$theta),
                               level = 0.95,
                               ...) {
-  # inference is currently limited to the one-step efficient estimator
-  # TODO: allow use for TML estimators once impelemented
-  assertthat::assert_that(object$type == "onestep")
+  # inference is currently limited to the efficient estimators
+  assertthat::assert_that(object$type %in% c("onestep", "tmle"))
 
   # first, let's get Z_(1 - alpha)
   ci_norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
@@ -75,7 +74,7 @@ confint.medoutcon <- function(object,
 summary.medoutcon <- function(object,
                               ...,
                               ci_level = 0.95) {
-  # inference is currently limited to the one-step efficient estimator
+  # inference is currently limited to the efficient estimators
   if (object$type %in% c("onestep", "tmle")) {
     # compute confidence interval using the pre-defined method
     ci <- stats::confint(object, level = ci_level)

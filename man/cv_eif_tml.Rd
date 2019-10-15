@@ -2,7 +2,7 @@
 % Please edit documentation in R/estim_tml.R
 \name{cv_eif_tml}
 \alias{cv_eif_tml}
-\title{TML EIF for stochastic (in)direct effects under mediator-outcome confounding}
+\title{TML EIF for stochastic (in)direct effects under intermediate confounding}
 \usage{
 cv_eif_tml(fold, data_in, contrast, g_learners, e_learners, m_learners,
   q_learners, r_learners, u_learners, v_learners, w_names, m_names)
@@ -71,6 +71,6 @@ routines and is automatically generated as part of a call to the user-facing
 wrapper function \code{\link{medoutcon}}.}
 }
 \description{
-TML EIF for stochastic (in)direct effects under mediator-outcome confounding
+TML EIF for stochastic (in)direct effects under intermediate confounding
 }
 \keyword{internal}

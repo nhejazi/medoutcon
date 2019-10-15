@@ -107,14 +107,11 @@ est_tml <- function(data,
   n_iter <- 0
   eif_stop_crit <- FALSE
   m_prime <- cv_est$m_prime %>%
-    scale_to_unit() %>%
-    bound_precision()
+    scale_to_unit()
   m_prime_Z_one <- cv_est$m_prime_Z_one %>%
-    scale_to_unit() %>%
-    bound_precision()
+    scale_to_unit()
   m_prime_Z_zero <- cv_est$m_prime_Z_zero %>%
-    scale_to_unit() %>%
-    bound_precision()
+    scale_to_unit()
   y_scaled <- data$Y %>%
     scale_to_unit() %>%
     bound_precision()
@@ -124,15 +121,21 @@ est_tml <- function(data,
   q_prime <- cv_est$q_prime_Z_natural
 
   # perform iterative targeting for TMLE
-  while (!eif_stop_crit && n_iter < max_iter) {
+  while (!eif_stop_crit && n_iter <= max_iter) {
     # extract necessary nuisance function components and build h*
     h_star <- (q_prime / cv_est$r_prime_Z_natural) * h_star_no_qr
     h_star_Z_one <- (q_prime_Z_one / cv_est$r_prime_Z_one) * h_star_no_qr
     h_star_Z_zero <- (1 - q_prime_Z_one / (1 - cv_est$r_prime_Z_one)) *
       h_star_no_qr
-    m_prime_logit <- stats::qlogis(m_prime)
-    m_prime_Z_one_logit <- stats::qlogis(m_prime_Z_one)
-    m_prime_Z_zero_logit <- stats::qlogis(m_prime_Z_zero)
+    m_prime_logit <- m_prime %>%
+      bound_precision() %>%
+      stats::qlogis()
+    m_prime_Z_one_logit <- m_prime_Z_one %>%
+      bound_precision() %>%
+      stats::qlogis()
+    m_prime_Z_zero_logit <- m_prime_Z_zero %>%
+      bound_precision %>%
+      stats::qlogis()
 
     # first fluctuation/tilting step
     # fit first fluctuation/tilting model
@@ -159,10 +162,10 @@ est_tml <- function(data,
     # fit second fluctuation/tilting model
     suppressWarnings(
       q_tilt_fit <- stats::glm(
-        stats::as.formula("Z ~ -1 + offset(q_prime_logit) + u_diff"),
+        stats::as.formula("Z ~ -1 + offset(q_prime_logit) + u_prime_diff"),
         data = data.table::as.data.table(list(
           Z = data$Z,
-          u_diff = u_prime_diff,
+          u_prime_diff = u_prime_diff,
           q_prime_logit = q_prime_logit
         )),
         subset = data$A == contrast[1],

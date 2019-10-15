@@ -753,11 +753,10 @@ fit_nuisance_v <- function(train_data,
     outcome_type = "continuous"
   )
   # NOTE: independent implementation from ID sets A to a* as done below
-  valid_data[, V_pseudo := v_pseudo_valid]
-  # valid_data[, `:=`(
-  # V_pseudo = v_pseudo_valid,
-  # A = contrast[2]
-  # )]
+  valid_data[, `:=`(
+    V_pseudo = v_pseudo_valid,
+    A = contrast[2]
+  )]
   v_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
     weights = "obs_weights",

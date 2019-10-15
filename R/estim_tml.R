@@ -8,7 +8,11 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'  a convenience utility to passing data around to the various core estimation
 #'  routines and is automatically generated as part of a call to the user-facing
 #'  wrapper function \code{\link{medoutcon}}.
-#' @param contrast ...
+#' @param contrast A \code{numeric} double indicating the two values of the
+#'  intervention \code{A} to be compared. The default value of \code{NULL} has
+#'  no effect, as the value of the argument \code{effect} is instead used to
+#'  define the contrasts. To override \code{effect}, provide a \code{numeric}
+#'  double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.
 #' @param g_learners A \code{Stack} object, or other learner class (inheriting
 #'  from \code{Lrnr_base}), containing a single or set of instantiated learners
 #'  from the \code{sl3} package, for use in fitting a model for the propensity
@@ -104,9 +108,14 @@ est_tml <- function(data,
   # concatenate nuisance function and influence function estimates across folds
   cv_est <- do.call(rbind, cv_eif_results[[1]])
 
-  # extract nuisance function estimates and prepare for iterative targeting
-  n_iter <- 0
-  eif_stop_crit <- FALSE
+  # generate inverse weights
+  ipw_prime <- as.numeric(data$A == contrast[1]) / cv_est$g_prime
+  ipw_star <- as.numeric(data$A == contrast[2]) / cv_est$g_star
+
+  # extract nuisance function estimates
+  q_prime_Z_one <- cv_est$q_prime_Z_one
+  q_prime <- cv_est$q_prime_Z_natural
+  u_prime_diff <- cv_est$u_diff
   m_prime <- cv_est$m_prime %>%
     scale_to_unit()
   m_prime_Z_one <- cv_est$m_prime_Z_one %>%
@@ -116,18 +125,23 @@ est_tml <- function(data,
   y_scaled <- data$Y %>%
     scale_to_unit() %>%
     bound_precision()
-  u_prime_diff <- cv_est$u_diff
-  h_star_no_qr <- with(cv_est, (g_prime / g_star) * (e_star / e_prime))
-  q_prime_Z_one <- cv_est$q_prime_Z_one
-  q_prime <- cv_est$q_prime_Z_natural
+  v_star_logit <- cv_est$v_star %>%
+    scale_to_unit() %>%
+    bound_precision() %>%
+    stats::qlogis()
+  h_star_mult <- with(cv_est, (g_prime / g_star) * (e_star / e_prime))
+
+  # prepare for iterative targeting
+  n_iter <- 0
+  eif_stop_crit <- FALSE
 
   # perform iterative targeting for TMLE
   while (!eif_stop_crit && n_iter <= max_iter) {
     # extract necessary nuisance function components and build h*
-    h_star <- (q_prime / cv_est$r_prime_Z_natural) * h_star_no_qr
-    h_star_Z_one <- (q_prime_Z_one / cv_est$r_prime_Z_one) * h_star_no_qr
+    h_star <- (q_prime / cv_est$r_prime_Z_natural) * h_star_mult
+    h_star_Z_one <- (q_prime_Z_one / cv_est$r_prime_Z_one) * h_star_mult
     h_star_Z_zero <- (1 - q_prime_Z_one / (1 - cv_est$r_prime_Z_one)) *
-      h_star_no_qr
+      h_star_mult
     m_prime_logit <- m_prime %>%
       bound_precision() %>%
       stats::qlogis()
@@ -199,10 +213,6 @@ est_tml <- function(data,
 
   # compute updated substitution estimator and prepare for tilting regression
   v_pseudo <- (m_prime_Z_one * q_prime_Z_one) + m_prime_Z_zero * (1 - q_prime)
-  v_star_logit <- cv_est$v_star %>%
-    scale_to_unit() %>%
-    bound_precision() %>%
-    stats::qlogis()
 
   # fit fluctuation/tilting model
   suppressWarnings(
@@ -221,25 +231,34 @@ est_tml <- function(data,
   v_star <- stats::plogis(v_star_logit + stats::coef(v_tilt_fit))
 
   # NOTE: one more round of updating to catch with loop termination
-  h_star <- (q_prime / cv_est$r_prime_Z_natural) * h_star_no_qr
-  h_star_Z_one <- (q_prime_Z_one / cv_est$r_prime_Z_one) * h_star_no_qr
+  h_star <- (q_prime / cv_est$r_prime_Z_natural) * h_star_mult
+  h_star_Z_one <- (q_prime_Z_one / cv_est$r_prime_Z_one) * h_star_mult
   h_star_Z_zero <- (1 - q_prime_Z_one / (1 - cv_est$r_prime_Z_one)) *
-    h_star_no_qr
+    h_star_mult
   m_prime <- stats::plogis(m_prime_logit + m_coef * h_star)
   m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit + m_coef * h_star_Z_one)
   m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit + m_coef *
     h_star_Z_zero)
 
+  # rescale outcome mechanism to original outcome scale
+  #m_prime <- scale_to_original(scaled_vals = m_prime,
+                               #max_orig = max(data$Y),
+                               #min_orig = min(data$Y))
+  #m_prime_Z_one <- scale_to_original(scaled_vals = m_prime_Z_one,
+                                     #max_orig = max(data$Y),
+                                     #min_orig = min(data$Y))
+  #m_prime_Z_zero <- scale_to_original(scaled_vals = m_prime_Z_zero,
+                                      #max_orig = max(data$Y),
+                                      #min_orig = min(data$Y))
+
   # update pseudo-outcomes and weights for efficient influence function
   u_pseudo <- m_prime * h_star
   v_pseudo <- m_prime_Z_one * q_prime_Z_one + m_prime_Z_zero *
     (1 - q_prime_Z_one)
-  ipw_prime <- as.numeric(data$A == contrast[1]) / cv_est$g_prime
-  ipw_star <- as.numeric(data$A == contrast[2]) / cv_est$g_star
 
   # define components of efficient influence function and compute
   eif_y <- (ipw_prime * h_star / mean(ipw_prime * h_star)) * (data$Y - m_prime)
-  eif_u <- (ipw_prime / mean(ipw_prime)) * (cv_est$u_diff) *
+  eif_u <- (ipw_prime / mean(ipw_prime)) * (u_prime_diff) *
     (data$Z - q_prime_Z_one)
   eif_v <- (ipw_star / mean(ipw_star)) * (v_pseudo - v_star)
   eif_est <- (eif_y + eif_u + eif_v + v_star)

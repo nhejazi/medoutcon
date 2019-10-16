@@ -14,8 +14,7 @@ medoutcon(W, A, Z, M, Y, obs_weights = rep(1, length(Y)),
   r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_learners = sl3::Lrnr_glm_fast$new(),
   v_learners = sl3::Lrnr_glm_fast$new(), estimator = c("onestep",
-  "tmle", "ipw", "sub"), estimator_args = list(cv_folds = 10, max_iter =
-  5))
+  "tmle"), estimator_args = list(cv_folds = 10, max_iter = 5))
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar object corresponding
@@ -94,15 +93,15 @@ useful for computing the efficient one-step estimator, i.e.,
 A = a, W = w)]}.}
 
 \item{estimator}{The desired estimator of the direct or indirect effect (or
-contrast-specific parameter) to be computed. Currently, the singular option
-is an efficient one-step estimator, though support is planned for classical
-estimators (substitution; inverse probability weighted) and an efficient
-targeted maximum likelihood estimator.}
+contrast-specific parameter) to be computed. Both an efficient one-step
+estimator using cross-fitting and a cross-validated targeted minimum loss
+estimator (TMLE) are supported.}
 
 \item{estimator_args}{A \code{list} of extra arguments to be passed (via
 \code{...}) to the function call for the specified estimator. The default
 is so chosen as to allow the number of folds used in computing the one-step
-estimator to be easily adjusted.}
+or TMLE to be easily adjusted. In the case of the TMLE, the number of update
+iterations is also limited.}
 }
 \description{
 Efficient estimation of stochastic (in)direct effects in the presence of

@@ -109,7 +109,7 @@ make_example_data <- function(n_obs = 1000) {
 
 # set seed and simulate example data
 set.seed(75681)
-example_data <- make_example_data()
+example_data <- make_example_data(10000)
 w_names <- str_subset(colnames(example_data), "w")
 m_names <- str_subset(colnames(example_data), "m")
 
@@ -119,6 +119,7 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           Z = example_data$Z,
                           M = example_data[, ..m_names],
                           Y = example_data$Y,
+                          contrast = c(0,1),
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
@@ -129,6 +130,7 @@ tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
                             Z = example_data$Z,
                             M = example_data[, ..m_names],
                             Y = example_data$Y,
+                            contrast = c(0,1),
                             estimator = "tmle",
                             estimator_args = list(cv_folds = 3))
 summary(tmle_medoutcon)

@@ -61,14 +61,14 @@
 #'  \eqn{v(A, W) = E[\int_z m(a', z, M, W) * q(z | a', W) d \nu(z) |
 #'  A = a, W = w)]}.
 #' @param estimator The desired estimator of the direct or indirect effect (or
-#'   contrast-specific parameter) to be computed. Currently, the singular option
-#'   is an efficient one-step estimator, though support is planned for classical
-#'   estimators (substitution; inverse probability weighted) and an efficient
-#'   targeted maximum likelihood estimator.
+#'   contrast-specific parameter) to be computed. Both an efficient one-step
+#'   estimator using cross-fitting and a cross-validated targeted minimum loss
+#'   estimator (TMLE) are supported.
 #' @param estimator_args A \code{list} of extra arguments to be passed (via
 #'  \code{...}) to the function call for the specified estimator. The default
 #'  is so chosen as to allow the number of folds used in computing the one-step
-#'  estimator to be easily adjusted.
+#'  or TMLE to be easily adjusted. In the case of the TMLE, the number of update
+#'  iterations is also limited.
 #'
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stats binomial var
@@ -98,9 +98,7 @@ medoutcon <- function(W,
                       v_learners = sl3::Lrnr_glm_fast$new(),
                       estimator = c(
                         "onestep",
-                        "tmle",
-                        "ipw",
-                        "sub"
+                        "tmle"
                       ),
                       estimator_args = list(cv_folds = 10, max_iter = 5)) {
   # set defaults
@@ -132,13 +130,7 @@ medoutcon <- function(W,
   }
 
   est_params <- lapply(contrast_grid, function(contrast) {
-    if (estimator == "sub") {
-      # SUBSTITUTION ESTIMATOR
-      stop("The substitution estimator is currently under development.")
-    } else if (estimator == "ipw") {
-      # INVERSE PROBABILITY RE-WEIGHTED ESTIMATOR
-      stop("The IPW estimator is currently under development.")
-    } else if (estimator == "onestep") {
+    if (estimator == "onestep") {
       # EFFICIENT ONE-STEP ESTIMATOR
       onestep_est_args <- list(
         data = data,

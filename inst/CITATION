@@ -6,7 +6,7 @@ year <- format(Sys.Date(), "%Y")
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Manual",
-         title = "{medoutcon}: Efficient causal mediation analysis with intermediate confounding",
+         title = "{medoutcon}: Efficient causal mediation under intermediate confounding",
          author = c(person("Nima", "Hejazi", "S"),
                     person("Iván", "Díaz"),
                     person("Kara", "Rudolph", "E")),

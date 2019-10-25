@@ -15,7 +15,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis with Mediator-Outcome Confounding
+> Efficient Causal Mediation Under Intermediate Confounding
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -41,11 +41,15 @@ with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
 minimum loss (TML) estimator (van der Laan and Rose 2011; Zheng and van
 der Laan 2011) are made available. `medoutcon` integrates with the
 [`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to
-leverage statistical machine learning in the estimation procedure. <!--
+leverage statistical machine learning in the estimation procedure.
+
+<!--
 and expands on
 the architecture exposed by the [`tmle3` R
 package](https://github.com/tlverse/tmle3) for TML estimation.
---> —
+-->
+
+-----
 
 ## Installation
 
@@ -102,7 +106,7 @@ make_example_data <- function(n_obs = 1000) {
 
 # set seed and simulate example data
 set.seed(75681)
-example_data <- make_example_data()
+example_data <- make_example_data(10000)
 w_names <- str_subset(colnames(example_data), "w")
 m_names <- str_subset(colnames(example_data), "m")
 
@@ -112,13 +116,14 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           Z = example_data$Z,
                           M = example_data[, ..m_names],
                           Y = example_data$Y,
+                          contrast = c(0,1),
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
 #>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>        0.9908        1.1001        1.2093        0.0031    1.7535e-17 
+#>       -0.2186        -0.197       -0.1755         1e-04    1.7225e-17 
 #>     estimator         param 
-#>       onestep direct_effect
+#>       onestep contrast_spec
 
 # compute targeted minimum loss estimate
 tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
@@ -126,13 +131,14 @@ tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
                             Z = example_data$Z,
                             M = example_data[, ..m_names],
                             Y = example_data$Y,
+                            contrast = c(0,1),
                             estimator = "tmle",
                             estimator_args = list(cv_folds = 3))
 summary(tmle_medoutcon)
 #>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>        0.5852        0.7948        1.0044        0.0114   -1.5132e-17 
+#>       -0.3276        -0.286       -0.2444         5e-04   -2.5597e-17 
 #>     estimator         param 
-#>          tmle direct_effect
+#>          tmle contrast_spec
 ```
 
 For details on how to use data adaptive regression (machine learning)

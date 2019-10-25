@@ -1,0 +1,39 @@
+Package: medoutconlite
+Title: Mediation Analysis with Intermediate Confounding Made Lite
+Version: 0.0.1
+Authors@R: c(
+    person("Iván", "Díaz", email = "ild2005@med.cornell.edu",
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0001-9056-2047")),
+    person("Nima", "Hejazi", email = "nh@nimahejazi.org",
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-7127-2789"))
+  )
+Description: Efficient estimators of a stochastic (in)direct effects in the
+    presence of mediator-outcome confounding affected by exposure. The effects
+    estimated allow for the impact of the treatment on the outcome through a
+    direct path to be disentangled from that through mediators, even in the
+    presence of intermediate confounders that complicate this relationship.
+    Currently supported are an efficient one-step estimator and a targeted
+    minimum loss (TML) estimator. This is a simplified implementation of the
+    same techniques that appear in the medoutcon package. For an in-depth
+    treatment of the methodology, see Díaz, Hejazi, Rudolph, and van der Laan;
+    2019+ (preprint); <https://arxiv.org/abs/XXXX.YYYYY>.
+Depends: R (>= 3.2.0)
+Imports:
+    stats,
+    methods,
+    data.table,
+    assertthat,
+    SuperLearner
+Suggests:
+    rmarkdown,
+    stringr,
+    Rsolnp,
+    nnls,
+    caret
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1

@@ -4,8 +4,17 @@
 \alias{fit_nuisance_u}
 \title{Fit pseudo-outcome regression conditioning on mediator-outcome confounder}
 \usage{
-fit_nuisance_u(train_data, valid_data, learners, m_out, q_out, r_out,
-  g_out, e_out, w_names)
+fit_nuisance_u(
+  train_data,
+  valid_data,
+  learners,
+  m_out,
+  q_out,
+  r_out,
+  g_out,
+  e_out,
+  w_names
+)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing observed data, with columns

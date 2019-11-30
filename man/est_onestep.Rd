@@ -4,9 +4,21 @@
 \alias{est_onestep}
 \title{One-step for stochastic (in)direct effects under intermediate confounding}
 \usage{
-est_onestep(data, contrast, g_learners, e_learners, m_learners, q_learners,
-  r_learners, u_learners, v_learners, w_names, m_names,
-  ext_weights = NULL, cv_folds = 10)
+est_onestep(
+  data,
+  contrast,
+  g_learners,
+  e_learners,
+  m_learners,
+  q_learners,
+  r_learners,
+  u_learners,
+  v_learners,
+  w_names,
+  m_names,
+  ext_weights = NULL,
+  cv_folds = 10
+)
 }
 \arguments{
 \item{data}{A \code{data.table} containing the observed data, with columns

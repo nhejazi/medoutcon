@@ -4,8 +4,7 @@
 \alias{confint.medoutcon}
 \title{Confidence Intervals for Stochastic Mediation Parameter Objects}
 \usage{
-\method{confint}{medoutcon}(object, parm = seq_len(object$theta),
-  level = 0.95, ...)
+\method{confint}{medoutcon}(object, parm = seq_len(object$theta), level = 0.95, ...)
 }
 \arguments{
 \item{object}{An object of class \code{medoutcon}, as produced by invoking

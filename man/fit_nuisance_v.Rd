@@ -4,8 +4,16 @@
 \alias{fit_nuisance_v}
 \title{Fit pseudo-outcome regression conditioning on treatment and baseline}
 \usage{
-fit_nuisance_v(train_data, valid_data, contrast, learners, m_out, q_out,
-  m_names, w_names)
+fit_nuisance_v(
+  train_data,
+  valid_data,
+  contrast,
+  learners,
+  m_out,
+  q_out,
+  m_names,
+  w_names
+)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing observed data, with columns

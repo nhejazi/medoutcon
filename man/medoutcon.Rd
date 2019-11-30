@@ -5,16 +5,26 @@
 \title{Efficient estimation of stochastic (in)direct effects in the presence of
 mediator-outcome confounders affected by exposure}
 \usage{
-medoutcon(W, A, Z, M, Y, obs_weights = rep(1, length(Y)),
-  ext_weights = NULL, effect = c("direct", "indirect"),
-  contrast = NULL, g_learners = sl3::Lrnr_glm_fast$new(family =
-  stats::binomial()), e_learners = sl3::Lrnr_glm_fast$new(family =
-  stats::binomial()), m_learners = sl3::Lrnr_glm_fast$new(),
+medoutcon(
+  W,
+  A,
+  Z,
+  M,
+  Y,
+  obs_weights = rep(1, length(Y)),
+  ext_weights = NULL,
+  effect = c("direct", "indirect"),
+  contrast = NULL,
+  g_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  e_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  m_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   u_learners = sl3::Lrnr_glm_fast$new(),
-  v_learners = sl3::Lrnr_glm_fast$new(), estimator = c("onestep",
-  "tmle"), estimator_args = list(cv_folds = 10, max_iter = 5))
+  v_learners = sl3::Lrnr_glm_fast$new(),
+  estimator = c("onestep", "tmle"),
+  estimator_args = list(cv_folds = 10, max_iter = 5)
+)
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar object corresponding

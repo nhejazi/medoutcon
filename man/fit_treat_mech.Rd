@@ -4,8 +4,15 @@
 \alias{fit_treat_mech}
 \title{Fit propensity scores for treatment contrasts}
 \usage{
-fit_treat_mech(train_data, valid_data = NULL, contrast, learners,
-  m_names, w_names, type = c("g", "e"))
+fit_treat_mech(
+  train_data,
+  valid_data = NULL,
+  contrast,
+  learners,
+  m_names,
+  w_names,
+  type = c("g", "e")
+)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing the observed data; columns

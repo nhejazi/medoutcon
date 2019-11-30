@@ -1,4 +1,4 @@
-Package: medoutcon
+Package: medoutcontmle
 Title: Efficient Causal Mediation Under Intermediate Confounding
 Version: 0.0.7
 Authors@R: c(
@@ -57,4 +57,4 @@ BugReports: https://github.com/nhejazi/medoutcon/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1

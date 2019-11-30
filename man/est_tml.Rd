@@ -4,9 +4,22 @@
 \alias{est_tml}
 \title{TMLE for stochastic (in)direct effects under intermediate confounding}
 \usage{
-est_tml(data, contrast, g_learners, e_learners, m_learners, q_learners,
-  r_learners, u_learners, v_learners, w_names, m_names,
-  ext_weights = NULL, cv_folds = 10, max_iter = 5)
+est_tml(
+  data,
+  contrast,
+  g_learners,
+  e_learners,
+  m_learners,
+  q_learners,
+  r_learners,
+  u_learners,
+  v_learners,
+  w_names,
+  m_names,
+  ext_weights = NULL,
+  cv_folds = 10,
+  max_iter = 5
+)
 }
 \arguments{
 \item{data}{A \code{data.table} containing the observed data, with columns

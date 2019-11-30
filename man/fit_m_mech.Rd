@@ -4,8 +4,7 @@
 \alias{fit_m_mech}
 \title{Fit outcome regression}
 \usage{
-fit_m_mech(train_data, valid_data = NULL, contrast, learners, m_names,
-  w_names)
+fit_m_mech(train_data, valid_data = NULL, contrast, learners, m_names, w_names)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing the observed data, with

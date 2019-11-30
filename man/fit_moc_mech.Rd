@@ -4,8 +4,15 @@
 \alias{fit_moc_mech}
 \title{Fit mediator-outcome confounder score with(out) conditioning on mediators}
 \usage{
-fit_moc_mech(train_data, valid_data = NULL, contrast, learners, m_names,
-  w_names, type = c("q", "r"))
+fit_moc_mech(
+  train_data,
+  valid_data = NULL,
+  contrast,
+  learners,
+  m_names,
+  w_names,
+  type = c("q", "r")
+)
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing observed data, with columns

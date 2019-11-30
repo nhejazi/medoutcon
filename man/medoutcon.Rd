@@ -20,8 +20,8 @@ medoutcon(
   m_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
   r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  u_learners = sl3::Lrnr_glm_fast$new(),
-  v_learners = sl3::Lrnr_glm_fast$new(),
+  u_learners = sl3::Lrnr_hal9001$new(max_degree = NULL),
+  v_learners = sl3::Lrnr_hal9001$new(max_degree = NULL),
   estimator = c("onestep", "tmle"),
   estimator_args = list(cv_folds = 10, max_iter = 5)
 )

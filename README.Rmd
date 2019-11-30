@@ -74,8 +74,8 @@ mediator(s) (`M`) and a binary mediator-outcome confounder (`Z`), consider the
 following simple example:
 
 ```{r simple_example, message=FALSE, warning=FALSE}
-library(stringr)
 library(data.table)
+library(tidyverse)
 library(medoutcon)
 
 # produces a simple data set based on ca causal model with mediation
@@ -86,7 +86,7 @@ make_example_data <- function(n_obs = 1000) {
   setnames(W, c("w_1", "w_2"))
 
   # create treatment based on baseline W
-  A <- as.numeric(rbinom(n_obs, 1, prob = rowSums(W)/3 + 0.1))
+  A <- as.numeric(rbinom(n_obs, 1, prob = (rowSums(W) / 3) + 0.1))
 
   # single mediator-outcome confounder
   z_prob <- 1 - plogis((A^2 + rowMeans(W)) / (A + rowSums(W^3) + 0.5))
@@ -120,18 +120,18 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           Z = example_data$Z,
                           M = example_data[, ..m_names],
                           Y = example_data$Y,
-                          contrast = c(0,1),
+                          contrast = c(0, 1),
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
 
 # compute targeted minimum loss estimate
-tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
+tmle_medoutcon <- medoutcontmle::medoutcon(W = example_data[, ..w_names],
                             A = example_data$A,
                             Z = example_data$Z,
                             M = example_data[, ..m_names],
                             Y = example_data$Y,
-                            contrast = c(0,1),
+                            contrast = c(0, 1),
                             estimator = "tmle",
                             estimator_args = list(cv_folds = 3))
 summary(tmle_medoutcon)

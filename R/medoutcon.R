@@ -72,7 +72,7 @@
 #'
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stats binomial var
-#' @importFrom sl3 Lrnr_glm_fast
+#' @importFrom sl3 Lrnr_glm_fast Lrnr_hal9001
 #'
 #' @export
 #
@@ -94,8 +94,8 @@ medoutcon <- function(W,
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
                       r_learners =
                         sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      u_learners = sl3::Lrnr_glm_fast$new(),
-                      v_learners = sl3::Lrnr_glm_fast$new(),
+                      u_learners = sl3::Lrnr_hal9001$new(max_degree = NULL),
+                      v_learners = sl3::Lrnr_hal9001$new(max_degree = NULL),
                       estimator = c(
                         "onestep",
                         "tmle"

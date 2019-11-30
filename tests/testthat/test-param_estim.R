@@ -126,7 +126,6 @@ theta_os <- medoutcon(
 )
 summary(theta_os)
 
-
 # 5) compute efficient influence function based on observed data
 w <- as_tibble(data)[, w_names]
 a <- data$A

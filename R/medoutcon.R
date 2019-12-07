@@ -22,8 +22,8 @@
 #'  \code{obs_weights}, these weights are not incorporated in the estimation of
 #'  nuisance parameters. Input weights should be normalized. Use with caution.
 #' @param effect A \code{character} indicating whether to compute the direct
-#'  effect or the indirect effect as discussed in CITE PAPER. Note that this is
-#'  ignored when the argument \code{contrast} is provided.
+#'  effect or the indirect effect as discussed in [TODO: CITE PAPER]. Note that
+#'  this is ignored when the argument \code{contrast} is provided.
 #' @param contrast A \code{numeric} double indicating the two values of the
 #'  intervention \code{A} to be compared. The default value of \code{NULL} has
 #'  no effect, as the value of the argument \code{effect} is instead used to

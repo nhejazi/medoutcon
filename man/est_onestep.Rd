@@ -2,7 +2,7 @@
 % Please edit documentation in R/estim_onestep.R
 \name{est_onestep}
 \alias{est_onestep}
-\title{One-step for stochastic (in)direct effects under intermediate confounding}
+\title{One-step for stochastic (in)direct effects with intermediate confounding}
 \usage{
 est_onestep(
   data,
@@ -25,8 +25,8 @@ est_onestep(
 in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
 appropriately based on the original input data. Such a structure is merely
 a convenience utility to passing data around to the various core estimation
-routines and is automatically generated as part of a call to the user-facing
-wrapper function \code{\link{medoutcon}}.}
+routines and is automatically generated as part of a call to the wrapper
+function \code{\link{medoutcon}}.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
 intervention \code{A} to be compared. The default value of \code{NULL} has
@@ -51,25 +51,25 @@ from the \code{sl3} package, to be used in fitting the outcome regression.}
 \item{q_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, for use in fitting a regression involving the
-mediator-outcome confounder, i.e., \eqn{q(L | A', W)}.}
+mediator-outcome confounder, i.e., \eqn{q(Z | A', W)}.}
 
 \item{r_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a regression involving
-the mediator-outcome confounder, i.e., \eqn{r(L | A', M, W)}.}
+the mediator-outcome confounder, i.e., \eqn{r(Z | A', M, W)}.}
 
 \item{u_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
 useful for computing the efficient one-step estimator, i.e.,
-\eqn{u(L, A, W) = E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) *
-(e(a'|Z,W) / e(A|Z,W)) | L = l, A = a, W = w]}.}
+\eqn{u(Z, A, W) = E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) *
+(e(a'|M,W) / e(A|M,W)) | Z = z, A = a, W = w]}.}
 
 \item{v_learners}{A \code{Stack} object, or other learner class (inheriting
 from \code{Lrnr_base}), containing a single or set of instantiated learners
 from the \code{sl3} package, to be used in fitting a reduced regression
 useful for computing the efficient one-step estimator, i.e.,
-\eqn{v(A,W) = E[\int_z m(a', l, Z, W) * q(l|A',W) d\nu(z) | A = a, W = w)]}.}
+\eqn{v(A,W) = E[\int_m m(a', Z, M, W) * q(z|A',W) d\nu(m) | A = a, W = w)]}.}
 
 \item{w_names}{A \code{character} vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is
@@ -85,12 +85,12 @@ have been computed externally. Such weights are used in the construction of
 a re-weighted one-step estimator or in solving a re-weighted estimating
 equation in the case of the TML estimator. Use with caution.}
 
-\item{cv_folds}{A \code{numeric} integer value specifying the number of folds
-to be created for cross-validation. Use of cross-validation / cross-fitting
-allows for entropy conditions on the one-step estimator to be relaxed. Note:
-for compatibility with \code{origami::make_folds}, this value specified here
-must be greater than or equal to 2; the default is to create 10 folds.}
+\item{cv_folds}{A \code{numeric} integer specifying the number of folds to
+be created for cross-validation. Use of cross-validation / cross-fitting
+allows for entropy conditions on the one-step estimator to be relaxed. For
+compatibility with \code{origami::make_folds}, this value specified must be
+greater than or equal to 2; the default is to create 10 folds.}
 }
 \description{
-One-step for stochastic (in)direct effects under intermediate confounding
+One-step for stochastic (in)direct effects with intermediate confounding
 }

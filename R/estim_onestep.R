@@ -325,11 +325,6 @@ cv_eif_os <- function(fold,
   })
   u_int_eif <- do.call(`-`, u_int_eif)
 
-  # truncate mechanisms corresponding to inverse weights
-  #g_prime
-  #g_star
-  #e_prime
-
   # create inverse probability weights
   ipw_a_prime <- as.numeric(valid_data$A == contrast[1]) / g_prime
   ipw_a_star <- as.numeric(valid_data$A == contrast[2]) / g_star

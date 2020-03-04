@@ -16,15 +16,14 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: Efficient estimators of a stochastic (in)direct effects in the
+Description: Efficient estimators of a interventional (in)direct effects in the
     presence of mediator-outcome confounding affected by exposure. The effects
     estimated allow for the impact of the treatment on the outcome through a
     direct path to be disentangled from that through mediators, even in the
     presence of intermediate confounders that complicate this relationship.
-    Currently supported are an efficient one-step estimator and a targeted
-    minimum loss (TML) estimator. For an in-depth treatment of the methodology,
-    see Díaz, Hejazi, Rudolph, and van der Laan; 2019+ (preprint);
-    <https://arxiv.org/abs/TBA>.
+    Currently supported are non-parametric efficient one-step and targeted
+    minimum loss (TML) estimators, based on the formulation of Díaz, Hejazi,
+    Rudolph, and van der Laan (2019+) <https://arxiv.org/abs/1912.09936>.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -46,15 +45,15 @@ Suggests:
     nnls,
     stringr,
     tibble,
-    tmle3
+    SuperLearner,
+    caret
 Remotes:
     github::tlverse/hal9001@master,
-    github::tlverse/sl3@master,
-    github::tlverse/tmle3@master
+    github::tlverse/sl3@master
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon
 BugReports: https://github.com/nhejazi/medoutcon/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2

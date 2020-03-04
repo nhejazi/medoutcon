@@ -10,23 +10,19 @@ library(hal9001)
 library(sl3)
 
 # options
-set.seed(7128816)
+set.seed(27158)
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
-n_obs <- 1000
+n_obs <- 5000
 
 # 1) set up learners for nuisance parameters
-hal_contin_lrnr <- Lrnr_hal9001$new(
-  fit_type = "glmnet", n_folds = 5
-)
-hal_binary_lrnr <- Lrnr_hal9001$new(
-  fit_type = "glmnet", n_folds = 5,
-  family = "binomial"
+hal_lrnr <- Lrnr_hal9001$new(
+  fit_type = "glmnet", max_degree = NULL, n_folds = 5, family = "gaussian",
+  lambda.min.ratio = 1 / n_obs
 )
 g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  hal_binary_lrnr
-u_learners <- v_learners <- hal_contin_lrnr
+  u_learners <- v_learners <- hal_lrnr
 
 # 2) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data(n_obs = n_obs)
@@ -74,15 +70,15 @@ var_eif <- var(eif_est) / n_obs
 
 # 6) testing
 test_that("Parameter estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_os, tol = 0.04)
+  expect_equal(theta_os$theta, psi_os, tol = 0.001)
 })
 
 test_that("Variance estimate close to independent EIF variance", {
-  expect_equal(theta_os$var, var_eif, tol = 0.01)
+  expect_equal(theta_os$var, var_eif, tol = 0.001)
 })
 
 test_that("Mean of estimated EIF close to that of independent EIF", {
   expect_equal(abs(mean(theta_os$eif)), abs(mean(eif_est - psi_os)),
-    tol = 0.02
+               tol = 1e-3
   )
 })

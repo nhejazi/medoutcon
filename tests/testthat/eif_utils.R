@@ -33,7 +33,7 @@ e <- function(a, m, w) {
 }
 
 my <- function(m, z, a, w) {
-  plogis(1 / (rowSums(w) - z + a - m))
+  plogis(1 / (rowSums(w) - z + a + m))
 }
 
 # compute nuisance functions by their definitions

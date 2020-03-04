@@ -55,8 +55,8 @@ equation in the case of the TML estimator. Note that, unlike the argument
 nuisance parameters. Input weights should be normalized. Use with caution.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct
-effect or the indirect effect as discussed in CITE PAPER. Note that this is
-ignored when the argument \code{contrast} is provided.}
+or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
+This is ignored when the argument \code{contrast} is provided.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
 intervention \code{A} to be compared. The default value of \code{NULL} has

@@ -168,8 +168,8 @@ After using the `medoutcon` R package, please cite the following:
             confounders},
           author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
             and {van der Laan}, Mark J},
-          year={2019+},
-          url = {},
+          year={2019},
+          url = {https://arxiv.org/abs/1912.09936},
           doi = {},
           journal={},
           volume={},
@@ -178,27 +178,27 @@ After using the `medoutcon` R package, please cite the following:
           publisher={}
         }
 
-        @manual{hejazi2019medoutcon,
+        @manual{hejazi2020medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
           title = {{medoutcon}: Efficient causal mediation analysis with
             intermediate confounding},
-          year  = {2019},
+          year  = {2020},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.0.4}
+          note = {R package version 0.0.7}
         }
 
 ---
 
 ## License
 
-&copy; 2019 [Nima S. Hejazi](https://nimahejazi.org)
+&copy; 2019-2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:
 ```
 MIT License
 
-Copyright (c) 2019 Nima S. Hejazi
+Copyright (c) 2019-2020 Nima S. Hejazi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

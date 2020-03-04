@@ -8,48 +8,53 @@ library(stringr)
 library(tibble)
 library(hal9001)
 library(sl3)
-# library(caret)
-# library(SuperLearner)
 
 # options
-set.seed(7128816)
+set.seed(27158)
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
-n_obs <- 1000
+n_obs <- 5000
 
 # 1) set up learners for nuisance parameters
 if (FALSE) {
-  ## caret hyperparameter-tuning model for random forest
-  # SL.caretRF <- function(Y, X, newX, family, obsWeights, ...) {
-  # SL.caret(Y, X, newX, family, obsWeights, method = 'rf',  tuneLength = 3,
-  # trControl =  caret::trainControl(method = "LGOCV",
-  # search = 'random',
-  # verboseIter = TRUE), ...)
-  # }
-  # rf_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretRF")
+  library(caret)
+  library(SuperLearner)
 
-  ## caret hyperparameter-tuning model for xgboost
-  # SL.caretXGB <- function(Y, X, newX, family, obsWeights, ...) {
-  # SL.caret(Y, X, newX, family, obsWeights, method = 'xgbTree',
-  # tuneLength = 3,
-  # trControl =  caret::trainControl(method = "LGOCV",
-  # search = 'random',
-  # verboseIter = TRUE), ...)
-  # }
-  # xgb_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretXGB")
+  # caret hyperparameter-tuning model for random forest
+  SL.caretRF <- function(Y, X, newX, family, obsWeights, ...) {
+    SL.caret(Y, X, newX, family, obsWeights, method = 'rf',  tuneLength = 3,
+             trControl =  caret::trainControl(method = "LGOCV",
+                                              search = 'random',
+                                              verboseIter = TRUE), ...)
+  }
+  rf_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretRF")
 
-  ## instantiate learners and SL for continuous outcomes
+  # caret hyperparameter-tuning model for xgboost
+  SL.caretXGB <- function(Y, X, newX, family, obsWeights, ...) {
+    SL.caret(Y, X, newX, family, obsWeights, method = 'xgbTree',
+             tuneLength = 3,
+             trControl =  caret::trainControl(method = "LGOCV",
+                                              search = 'random',
+                                              verboseIter = TRUE), ...)
+  }
+  xgb_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretXGB")
+
+  ## instantiate learners and SL
   mean_lrnr <- Lrnr_mean$new()
   fglm_contin_lrnr <- Lrnr_glm_fast$new()
-  hal_contin_lrnr <- Lrnr_hal9001$new(
-    fit_type = "glmnet", n_folds = 5
+  fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
+  hal_lrnr <- Lrnr_hal9001$new(
+    fit_type = "glmnet", n_folds = 5, max_degree = NULL,
+    family = "gaussian", lambda.min.ratio = 1 / n_obs
   )
+
+  ## SL for continuous outcomes
   stack_lrnrs_contin <- make_learner(
     Stack,
     mean_lrnr,
+    hal_lrnr,
     fglm_contin_lrnr,
-    hal_contin_lrnr,
     rf_caret_lrnr,
     xgb_caret_lrnr
   )
@@ -59,12 +64,7 @@ if (FALSE) {
     keep_extra = TRUE
   )
 
-  ## instantiate learners and SL for binary outcomes
-  fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
-  hal_binary_lrnr <- Lrnr_hal9001$new(
-    fit_type = "glmnet", n_folds = 5,
-    family = "binomial"
-  )
+  ## SL for binary outcomes
   logistic_metalearner <- make_learner(
     Lrnr_solnp,
     metalearner_logistic_binomial,
@@ -73,8 +73,8 @@ if (FALSE) {
   stack_lrnrs_binary <- make_learner(
     Stack,
     mean_lrnr,
+    hal_lrnr,
     fglm_binary_lrnr,
-    hal_binary_lrnr,
     rf_caret_lrnr,
     xgb_caret_lrnr
   )
@@ -91,17 +91,12 @@ if (FALSE) {
 }
 
 ## use HAL by itself for testing functionality
-hal_contin_lrnr <- Lrnr_hal9001$new(
-  fit_type = "glmnet", n_folds = 5
-)
-hal_binary_lrnr <- Lrnr_hal9001$new(
-  fit_type = "glmnet", n_folds = 5,
-  family = "binomial"
+hal_lrnr <- Lrnr_hal9001$new(
+  fit_type = "glmnet", max_degree = NULL, n_folds = 5, family = "gaussian",
+  lambda.min.ratio = 1 / n_obs
 )
 g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  hal_binary_lrnr
-u_learners <- v_learners <- hal_contin_lrnr
-
+  u_learners <- v_learners <- hal_lrnr
 
 # 3) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data(n_obs = n_obs)
@@ -145,13 +140,13 @@ var_eif <- var(eif) / n_obs
 
 # 6) testing
 test_that("Parameter estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_os, tol = 0.04)
+  expect_equal(theta_os$theta, psi_os, tol = 0.001)
 })
 
 test_that("Variance estimate close to independent EIF variance", {
-  expect_equal(theta_os$var, var_eif, tol = 0.01)
+  expect_equal(theta_os$var, var_eif, tol = 0.0011)
 })
 
 test_that("Mean of estimated EIF close to that of independent EIF", {
-  expect_equal(abs(mean(theta_os$eif)), abs(mean(eif - psi_os)), tol = 0.001)
+  expect_equal(abs(mean(theta_os$eif)), abs(mean(eif - psi_os)), tol = 1e-10)
 })

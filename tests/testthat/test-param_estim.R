@@ -23,20 +23,28 @@ if (FALSE) {
 
   # caret hyperparameter-tuning model for random forest
   SL.caretRF <- function(Y, X, newX, family, obsWeights, ...) {
-    SL.caret(Y, X, newX, family, obsWeights, method = 'rf',  tuneLength = 3,
-             trControl =  caret::trainControl(method = "LGOCV",
-                                              search = 'random',
-                                              verboseIter = TRUE), ...)
+    SL.caret(Y, X, newX, family, obsWeights,
+      method = "rf", tuneLength = 3,
+      trControl = caret::trainControl(
+        method = "LGOCV",
+        search = "random",
+        verboseIter = TRUE
+      ), ...
+    )
   }
   rf_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretRF")
 
   # caret hyperparameter-tuning model for xgboost
   SL.caretXGB <- function(Y, X, newX, family, obsWeights, ...) {
-    SL.caret(Y, X, newX, family, obsWeights, method = 'xgbTree',
-             tuneLength = 3,
-             trControl =  caret::trainControl(method = "LGOCV",
-                                              search = 'random',
-                                              verboseIter = TRUE), ...)
+    SL.caret(Y, X, newX, family, obsWeights,
+      method = "xgbTree",
+      tuneLength = 3,
+      trControl = caret::trainControl(
+        method = "LGOCV",
+        search = "random",
+        verboseIter = TRUE
+      ), ...
+    )
   }
   xgb_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretXGB")
 

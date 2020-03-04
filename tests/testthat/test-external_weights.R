@@ -79,6 +79,6 @@ test_that("Variance estimate close to independent EIF variance", {
 
 test_that("Mean of estimated EIF close to that of independent EIF", {
   expect_equal(abs(mean(theta_os$eif)), abs(mean(eif_est - psi_os)),
-               tol = 1e-3
+    tol = 1e-3
   )
 })

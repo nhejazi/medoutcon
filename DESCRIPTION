@@ -30,8 +30,6 @@ Imports:
     methods,
     data.table,
     assertthat,
-    R6,
-    uuid,
     dplyr,
     origami (>= 1.0.0),
     hal9001 (>= 0.2.5),

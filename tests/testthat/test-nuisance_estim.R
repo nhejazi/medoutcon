@@ -17,9 +17,11 @@ set.seed(27158)
 
 # set up learners for each nuisance parameter
 g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  u_learners <- v_learners <-  Lrnr_hal9001$new(family = "gaussian",
-                                                lambda.min.ratio = 1e-5,
-                                                max_degree = NULL)
+  u_learners <- v_learners <- Lrnr_hal9001$new(
+    family = "gaussian",
+    lambda.min.ratio = 1e-5,
+    max_degree = NULL
+  )
 
 # simulate smaller data set for computing estimates
 n_samp <- 10000

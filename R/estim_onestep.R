@@ -60,6 +60,7 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'  compatibility with \code{origami::make_folds}, this value specified must be
 #'  greater than or equal to 2; the default is to create 10 folds.
 #'
+#' @importFrom assertthat assert_that
 #' @importFrom stats var weighted.mean
 #' @importFrom origami make_folds cross_validate folds_vfold
 #'
@@ -76,6 +77,10 @@ est_onestep <- function(data,
                         m_names,
                         ext_weights = NULL,
                         cv_folds = 10) {
+
+  # make sure that more than one fold is specified
+  assertthat::assert_that(cv_folds > 1)
+
   # create folds for use with origami::cross_validate
   folds <- origami::make_folds(data,
     fold_fun = origami::folds_vfold,

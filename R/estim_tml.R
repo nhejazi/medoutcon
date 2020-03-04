@@ -63,6 +63,7 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'  to be taken for the iterative procedure to construct a TML estimator.
 #'
 #' @importFrom dplyr "%>%"
+#' @importFrom assertthat assert_that
 #' @importFrom stats var glm as.formula qlogis plogis coef weighted.mean
 #' @importFrom origami make_folds cross_validate folds_vfold
 #'
@@ -80,6 +81,10 @@ est_tml <- function(data,
                     ext_weights = NULL,
                     cv_folds = 10,
                     max_iter = 5) {
+
+  # make sure that more than one fold is specified
+  assertthat::assert_that(cv_folds > 1)
+
   # create folds for use with origami::cross_validate
   folds <- origami::make_folds(data,
     fold_fun = origami::folds_vfold,
@@ -212,7 +217,7 @@ est_tml <- function(data,
   # compute updated substitution estimator and prepare for tilting regression
   v_pseudo <- (m_prime_Z_one * q_prime_Z_one) + m_prime_Z_zero *
     (1 - q_prime_Z_one)
-  #browser()
+  # browser()
 
   # fit fluctuation/tilting model
   suppressWarnings(
@@ -229,9 +234,9 @@ est_tml <- function(data,
     )
   )
   v_star <- stats::plogis(v_star_logit + stats::coef(v_tilt_fit))
-  #%>%
-    #scale_to_original(max_orig = max(cv_est$v_star),
-                      #min_orig = min(cv_est$v_star))
+  # %>%
+  # scale_to_original(max_orig = max(cv_est$v_star),
+  # min_orig = min(cv_est$v_star))
 
   # NOTE: one more round of updating to catch with loop termination
   h_star <- (q_prime / cv_est$r_prime_Z_natural) * h_star_mult
@@ -239,19 +244,19 @@ est_tml <- function(data,
   h_star_Z_zero <- (1 - q_prime_Z_one / (1 - cv_est$r_prime_Z_one)) *
     h_star_mult
   m_prime <- stats::plogis(m_prime_logit + m_coef * h_star)
-  #%>%
-    #scale_to_original(max_orig = max(data$Y),
-                      #min_orig = min(data$Y))
+  # %>%
+  # scale_to_original(max_orig = max(data$Y),
+  # min_orig = min(data$Y))
   m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit + m_coef *
-                                 h_star_Z_one)
-  #%>%
-    #scale_to_original(max_orig = max(data$Y),
-                      #min_orig = min(data$Y))
+    h_star_Z_one)
+  # %>%
+  # scale_to_original(max_orig = max(data$Y),
+  # min_orig = min(data$Y))
   m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit + m_coef *
-                                  h_star_Z_zero)
-  #%>%
-    #scale_to_original(max_orig = max(data$Y),
-                      #min_orig = min(data$Y))
+    h_star_Z_zero)
+  # %>%
+  # scale_to_original(max_orig = max(data$Y),
+  # min_orig = min(data$Y))
 
   # update pseudo-outcomes and weights for efficient influence function
   u_pseudo <- m_prime * h_star

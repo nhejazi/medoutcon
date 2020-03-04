@@ -70,8 +70,8 @@ presence of mediator(s) (`M`) and a binary mediator-outcome confounder
 (`Z`), consider the following simple example:
 
 ``` r
-library(stringr)
 library(data.table)
+library(tidyverse)
 library(medoutcon)
 
 # produces a simple data set based on ca causal model with mediation
@@ -82,7 +82,7 @@ make_example_data <- function(n_obs = 1000) {
   setnames(W, c("w_1", "w_2"))
 
   # create treatment based on baseline W
-  A <- as.numeric(rbinom(n_obs, 1, prob = rowSums(W)/3 + 0.1))
+  A <- as.numeric(rbinom(n_obs, 1, prob = (rowSums(W) / 3) + 0.1))
 
   # single mediator-outcome confounder
   z_prob <- 1 - plogis((A^2 + rowMeans(W)) / (A + rowSums(W^3) + 0.5))
@@ -116,12 +116,12 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           Z = example_data$Z,
                           M = example_data[, ..m_names],
                           Y = example_data$Y,
-                          contrast = c(0,1),
+                          contrast = c(0, 1),
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
 #>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>       -0.2186        -0.197       -0.1755         1e-04    1.7225e-17 
+#>       -0.2191       -0.1989       -0.1786         1e-04    1.4501e-17 
 #>     estimator         param 
 #>       onestep contrast_spec
 
@@ -131,12 +131,12 @@ tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
                             Z = example_data$Z,
                             M = example_data[, ..m_names],
                             Y = example_data$Y,
-                            contrast = c(0,1),
+                            contrast = c(0, 1),
                             estimator = "tmle",
                             estimator_args = list(cv_folds = 3))
 summary(tmle_medoutcon)
 #>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>       -0.3276        -0.286       -0.2444         5e-04   -2.5597e-17 
+#>       -0.3097       -0.2695       -0.2292         4e-04    3.7347e-18 
 #>     estimator         param 
 #>          tmle contrast_spec
 ```
@@ -173,8 +173,8 @@ After using the `medoutcon` R package, please cite the following:
         confounders},
       author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
         and {van der Laan}, Mark J},
-      year={2019+},
-      url = {},
+      year={2019},
+      url = {https://arxiv.org/abs/1912.09936},
       doi = {},
       journal={},
       volume={},
@@ -183,13 +183,13 @@ After using the `medoutcon` R package, please cite the following:
       publisher={}
     }
 
-    @manual{hejazi2019medoutcon,
+    @manual{hejazi2020medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
       title = {{medoutcon}: Efficient causal mediation analysis with
         intermediate confounding},
-      year  = {2019},
+      year  = {2020},
       url = {https://github.com/nhejazi/medoutcon},
-      note = {R package version 0.0.4}
+      note = {R package version 0.0.7}
     }
 ```
 
@@ -197,14 +197,14 @@ After using the `medoutcon` R package, please cite the following:
 
 ## License
 
-© 2019 [Nima S. Hejazi](https://nimahejazi.org)
+© 2019-2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2019 Nima S. Hejazi
+    Copyright (c) 2019-2020 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

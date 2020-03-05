@@ -32,7 +32,6 @@ r_github_packages:
   - r-lib/covr
   - tlverse/hal9001
   - tlverse/sl3
-  - tlverse/tmle3
 
 after_success:
   ## coverage

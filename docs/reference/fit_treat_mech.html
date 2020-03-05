@@ -92,7 +92,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounding</a>
+      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
     </li>
   </ul>
 </li>
@@ -126,8 +126,15 @@
     <p>Fit propensity scores for treatment contrasts</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fit_treat_mech</span>(<span class='no'>train_data</span>, <span class='kw'>valid_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>contrast</span>, <span class='no'>learners</span>,
-  <span class='no'>m_names</span>, <span class='no'>w_names</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"g"</span>, <span class='st'>"e"</span>))</pre>
+    <pre class="usage"><span class='fu'>fit_treat_mech</span>(
+  <span class='no'>train_data</span>,
+  <span class='kw'>valid_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>contrast</span>,
+  <span class='no'>learners</span>,
+  <span class='no'>m_names</span>,
+  <span class='no'>w_names</span>,
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"g"</span>, <span class='st'>"e"</span>)
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

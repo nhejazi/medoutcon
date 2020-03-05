@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Under Intermediate Confounding
+> Efficient Causal Mediation Analysis with Intermediate Confounders
 
 __Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -48,11 +48,6 @@ one-step cross-validated targeted minimum loss (TML) estimator
 with the [`sl3` R package](https://github.com/tlverse/sl3) [@coyle2019sl3] to
 leverage statistical machine learning in the estimation procedure.
 
-<!--
-and expands on
-the architecture exposed by the [`tmle3` R
-package](https://github.com/tlverse/tmle3) for TML estimation.
--->
 ---
 
 ## Installation
@@ -180,7 +175,7 @@ After using the `medoutcon` R package, please cite the following:
 
         @manual{hejazi2020medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-          title = {{medoutcon}: Efficient causal mediation analysis with
+          title = {{medoutcon}: Efficient causal mediation analysis under
             intermediate confounding},
           year  = {2020},
           url = {https://github.com/nhejazi/medoutcon},

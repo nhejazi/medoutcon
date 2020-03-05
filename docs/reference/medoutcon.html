@@ -95,7 +95,7 @@ mediator-outcome confounders affected by exposure" />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounding</a>
+      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
     </li>
   </ul>
 </li>
@@ -131,17 +131,26 @@ mediator-outcome confounders affected by exposure</h1>
 mediator-outcome confounders affected by exposure</p>
     </div>
 
-    <pre class="usage"><span class='fu'>medoutcon</span>(<span class='no'>W</span>, <span class='no'>A</span>, <span class='no'>Z</span>, <span class='no'>M</span>, <span class='no'>Y</span>, <span class='kw'>obs_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
-  <span class='kw'>ext_weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>effect</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"direct"</span>, <span class='st'>"indirect"</span>),
-  <span class='kw'>contrast</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>g_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span>
-  <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()), <span class='kw'>e_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span>
-  <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()), <span class='kw'>m_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
+    <pre class="usage"><span class='fu'>medoutcon</span>(
+  <span class='no'>W</span>,
+  <span class='no'>A</span>,
+  <span class='no'>Z</span>,
+  <span class='no'>M</span>,
+  <span class='no'>Y</span>,
+  <span class='kw'>obs_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
+  <span class='kw'>ext_weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>effect</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"direct"</span>, <span class='st'>"indirect"</span>),
+  <span class='kw'>contrast</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>g_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
+  <span class='kw'>e_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
+  <span class='kw'>m_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
   <span class='kw'>q_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
   <span class='kw'>r_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(<span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>binomial</a></span>()),
-  <span class='kw'>u_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>v_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(), <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"onestep"</span>,
-  <span class='st'>"tmle"</span>, <span class='st'>"ipw"</span>, <span class='st'>"sub"</span>), <span class='kw'>estimator_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span>
-  <span class='fl'>5</span>))</pre>
+  <span class='kw'>u_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span>$<span class='fu'>new</span>(<span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='kw'>NULL</span>),
+  <span class='kw'>v_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span>$<span class='fu'>new</span>(<span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='kw'>NULL</span>),
+  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"onestep"</span>, <span class='st'>"tmle"</span>),
+  <span class='kw'>estimator_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>5</span>)
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,8 +199,8 @@ nuisance parameters. Input weights should be normalized. Use with caution.</p></
     <tr>
       <th>effect</th>
       <td><p>A <code>character</code> indicating whether to compute the direct
-effect or the indirect effect as discussed in CITE PAPER. Note that this is
-ignored when the argument <code>contrast</code> is provided.</p></td>
+or the indirect effect as discussed in &lt;https://arxiv.org/abs/1912.09936&gt;.
+This is ignored when the argument <code>contrast</code> is provided.</p></td>
     </tr>
     <tr>
       <th>contrast</th>
@@ -256,17 +265,17 @@ A = a, W = w)]\).</p></td>
     <tr>
       <th>estimator</th>
       <td><p>The desired estimator of the direct or indirect effect (or
-contrast-specific parameter) to be computed. Currently, the singular option
-is an efficient one-step estimator, though support is planned for classical
-estimators (substitution; inverse probability weighted) and an efficient
-targeted maximum likelihood estimator.</p></td>
+contrast-specific parameter) to be computed. Both an efficient one-step
+estimator using cross-fitting and a cross-validated targeted minimum loss
+estimator (TMLE) are supported.</p></td>
     </tr>
     <tr>
       <th>estimator_args</th>
       <td><p>A <code>list</code> of extra arguments to be passed (via
 <code>...</code>) to the function call for the specified estimator. The default
 is so chosen as to allow the number of folds used in computing the one-step
-estimator to be easily adjusted.</p></td>
+or TMLE to be easily adjusted. In the case of the TMLE, the number of update
+iterations is also limited.</p></td>
     </tr>
     </table>
 

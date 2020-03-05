@@ -1,5 +1,5 @@
 Package: medoutcon
-Title: Efficient Causal Mediation Under Intermediate Confounding
+Title: Efficient Causal Mediation Analysis With Intermediate Confounders
 Version: 0.0.7
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",

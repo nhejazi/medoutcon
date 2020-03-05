@@ -1,12 +1,12 @@
 ---
-title: "Efficient causal mediation analysis with intermediate confounding"
+title: "Efficient causal mediation analysis with intermediate confounders"
 author: "[Nima Hejazi](https://nimahejazi.org) and [Iván
   Díaz](https://www.idiaz.xyz/)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{Efficient mediation analysis with intermediate confounding}
+  %\VignetteIndexEntry{Efficient causal mediation analysis with intermediate confounders}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,4 +15,13 @@ vignette: >
 
 [TODO]
 
+# Methodology
+
+[TODO]
+
+# Example
+
+[TODO]
+
 ## References
+

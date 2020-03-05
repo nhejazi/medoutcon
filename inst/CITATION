@@ -6,7 +6,7 @@ year <- format(Sys.Date(), "%Y")
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Manual",
-         title = "{medoutcon}: Efficient causal mediation under intermediate confounding",
+         title = "{medoutcon}: Efficient causal mediation analysis with intermediate confounders",
          author = c(person("Nima", "Hejazi", "S"),
                     person("Iván", "Díaz"),
                     person("Kara", "Rudolph", "E")),
@@ -22,6 +22,6 @@ bibentry(bibtype = "Article",
                     person("Nima", "Hejazi", "S"),
                     person("Kara", "Rudolph", "E"),
                     person("Mark", "van der Laan", "J")),
-         year = "2019+",
+         year = "2019",
          doi = "",
-         url = "")
+         url = "https://arxiv.org/abs/1912.09936")

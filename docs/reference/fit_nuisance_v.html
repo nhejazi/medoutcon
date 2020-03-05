@@ -92,7 +92,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounding</a>
+      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
     </li>
   </ul>
 </li>
@@ -126,8 +126,16 @@
     <p>Fit pseudo-outcome regression conditioning on treatment and baseline</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fit_nuisance_v</span>(<span class='no'>train_data</span>, <span class='no'>valid_data</span>, <span class='no'>contrast</span>, <span class='no'>learners</span>, <span class='no'>m_out</span>, <span class='no'>q_out</span>,
-  <span class='no'>m_names</span>, <span class='no'>w_names</span>)</pre>
+    <pre class="usage"><span class='fu'>fit_nuisance_v</span>(
+  <span class='no'>train_data</span>,
+  <span class='no'>valid_data</span>,
+  <span class='no'>contrast</span>,
+  <span class='no'>learners</span>,
+  <span class='no'>m_out</span>,
+  <span class='no'>q_out</span>,
+  <span class='no'>m_names</span>,
+  <span class='no'>w_names</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

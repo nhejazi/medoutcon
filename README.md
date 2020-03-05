@@ -15,7 +15,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Under Intermediate Confounding
+> Efficient Causal Mediation Analysis with Intermediate Confounders
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -35,19 +35,13 @@ by the treatment \(A\). While the proposed approach is similar to those
 appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et
 al. (2017), and Zheng and van der Laan (2017), `medoutcon` is designed
 as a software implementation to accompany the methodology proposed in
-Díaz et al. (n.d.). Both an efficient one-step bias-corrected estimator
+Díaz et al. (2019). Both an efficient one-step bias-corrected estimator
 with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
 2011; Chernozhukov et al. 2018) and a one-step cross-validated targeted
 minimum loss (TML) estimator (van der Laan and Rose 2011; Zheng and van
 der Laan 2011) are made available. `medoutcon` integrates with the
 [`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to
 leverage statistical machine learning in the estimation procedure.
-
-<!--
-and expands on
-the architecture exposed by the [`tmle3` R
-package](https://github.com/tlverse/tmle3) for TML estimation.
--->
 
 -----
 
@@ -185,7 +179,7 @@ After using the `medoutcon` R package, please cite the following:
 
     @manual{hejazi2020medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Efficient causal mediation analysis with
+      title = {{medoutcon}: Efficient causal mediation analysis under
         intermediate confounding},
       year  = {2020},
       url = {https://github.com/nhejazi/medoutcon},
@@ -245,15 +239,15 @@ Parameters.” *The Econometrics Journal* 21 (1).
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
 “sl3: Modern Pipelines for Machine Learning and Super Learning.”
 <https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.3251138>.
+<https://doi.org/10.5281/zenodo.3558317>.
 
 </div>
 
 <div id="ref-diaz2019nonparametric">
 
-Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan. n.d.
-“Non-Parametric Efficient Causal Mediation with Intermediate
-Confounders.”
+Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.
+2019. “Non-Parametric Efficient Causal Mediation with Intermediate
+Confounders.” <https://arxiv.org/abs/1912.09936>.
 
 </div>
 

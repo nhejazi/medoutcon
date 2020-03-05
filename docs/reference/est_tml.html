@@ -92,7 +92,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounding</a>
+      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
     </li>
   </ul>
 </li>
@@ -126,9 +126,22 @@
     <p>TMLE for stochastic (in)direct effects under intermediate confounding</p>
     </div>
 
-    <pre class="usage"><span class='fu'>est_tml</span>(<span class='no'>data</span>, <span class='no'>contrast</span>, <span class='no'>g_learners</span>, <span class='no'>e_learners</span>, <span class='no'>m_learners</span>, <span class='no'>q_learners</span>,
-  <span class='no'>r_learners</span>, <span class='no'>u_learners</span>, <span class='no'>v_learners</span>, <span class='no'>w_names</span>, <span class='no'>m_names</span>,
-  <span class='kw'>ext_weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>5</span>)</pre>
+    <pre class="usage"><span class='fu'>est_tml</span>(
+  <span class='no'>data</span>,
+  <span class='no'>contrast</span>,
+  <span class='no'>g_learners</span>,
+  <span class='no'>e_learners</span>,
+  <span class='no'>m_learners</span>,
+  <span class='no'>q_learners</span>,
+  <span class='no'>r_learners</span>,
+  <span class='no'>u_learners</span>,
+  <span class='no'>v_learners</span>,
+  <span class='no'>w_names</span>,
+  <span class='no'>m_names</span>,
+  <span class='kw'>ext_weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>5</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,7 +157,11 @@ wrapper function <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
     </tr>
     <tr>
       <th>contrast</th>
-      <td><p>...</p></td>
+      <td><p>A <code>numeric</code> double indicating the two values of the
+intervention <code>A</code> to be compared. The default value of <code>NULL</code> has
+no effect, as the value of the argument <code>effect</code> is instead used to
+define the contrasts. To override <code>effect</code>, provide a <code>numeric</code>
+double vector, giving the values of a' and a* (e.g., <code><a href='https://rdrr.io/r/base/c.html'>c(0, 1)</a></code>.</p></td>
     </tr>
     <tr>
       <th>g_learners</th>

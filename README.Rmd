@@ -115,7 +115,7 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           Z = example_data$Z,
                           M = example_data[, ..m_names],
                           Y = example_data$Y,
-                          contrast = c(0, 1),
+                          effect = "direct",
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
@@ -126,7 +126,7 @@ tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
                             Z = example_data$Z,
                             M = example_data[, ..m_names],
                             Y = example_data$Y,
-                            contrast = c(0, 1),
+                            effect = "direct",
                             estimator = "tmle",
                             estimator_args = list(cv_folds = 3))
 summary(tmle_medoutcon)
@@ -186,14 +186,14 @@ After using the `medoutcon` R package, please cite the following:
 
 ## License
 
-&copy; 2019-2020 [Nima S. Hejazi](https://nimahejazi.org)
+&copy; 2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:
 ```
 MIT License
 
-Copyright (c) 2019-2020 Nima S. Hejazi
+Copyright (c) 2020 Nima S. Hejazi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -8,18 +8,18 @@
 }
 \arguments{
 \item{object}{An object of class \code{medoutcon}, as produced by invoking
-the function \code{tmle_medoutcon}, for which a confidence interval is to be
-computed.}
+the function \code{tmle_medoutcon}, for which a confidence interval is to
+be computed.}
 
 \item{parm}{A \code{numeric} vector indicating indices of \code{object$est}
 for which to return confidence intervals.}
 
-\item{level}{A \code{numeric} indicating the level of the confidence interval
-to be computed.}
+\item{level}{A \code{numeric} indicating the level of the confidence
+interval to be computed.}
 
 \item{...}{Other arguments. Not currently used.}
 }
 \description{
 Compute confidence intervals for objects of class \code{medoutcon}, which
-contain estimates produced by \code{medoutcon}.
+contain estimates produced by \code{\link{medoutcon}}.
 }

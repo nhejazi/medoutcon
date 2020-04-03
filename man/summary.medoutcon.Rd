@@ -8,8 +8,8 @@
 }
 \arguments{
 \item{object}{An object of class \code{medoutcon}, as produced by invoking
-the function \code{tmle_medoutcon}, for which a confidence interval is to be
-computed.}
+the function \code{\link{medoutcon}}, for which a confidence interval is to
+be computed.}
 
 \item{...}{Other arguments. Not currently used.}
 

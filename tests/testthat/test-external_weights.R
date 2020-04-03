@@ -1,6 +1,6 @@
 context("Estimator performance does not degrade with use of external weights")
-source("eif_utils.R")
-source("data_utils.R")
+source("utils_eif.R")
+source("utils_data.R")
 
 # packages
 library(data.table)

@@ -1,6 +1,6 @@
 context("Estimators of parameter and EIF match manual analogs closely")
-source("eif_utils.R")
-source("data_utils.R")
+source("utils_eif.R")
+source("utils_data.R")
 
 # packages
 library(data.table)
@@ -129,6 +129,23 @@ theta_os <- medoutcon(
 )
 summary(theta_os)
 
+theta_tmle <- medoutcon(
+  W = data[, ..w_names], A = data$A, Z = data$Z,
+  M = data[, ..m_names], Y = data$Y,
+  # effect = "direct",
+  contrast = c(0, 1),
+  g_learners = g_learners,
+  e_learners = e_learners,
+  m_learners = m_learners,
+  q_learners = q_learners,
+  r_learners = r_learners,
+  u_learners = u_learners,
+  v_learners = v_learners,
+  estimator = "tmle",
+  estimator_args = list(cv_folds = 2)
+)
+summary(theta_tmle)
+
 # 5) compute efficient influence function based on observed data
 w <- as_tibble(data)[, w_names]
 a <- data$A
@@ -143,18 +160,32 @@ eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
   pm(m, z, aprime, w) * (y - my(m, z, aprime, w)) + (a == aprime) /
     g(aprime, w) * (u(z, w, aprime, astar) - intu(w, aprime, astar)) +
   (a == astar) / g(astar, w) * (intv(m, w, aprime) - v) + v
-psi_os <- mean(eif)
-var_eif <- var(eif) / n_obs
+psi_indep <- mean(v)
+var_indep <- var(eif) / n_obs
 
-# 6) testing
-test_that("Parameter estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_os, tol = 0.001)
+# 6) testing one-step estimator
+test_that("One-step estimate close to independent EIF estimates", {
+  expect_equal(theta_os$theta, psi_indep, tol = 0.001)
 })
 
-test_that("Variance estimate close to independent EIF variance", {
-  expect_equal(theta_os$var, var_eif, tol = 0.0011)
+test_that("One-step variance estimate close to independent EIF variance", {
+  expect_equal(theta_os$var, var_indep, tol = 0.001)
 })
 
 test_that("Mean of estimated EIF close to that of independent EIF", {
-  expect_equal(abs(mean(theta_os$eif)), abs(mean(eif - psi_os)), tol = 1e-10)
+  expect_equal(abs(mean(theta_os$eif)), abs(mean(eif - psi_indep)), tol = 1e-3)
+})
+
+# 7) testing TML estimator
+test_that("TML estimate close to independent EIF estimates", {
+  expect_equal(theta_tmle$theta, psi_indep, tol = 0.03)
+})
+
+test_that("TML variance estimate close to independent EIF variance", {
+  expect_equal(theta_tmle$var, var_indep, tol = 0.001)
+})
+
+test_that("Mean of estimated EIF close to that of independent EIF", {
+  expect_equal(abs(mean(theta_tmle$eif)), abs(mean(eif - psi_indep)),
+               tol = 1e-3)
 })

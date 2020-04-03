@@ -7,8 +7,8 @@
 scale_to_unit(vals)
 }
 \arguments{
-\item{vals}{A \code{numeric} vector of values to be scaled into the interval
-[0, 1].}
+\item{vals}{A \code{numeric} vector of values to be scaled into the closed
+interval [0, 1].}
 }
 \description{
 Scale Values to the Unit Interval [0, 1]

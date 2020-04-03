@@ -3,6 +3,8 @@
 S3method(confint,medoutcon)
 S3method(print,medoutcon)
 S3method(summary,medoutcon)
+export(est_onestep)
+export(est_tml)
 export(medoutcon)
 importFrom(assertthat,assert_that)
 importFrom(data.table,":=")

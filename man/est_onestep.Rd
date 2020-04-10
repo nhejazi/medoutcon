@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate.R
 \name{est_onestep}
 \alias{est_onestep}
-\title{One-step for stochastic (in)direct effects with intermediate confounding}
+\title{One-step for interventional (in)direct effects with intermediate confounding}
 \usage{
 est_onestep(
   data,
@@ -87,5 +87,5 @@ conditions on the one-step estimator to be relaxed. For compatibility with
 than or equal to 2; the default is to create 10 folds.}
 }
 \description{
-One-step for stochastic (in)direct effects with intermediate confounding
+One-step for interventional (in)direct effects with intermediate confounding
 }

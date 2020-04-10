@@ -105,7 +105,7 @@ make_example_data <- function(n_obs = 1000) {
 
 # set seed and simulate example data
 set.seed(75681)
-example_data <- make_example_data(10000)
+example_data <- make_example_data(1000)
 w_names <- str_subset(colnames(example_data), "w")
 m_names <- str_subset(colnames(example_data), "m")
 

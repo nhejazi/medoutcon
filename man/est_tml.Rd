@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate.R
 \name{est_tml}
 \alias{est_tml}
-\title{TMLE for stochastic (in)direct effects under intermediate confounding}
+\title{TMLE for interventional (in)direct effects under intermediate confounding}
 \usage{
 est_tml(
   data,
@@ -92,5 +92,5 @@ equal to 2; the default is to create 10 folds.}
 to be taken for the iterative procedure to construct a TML estimator.}
 }
 \description{
-TMLE for stochastic (in)direct effects under intermediate confounding
+TMLE for interventional (in)direct effects under intermediate confounding
 }

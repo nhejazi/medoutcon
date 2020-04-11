@@ -93,18 +93,21 @@ if (FALSE) {
   )
 
   ## use SL including HAL for analyzing data
-  g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-    sl_binary_lrnr
+  g_learners <- e_learners <- m_learners <- q_learners <-
+    r_learners <- sl_binary_lrnr
   u_learners <- v_learners <- sl_contin_lrnr
 }
 
 ## use HAL by itself for testing functionality
 hal_lrnr <- Lrnr_hal9001$new(
-  fit_type = "glmnet", max_degree = NULL, n_folds = 5, family = "gaussian",
+  fit_type = "glmnet", max_degree = NULL, n_folds = 3, family = "gaussian",
   lambda.min.ratio = 1 / n_obs
 )
+bound_lrnr <- Lrnr_bound$new(bound = 0.001)
+hal_bounded_lrnr <- Pipeline$new(hal_lrnr, bound_lrnr)
+
 g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  u_learners <- v_learners <- hal_lrnr
+  u_learners <- v_learners <- hal_bounded_lrnr
 
 # 3) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data(n_obs = n_obs)
@@ -165,27 +168,26 @@ var_indep <- var(eif) / n_obs
 
 # 6) testing one-step estimator
 test_that("One-step estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_indep, tol = 0.001)
+  expect_equal(theta_os$theta, psi_indep, tol = 0.01)
 })
 
-test_that("One-step variance estimate close to independent EIF variance", {
+test_that("EIF variance of one-step is close to independent EIF variance", {
   expect_equal(theta_os$var, var_indep, tol = 0.001)
 })
 
-test_that("Mean of estimated EIF close to that of independent EIF", {
-  expect_equal(abs(mean(theta_os$eif)), abs(mean(eif - psi_indep)), tol = 1e-3)
+test_that("Mean of estimated EIF is nearly zero for the one-step", {
+  expect_lt(abs(mean(theta_os$eif)), 1e-10)
 })
 
 # 7) testing TML estimator
 test_that("TML estimate close to independent EIF estimates", {
-  expect_equal(theta_tmle$theta, psi_indep, tol = 0.03)
+  expect_equal(theta_tmle$theta, psi_indep, tol = 0.01)
 })
 
-test_that("TML variance estimate close to independent EIF variance", {
+test_that("EIF variance of TMLE is close to independent EIF variance", {
   expect_equal(theta_tmle$var, var_indep, tol = 0.001)
 })
 
-test_that("Mean of estimated EIF close to that of independent EIF", {
-  expect_equal(abs(mean(theta_tmle$eif)), abs(mean(eif - psi_indep)),
-               tol = 1e-3)
+test_that("Mean of estimated EIF is nearly zero for the TMLE", {
+  expect_lt(abs(mean(theta_tmle$eif)), 1e-10)
 })

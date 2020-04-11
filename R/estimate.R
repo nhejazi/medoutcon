@@ -467,10 +467,6 @@ est_tml <- function(data,
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
   cv_eif_est <- cv_eif_est[obs_valid_idx, ]
 
-  # generate inverse weights
-  ipw_prime <- as.numeric(data$A == contrast[1]) / cv_eif_est$g_prime
-  ipw_star <- as.numeric(data$A == contrast[2]) / cv_eif_est$g_star
-
   # extract nuisance function estimates and auxiliary quantities
   g_prime <- cv_eif_est$g_prime
   e_prime <- cv_eif_est$e_prime
@@ -483,6 +479,10 @@ est_tml <- function(data,
   m_prime_Z_one <- cv_eif_est$m_prime_Z_one
   m_prime_Z_zero <- cv_eif_est$m_prime_Z_zero
   m_prime_Z_natural <- cv_eif_est$m_prime
+
+  # generate inverse weights
+  ipw_prime <- as.numeric(data$A == contrast[1]) / g_prime
+  ipw_star <- as.numeric(data$A == contrast[2]) / g_star
 
   # prepare for iterative targeting
   n_iter <- 0
@@ -521,7 +521,7 @@ est_tml <- function(data,
         stats::as.formula("y_scaled ~ -1 + offset(m_prime_logit) + h_star"),
         data = data.table::as.data.table(list(
           A = data$A,
-          y_scaled = scale_to_unit(data$Y),
+          y_scaled = data$Y,
           m_prime_logit = m_prime_Z_natural_logit,
           h_star = h_star_Z_natural
         )),
@@ -561,23 +561,27 @@ est_tml <- function(data,
 
     # update nuisance estimates via tilting models, for outcome
     m_prime_Z_natural <- stats::plogis(m_prime_Z_natural_logit +
-                                       m_tilt_coef * h_star_Z_natural) %>%
-      scale_from_unit(max_orig = max(m_prime_Z_natural),
-                      min_orig = min(m_prime_Z_natural))
+                                       m_tilt_coef * h_star_Z_natural)
+    #%>%
+      #scale_from_unit(max_orig = max(m_prime_Z_natural),
+                      #min_orig = min(m_prime_Z_natural))
     m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit +
-                                   m_tilt_coef * h_star_Z_one) %>%
-      scale_from_unit(max_orig = max(m_prime_Z_one),
-                      min_orig = min(m_prime_Z_one))
+                                   m_tilt_coef * h_star_Z_one)
+    #%>%
+      #scale_from_unit(max_orig = max(m_prime_Z_one),
+                      #min_orig = min(m_prime_Z_one))
     m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit +
-                                    m_tilt_coef * h_star_Z_zero) %>%
-      scale_from_unit(max_orig = max(m_prime_Z_zero),
-                      min_orig = min(m_prime_Z_zero))
+                                    m_tilt_coef * h_star_Z_zero)
+    #%>%
+      #scale_from_unit(max_orig = max(m_prime_Z_zero),
+                      #min_orig = min(m_prime_Z_zero))
 
     # update nuisance estimates via tilting models, for intermediate confounder
     q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
-                                   cv_eif_est$u_int_diff) %>%
-      scale_from_unit(max_orig = max(q_prime_Z_one),
-                      min_orig = min(q_prime_Z_one))
+                                   cv_eif_est$u_int_diff)
+    #%>%
+      #scale_from_unit(max_orig = max(q_prime_Z_one),
+                      #min_orig = min(q_prime_Z_one))
     q_prime_Z_natural <- data$Z * q_prime_Z_one + (1 - data$Z) *
       (1 - q_prime_Z_one)
 
@@ -605,7 +609,7 @@ est_tml <- function(data,
       stats::as.formula("v_pseudo ~ offset(v_star_logit)"),
       data = data.table::as.data.table(list(
         A = data$A,
-        v_pseudo = scale_to_unit(v_pseudo),
+        v_pseudo = v_pseudo,
         v_star_logit = v_star_logit
       )),
       subset = data$A == contrast[2],
@@ -614,9 +618,11 @@ est_tml <- function(data,
       start = 0
     )
   )
-  v_star <- stats::plogis(v_star_logit + stats::coef(v_tilt_fit)) %>%
-      scale_from_unit(max_orig = max(cv_eif_est$v_star),
-                      min_orig = min(cv_eif_est$v_star))
+  #browser()
+  v_star <- stats::plogis(v_star_logit + stats::coef(v_tilt_fit))
+  #%>%
+      #scale_from_unit(max_orig = max(cv_eif_est$v_star),
+                      #min_orig = min(cv_eif_est$v_star))
 
   # define updated components of efficient influence function
   eif_y <- (data$Y - m_prime_Z_natural) * (ipw_prime * h_star_Z_natural /
@@ -641,7 +647,7 @@ est_tml <- function(data,
   tmle_out <- list(
     theta = tml_est,
     var = tmle_var,
-    eif = (eif_est - mean(eif_est)),
+    eif = (eif_est - tml_est),
     type = "tmle"
   )
   return(tmle_out)

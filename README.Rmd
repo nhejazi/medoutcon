@@ -74,33 +74,31 @@ library(tidyverse)
 library(medoutcon)
 
 # produces a simple data set based on ca causal model with mediation
-make_example_data <- function(n_obs = 1000) {
-  # baseline covariate -- simple, binary
-  W <- replicate(2, rbinom(n_obs, 1, prob = 0.50))
-  W <- as.data.table(W)
-  setnames(W, c("w_1", "w_2"))
+make_example_data <- function(n_obs = 10000) {
+  ## baseline covariate -- simple, binary
+  w_1 <- rbinom(n_obs, 1, prob = 0.6)
+  w_2 <- rbinom(n_obs, 1, prob = 0.3)
+  w_3 <- rbinom(n_obs, 1, prob = pmin(0.2 + (w_1 + w_2) / 3, 1))
+  w <- cbind(w_1, w_2, w_3)
+  w_names <- paste("W", seq_len(ncol(w)), sep = "_")
 
-  # create treatment based on baseline W
-  A <- as.numeric(rbinom(n_obs, 1, prob = (rowSums(W) / 3) + 0.1))
+  ## exposure/treatment
+  a <- as.numeric(rbinom(n_obs, 1, prob = g(1, w)))
 
-  # single mediator-outcome confounder
-  z_prob <- 1 - plogis((A^2 + rowMeans(W)) / (A + rowSums(W^3) + 0.5))
-  Z <- rbinom(n_obs, 1, prob = z_prob)
+  ## mediator-outcome confounder affected by treatment
+  z <- rbinom(n_obs, 1, pz(1, a, w))
 
-  # matrix of mediators
-  m1_prob <- plogis((A^2 - Z) / (A + rowMeans(W) + 0.5))
-  m2_prob <- 1 - plogis((A + rowSums(W)) / (Z + 0.5))
-  M1 <- rbinom(n_obs, 1, prob = m1_prob)
-  M2 <- rbinom(n_obs, 1, prob = m2_prob)
-  M <- as.data.table(list(m_1 = M1, m_2 = M2))
+  ## mediator (possibly multivariate)
+  m <- rbinom(n_obs, 1, pm(1, z, a, w))
+  m_names <- "M"
 
-  # create outcome as a linear function + white noise
-  Y <- rowMeans(M) - Z + A - 0.1 * rowSums(W) +
-    rnorm(n_obs, mean = 0, sd = 0.25)
+  ## outcome
+  y <- rbinom(n_obs, 1, my(m, z, a, w))
 
-  # full data structure
-  data <- as.data.table(cbind(Y, M, Z, A, W))
-  return(data)
+  ## construct data for output
+  dat <- as.data.table(cbind(w = w, a = a, z = z, m = m, y = y))
+  setnames(dat, c(w_names, "A", "Z", m_names, "Y"))
+  return(dat)
 }
 
 # set seed and simulate example data

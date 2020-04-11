@@ -124,18 +124,22 @@ print.medoutcon <- function(x, ...) {
 
 #' Bounding Numerical Precision
 #'
-#' Bounds extreme values to numerical (machine) precision, for use with
-#' sensitive quantities like estimated propensity scores.
+#' Bounds extreme values to a specified tolerance level, for use with sensitive
+#' quantities that must be transformed, e.g., via \code{\link[stats]{qlogis}}.
 #'
 #' @param vals A \code{numeric} vector of values in the interval [0, 1].
+#' @param tol A \code{numeric} indicating the tolerance limit to which extreme
+#'  values should be truncated. Realizations of \code{val} less than \code{tol}
+#'  are truncated to \code{tol} while those greater than (1 - \code{tol}) are
+#'  truncated to (1 - \code{tol}).
 #'
 #' @importFrom assertthat assert_that
 #'
 #' @keywords internal
-bound_precision <- function(vals) {
-  assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
-  vals[vals == 0] <- .Machine$double.neg.eps
-  vals[vals == 1] <- 1 - .Machine$double.neg.eps
+bound_precision <- function(vals, tol = 1e-3) {
+  assertthat::assert_that(!(max(vals) > 1 || min(vals) < 0))
+  vals[vals < tol] <- tol
+  vals[vals > 1 - tol] <- 1 - tol
   return(vals)
 }
 
@@ -154,7 +158,7 @@ bound_precision <- function(vals) {
 #'
 #' @keywords internal
 bound_propensity <- function(vals, bounds = c(0.001, 0.999)) {
-  assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
+  assertthat::assert_that(!(max(vals) > 1 || min(vals) < 0))
   vals[vals < bounds[1]] <- bounds[1]
   vals[vals > bounds[2]] <- bounds[2]
   return(vals)
@@ -175,7 +179,7 @@ scale_to_unit <- function(vals) {
 
 ################################################################################
 
-#' Scale Values from the Unit Interval [0, 1] to the Original Scale
+#' Scale Values from the Unit Interval [0, 1] to Their Original Scale
 #'
 #' @param scaled_vals A \code{numeric} vector of values scaled to lie in the
 #'  closed interval [0, 1] by use of \code{\link{scale_to_unit}}.

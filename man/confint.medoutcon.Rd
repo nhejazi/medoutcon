@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{confint.medoutcon}
 \alias{confint.medoutcon}
-\title{Confidence Intervals for Stochastic Mediation Parameter Objects}
+\title{Confidence Intervals for Interventional Mediation Effects}
 \usage{
 \method{confint}{medoutcon}(object, parm = seq_len(object$theta), level = 0.95, ...)
 }

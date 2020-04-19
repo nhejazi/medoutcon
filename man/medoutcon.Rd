@@ -2,8 +2,7 @@
 % Please edit documentation in R/medoutcon.R
 \name{medoutcon}
 \alias{medoutcon}
-\title{Efficient estimation of stochastic (in)direct effects in the presence of
-mediator-outcome confounders affected by exposure}
+\title{Efficient estimation of interventional (in)direct effects}
 \usage{
 medoutcon(
   W,
@@ -15,15 +14,15 @@ medoutcon(
   ext_weights = NULL,
   effect = c("direct", "indirect"),
   contrast = NULL,
-  g_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  e_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+  g_learners = sl3::Lrnr_glm_fast$new(),
+  e_learners = sl3::Lrnr_glm_fast$new(),
   m_learners = sl3::Lrnr_glm_fast$new(),
-  q_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  r_learners = sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-  u_learners = sl3::Lrnr_hal9001$new(max_degree = NULL),
-  v_learners = sl3::Lrnr_hal9001$new(max_degree = NULL),
+  q_learners = sl3::Lrnr_glm_fast$new(),
+  r_learners = sl3::Lrnr_glm_fast$new(),
+  u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
+  v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
   estimator = c("onestep", "tmle"),
-  estimator_args = list(cv_folds = 10, max_iter = 5)
+  estimator_args = list(cv_folds = 5, max_iter = 5)
 )
 }
 \arguments{
@@ -33,9 +32,9 @@ to a set of baseline covariates.}
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.}
 
-\item{Z}{A \code{numeric} vector corresponding to a mediator-outcome
-confounder affected by treatment (on the causal pathway between intervention
-A, mediator M, and outcome Y, but unaffected itself by the mediator M).}
+\item{Z}{A \code{numeric} vector corresponding to an intermediate confounder
+affected by treatment (on the causal pathway between the intervention A,
+mediators M, and outcome Y, but unaffected itself by the mediators).}
 
 \item{M}{A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 similar corresponding to a set of mediators (on the causal pathway between
@@ -43,16 +42,14 @@ the intervention A and the outcome Y).}
 
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
-\item{obs_weights}{A \code{numeric} vector of observation-level weights to be
-incorporated in all procedures estimating nuisance parameters. The default
-is to give all observations equal weighting.}
+\item{obs_weights}{A \code{numeric} vector of observation-level weights.
+The default is to give all observations equal weighting.}
 
 \item{ext_weights}{A \code{numeric} vector of observation-level weights that
 have been computed externally. Such weights are used in the construction of
-a re-weighted one-step estimator or in solving a re-weighted estimating
-equation in the case of the TML estimator. Note that, unlike the argument
-\code{obs_weights}, these weights are not incorporated in the estimation of
-nuisance parameters. Input weights should be normalized. Use with caution.}
+re-weighted efficient estimators. Unlike \code{obs_weights}, these weights
+are not incorporated in the estimation of nuisance parameters. These input
+weights should be normalized. Use with caution.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct
 or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
@@ -64,43 +61,40 @@ no effect, as the value of the argument \code{effect} is instead used to
 define the contrasts. To override \code{effect}, provide a \code{numeric}
 double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.}
 
-\item{g_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, for use in fitting a model for the propensity
-score, i.e., \eqn{g = P(A | W)}.}
+\item{g_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for the propensity score.}
 
-\item{e_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, for use in fitting a cleverly parameterized
-propensity score that includes the mediators, i.e., \eqn{e = P(A | M, W)}.}
+\item{e_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for a parameterization of the
+propensity score that conditions on the mediators.}
 
-\item{m_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, to be used in fitting the outcome regression.}
+\item{m_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for the outcome regression.}
 
-\item{q_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, to be used in fitting a regression involving
-the mediator-outcome confounder, i.e., \eqn{q(Z | A, W)}.}
+\item{q_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+the intermediate confounder, conditioning on the treatment and potential
+baseline covariates.}
 
-\item{r_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, to be used in fitting a regression involving
-the mediator-outcome confounder, i.e., \eqn{r(Z | A, M, W)}.}
+\item{r_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+the intermediate confounder, conditioning on the mediators, the treatment,
+and potential baseline confounders.}
 
-\item{u_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, to be used in fitting a reduced regression
-useful for computing the efficient one-step estimator, i.e.,
-\eqn{u(Z, A, W) = E[m(A, Z, M, W) * (q(Z | A, W) / r(Z | A, M, W)) *
-(e(a' | M, W) / e(A | M, W)) | Z = z, A = a, W = w]}.}
+\item{u_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+for in the efficient influence function.}
 
-\item{v_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from the \code{sl3} package, to be used in fitting a reduced regression
-useful for computing the efficient one-step estimator, i.e.,
-\eqn{v(A, W) = E[\int_z m(a', z, M, W) * q(z | a', W) d \nu(z) |
-A = a, W = w)]}.}
+\item{v_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+for in the efficient influence function.}
 
 \item{estimator}{The desired estimator of the direct or indirect effect (or
 contrast-specific parameter) to be computed. Both an efficient one-step
@@ -109,11 +103,10 @@ estimator (TMLE) are supported.}
 
 \item{estimator_args}{A \code{list} of extra arguments to be passed (via
 \code{...}) to the function call for the specified estimator. The default
-is so chosen as to allow the number of folds used in computing the one-step
-or TMLE to be easily adjusted. In the case of the TMLE, the number of update
-iterations is also limited.}
+is chosen so as to allow the number of folds used in computing the one-step
+or TML estimators to be easily adjusted. In the case of the TML estimator,
+the number of update (fluctuation) iterations is also limited.}
 }
 \description{
-Efficient estimation of stochastic (in)direct effects in the presence of
-mediator-outcome confounders affected by exposure
+Efficient estimation of interventional (in)direct effects
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{summary.medoutcon}
 \alias{summary.medoutcon}
-\title{Summary for Stochastic Mediation Parameter Objects}
+\title{Summary for Interventional Mediation Effect Objects}
 \usage{
 \method{summary}{medoutcon}(object, ..., ci_level = 0.95)
 }

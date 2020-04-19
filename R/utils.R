@@ -1,4 +1,4 @@
-#' Confidence Intervals for Stochastic Mediation Parameter Objects
+#' Confidence Intervals for Interventional Mediation Effects
 #'
 #' Compute confidence intervals for objects of class \code{medoutcon}, which
 #' contain estimates produced by \code{\link{medoutcon}}.
@@ -53,7 +53,7 @@ confint.medoutcon <- function(object,
 
 ################################################################################
 
-#' Summary for Stochastic Mediation Parameter Objects
+#' Summary for Interventional Mediation Effect Objects
 #'
 #' Print a convenient summary for objects of \code{S3} class \code{medoutcon}.
 #'
@@ -100,7 +100,7 @@ summary.medoutcon <- function(object,
 
 ################################################################################
 
-#' Print Method for Stochastic Mediation Parameter Objects
+#' Print Method for Interventional Mediation Effect Objects
 #'
 #' The \code{print} method for objects of class \code{medoutcon}.
 #'
@@ -136,7 +136,7 @@ print.medoutcon <- function(x, ...) {
 #' @importFrom assertthat assert_that
 #'
 #' @keywords internal
-bound_precision <- function(vals, tol = 1e-3) {
+bound_precision <- function(vals, tol = 1e-5) {
   assertthat::assert_that(!(max(vals) > 1 || min(vals) < 0))
   vals[vals < tol] <- tol
   vals[vals > 1 - tol] <- 1 - tol
@@ -179,7 +179,7 @@ scale_to_unit <- function(vals) {
 
 ################################################################################
 
-#' Scale Values from the Unit Interval [0, 1] to Their Original Scale
+#' Scale Values from the Unit Interval [0, 1] to the Original Scale
 #'
 #' @param scaled_vals A \code{numeric} vector of values scaled to lie in the
 #'  closed interval [0, 1] by use of \code{\link{scale_to_unit}}.

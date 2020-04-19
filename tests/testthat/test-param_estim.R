@@ -8,113 +8,39 @@ library(stringr)
 library(tibble)
 library(hal9001)
 library(sl3)
+library(SuperLearner)
 
 # options
 set.seed(27158)
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
-n_obs <- 5000
+n_obs <- 1000
 
-# 1) set up learners for nuisance parameters
-if (FALSE) {
-  library(caret)
-  library(SuperLearner)
+# 1) use HAL for testing functionality
+bound_lrnr <- Lrnr_bound$new(bound = 0.0001)
+hal_lrnr <- Lrnr_hal9001$new(family = "binomial", type.measure = "mse",
+                             lambda = exp(seq(-1, -10, length = 1000)),
+                             n_folds = 5, max_degree = NULL)
+hal_custom_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.halglmnet")
+hal_custom_bounded_lrnr <- Pipeline$new(hal_custom_lrnr, bound_lrnr)
 
-  # caret hyperparameter-tuning model for random forest
-  SL.caretRF <- function(Y, X, newX, family, obsWeights, ...) {
-    SL.caret(Y, X, newX, family, obsWeights,
-      method = "rf", tuneLength = 3,
-      trControl = caret::trainControl(
-        method = "LGOCV",
-        search = "random",
-        verboseIter = TRUE
-      ), ...
-    )
-  }
-  rf_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretRF")
-
-  # caret hyperparameter-tuning model for xgboost
-  SL.caretXGB <- function(Y, X, newX, family, obsWeights, ...) {
-    SL.caret(Y, X, newX, family, obsWeights,
-      method = "xgbTree",
-      tuneLength = 3,
-      trControl = caret::trainControl(
-        method = "LGOCV",
-        search = "random",
-        verboseIter = TRUE
-      ), ...
-    )
-  }
-  xgb_caret_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.caretXGB")
-
-  ## instantiate learners and SL
-  mean_lrnr <- Lrnr_mean$new()
-  fglm_contin_lrnr <- Lrnr_glm_fast$new()
-  fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
-  hal_lrnr <- Lrnr_hal9001$new(
-    fit_type = "glmnet", n_folds = 5, max_degree = NULL,
-    family = "gaussian", lambda.min.ratio = 1 / n_obs
-  )
-
-  ## SL for continuous outcomes
-  stack_lrnrs_contin <- make_learner(
-    Stack,
-    mean_lrnr,
-    hal_lrnr,
-    fglm_contin_lrnr,
-    rf_caret_lrnr,
-    xgb_caret_lrnr
-  )
-  sl_contin_lrnr <- Lrnr_sl$new(
-    learners = stack_lrnrs_contin,
-    metalearner = Lrnr_nnls$new(),
-    keep_extra = TRUE
-  )
-
-  ## SL for binary outcomes
-  logistic_metalearner <- make_learner(
-    Lrnr_solnp,
-    metalearner_logistic_binomial,
-    loss_loglik_binomial
-  )
-  stack_lrnrs_binary <- make_learner(
-    Stack,
-    mean_lrnr,
-    hal_lrnr,
-    fglm_binary_lrnr,
-    rf_caret_lrnr,
-    xgb_caret_lrnr
-  )
-  sl_binary_lrnr <- Lrnr_sl$new(
-    learners = stack_lrnrs_binary,
-    metalearner = logistic_metalearner,
-    keep_extra = TRUE
-  )
-
-  ## use SL including HAL for analyzing data
-  g_learners <- e_learners <- m_learners <- q_learners <-
-    r_learners <- sl_binary_lrnr
-  u_learners <- v_learners <- sl_contin_lrnr
-}
-
-## use HAL by itself for testing functionality
-hal_lrnr <- Lrnr_hal9001$new(
-  fit_type = "glmnet", max_degree = NULL, n_folds = 3, family = "gaussian",
-  lambda.min.ratio = 1 / n_obs
-)
-bound_lrnr <- Lrnr_bound$new(bound = 0.001)
-hal_bounded_lrnr <- Pipeline$new(hal_lrnr, bound_lrnr)
-
+## nuisance functions with data components as outcomes
 g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  u_learners <- v_learners <- hal_bounded_lrnr
+  hal_custom_bounded_lrnr
 
-# 3) get data and column names for sl3 tasks (for convenience)
+## nuisance functions with pseudo-outcomes need Gaussian HAL
+u_learners <- v_learners <- Lrnr_hal9001$new(family = "gaussian",
+                                             type.measure = "mse",
+                                             lambda.min.ratio = 1 / n_obs,
+                                             max_degree = NULL, n_folds = 5)
+
+# 2) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data(n_obs = n_obs)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
 
-# 4) test different estimators
+# 3) test different estimators
 theta_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = data$Z,
   M = data[, ..m_names], Y = data$Y,
@@ -149,14 +75,12 @@ theta_tmle <- medoutcon(
 )
 summary(theta_tmle)
 
-# 5) compute efficient influence function based on observed data
+# 4) compute estimate and influence function with convenience functions
 w <- as_tibble(data)[, w_names]
 a <- data$A
 z <- data$Z
 m <- data$M
 y <- data$Y
-
-# compute parameter estimate and influence function with convenience functions
 v <- intv(1, w, aprime) * pmaw(1, astar, w) + intv(0, w, aprime) *
   pmaw(0, astar, w)
 eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
@@ -166,9 +90,9 @@ eif <- (a == aprime) / g(aprime, w) * pmaw(m, astar, w) /
 psi_indep <- mean(v)
 var_indep <- var(eif) / n_obs
 
-# 6) testing one-step estimator
+# 5) testing one-step estimator
 test_that("One-step estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_indep, tol = 0.01)
+  expect_equal(theta_os$theta, psi_indep, tol = 0.05)
 })
 
 test_that("EIF variance of one-step is close to independent EIF variance", {
@@ -179,9 +103,9 @@ test_that("Mean of estimated EIF is nearly zero for the one-step", {
   expect_lt(abs(mean(theta_os$eif)), 1e-10)
 })
 
-# 7) testing TML estimator
+# 6) testing TML estimator
 test_that("TML estimate close to independent EIF estimates", {
-  expect_equal(theta_tmle$theta, psi_indep, tol = 0.01)
+  expect_equal(theta_tmle$theta, psi_indep, tol = 0.05)
 })
 
 test_that("EIF variance of TMLE is close to independent EIF variance", {

@@ -1,6 +1,6 @@
 Package: medoutcon
 Title: Efficient Causal Mediation Analysis With Intermediate Confounders
-Version: 0.0.7
+Version: 0.0.8
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -16,14 +16,14 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: Efficient estimators of a interventional (in)direct effects in the
+Description: Efficient estimators of interventional (in)direct effects in the
     presence of mediator-outcome confounding affected by exposure. The effects
     estimated allow for the impact of the treatment on the outcome through a
     direct path to be disentangled from that through mediators, even in the
-    presence of intermediate confounders that complicate this relationship.
+    presence of intermediate confounders that complicate such a relationship.
     Currently supported are non-parametric efficient one-step and targeted
-    minimum loss (TML) estimators, based on the formulation of Díaz, Hejazi,
-    Rudolph, and van der Laan (2019+) <https://arxiv.org/abs/1912.09936>.
+    minimum loss estimators, based on the formulation of Díaz, Hejazi, Rudolph,
+    and van der Laan (2019+) <https://arxiv.org/abs/1912.09936>.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -33,7 +33,8 @@ Imports:
     dplyr,
     origami (>= 1.0.0),
     hal9001 (>= 0.2.5),
-    sl3 (>= 1.3.5)
+    sl3 (>= 1.3.7),
+    glmnet
 Suggests:
     testthat,
     knitr,
@@ -45,9 +46,7 @@ Suggests:
     tibble,
     SuperLearner,
     caret
-Remotes:
-    github::tlverse/hal9001@master,
-    github::tlverse/sl3@master
+Remotes: github::tlverse/sl3@master
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon
 BugReports: https://github.com/nhejazi/medoutcon/issues

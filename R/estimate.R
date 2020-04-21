@@ -544,8 +544,10 @@ est_tml <- function(data,
         start = 0
       )
     )
-    if (!m_tilt_fit$converged || abs(max(stats::coef(m_tilt_fit))) >
-        tiltmod_tol) {
+    if (is.na(stats::coef(m_tilt_fit))) {
+      m_tilt_fit$coefficients <- 0
+    } else if (!m_tilt_fit$converged || abs(max(stats::coef(m_tilt_fit))) >
+               tiltmod_tol) {
       m_tilt_fit$coefficients <- 0
     }
     m_tilt_coef <- unname(stats::coef(m_tilt_fit))
@@ -574,8 +576,10 @@ est_tml <- function(data,
         start = 0
       )
     )
-    if (!q_tilt_fit$converged || abs(max(stats::coef(q_tilt_fit))) >
-        tiltmod_tol) {
+    if (is.na(stats::coef(q_tilt_fit))) {
+      q_tilt_fit$coefficients <- 0
+    } else if (!q_tilt_fit$converged || abs(max(stats::coef(q_tilt_fit))) >
+               tiltmod_tol) {
       q_tilt_fit$coefficients <- 0
     }
     q_tilt_coef <- unname(stats::coef(q_tilt_fit))

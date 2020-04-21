@@ -22,7 +22,7 @@ medoutcon(
   u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
   v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
   estimator = c("onestep", "tmle"),
-  estimator_args = list(cv_folds = 5, max_iter = 5)
+  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 50)
 )
 }
 \arguments{
@@ -105,7 +105,8 @@ estimator (TMLE) are supported.}
 \code{...}) to the function call for the specified estimator. The default
 is chosen so as to allow the number of folds used in computing the one-step
 or TML estimators to be easily adjusted. In the case of the TML estimator,
-the number of update (fluctuation) iterations is also limited.}
+the number of update (fluctuation) iterations is limited, and a tolerance
+is included for the updates introduced by the tilting (fluctuation) models.}
 }
 \description{
 Efficient estimation of interventional (in)direct effects

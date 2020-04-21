@@ -448,7 +448,7 @@ est_tml <- function(data,
                     ext_weights = NULL,
                     cv_folds = 5,
                     max_iter = 10,
-                    tiltmod_tol = 10) {
+                    tiltmod_tol = 50) {
 
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1)
@@ -550,6 +550,14 @@ est_tml <- function(data,
     }
     m_tilt_coef <- unname(stats::coef(m_tilt_fit))
 
+    # update nuisance estimates via tilting models for outcome
+    m_prime_Z_natural <- stats::plogis(m_prime_Z_natural_logit +
+                                       m_tilt_coef * h_star_Z_natural)
+    m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit +
+                                   m_tilt_coef * h_star_Z_one)
+    m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit +
+                                    m_tilt_coef * h_star_Z_zero)
+
     # fit second tilting model - for the intermediate confounding mechanism
     suppressWarnings(
       q_tilt_fit <- stats::glm(
@@ -572,14 +580,6 @@ est_tml <- function(data,
     }
     q_tilt_coef <- unname(stats::coef(q_tilt_fit))
 
-    # update nuisance estimates via tilting models for outcome
-    m_prime_Z_natural <- stats::plogis(m_prime_Z_natural_logit +
-                                       m_tilt_coef * h_star_Z_natural)
-    m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit +
-                                   m_tilt_coef * h_star_Z_one)
-    m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit +
-                                    m_tilt_coef * h_star_Z_zero)
-
     # update nuisance estimates via tilting models for intermediate confounder
     q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
                                    cv_eif_est$u_int_diff)
@@ -590,9 +590,6 @@ est_tml <- function(data,
     n_iter <- n_iter + 1
     eif_stop_crit <- max(abs(c(m_tilt_coef, q_tilt_coef))) < tilt_stop_crit
   }
-
-  # one more update to catch loop termination
-  h_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * h_star_mult
 
   # compute updated substitution estimator and prepare for tilting regression
   v_star_logit <- cv_eif_est$v_star %>%
@@ -626,6 +623,7 @@ est_tml <- function(data,
     scale_from_unit(max_orig = y_bounds[2], min_orig = y_bounds[1])
   m_prime_Z_natural_rescaled <- m_prime_Z_natural %>%
     scale_from_unit(max_orig = y_bounds[2], min_orig = y_bounds[1])
+  h_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * h_star_mult
 
   # define residuals and updated components of efficient influence function
   resid_y <- y_rescaled - m_prime_Z_natural_rescaled

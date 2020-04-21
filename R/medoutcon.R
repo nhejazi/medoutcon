@@ -62,7 +62,8 @@
 #'  \code{...}) to the function call for the specified estimator. The default
 #'  is chosen so as to allow the number of folds used in computing the one-step
 #'  or TML estimators to be easily adjusted. In the case of the TML estimator,
-#'  the number of update (fluctuation) iterations is also limited.
+#'  the number of update (fluctuation) iterations is limited, and a tolerance
+#'  is included for the updates introduced by the tilting (fluctuation) models.
 #'
 #' @importFrom data.table as.data.table setnames set
 #' @importFrom stats binomial var
@@ -86,11 +87,16 @@ medoutcon <- function(W,
                       u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       estimator = c("onestep", "tmle"),
-                      estimator_args = list(cv_folds = 5, max_iter = 5)) {
+                      estimator_args = list(cv_folds = 5, max_iter = 10,
+                                            tiltmod_tol = 50)) {
   # set defaults
   effect <- match.arg(effect)
   estimator <- match.arg(estimator)
   estimator_args <- unlist(estimator_args, recursive = FALSE)
+  est_args_os <- estimator_args[names(estimator_args) %in%
+                                names(formals(est_onestep))]
+  est_args_tmle <- estimator_args[names(estimator_args) %in%
+                                  names(formals(est_tml))]
 
   # construct input data structure
   data <- data.table::as.data.table(cbind(Y, M, Z, A, W, obs_weights))
@@ -137,7 +143,7 @@ medoutcon <- function(W,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
         ext_weights = ext_weights,
-        estimator_args
+        est_args_os
       )
       est_out <- do.call(est_onestep, onestep_est_args)
     } else if (estimator == "tmle") {
@@ -156,7 +162,7 @@ medoutcon <- function(W,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
         ext_weights = ext_weights,
-        estimator_args
+        est_args_tmle
       )
       est_out <- do.call(est_tml, tmle_est_args)
     }

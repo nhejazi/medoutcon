@@ -20,7 +20,7 @@ est_tml(
   ext_weights = NULL,
   cv_folds = 5,
   max_iter = 10,
-  tiltmod_tol = 10
+  tiltmod_tol = 50
 )
 }
 \arguments{

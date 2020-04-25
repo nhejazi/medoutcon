@@ -19,8 +19,8 @@ est_tml(
   y_bounds,
   ext_weights = NULL,
   cv_folds = 5,
-  max_iter = 10,
-  tiltmod_tol = 50
+  max_iter = 5,
+  tiltmod_tol = 10
 )
 }
 \arguments{

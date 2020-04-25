@@ -22,7 +22,7 @@ medoutcon(
   u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
   v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
   estimator = c("onestep", "tmle"),
-  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 50)
+  estimator_args = list(cv_folds = 5, max_iter = 5, tiltmod_tol = 10)
 )
 }
 \arguments{

@@ -66,8 +66,8 @@
 #'  is included for the updates introduced by the tilting (fluctuation) models.
 #'
 #' @importFrom data.table as.data.table setnames set
-#' @importFrom stats binomial var
 #' @importFrom sl3 Lrnr_glm_fast Lrnr_hal9001
+#' @importFrom stats var
 #'
 #' @export
 medoutcon <- function(W,
@@ -87,8 +87,8 @@ medoutcon <- function(W,
                       u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       estimator = c("onestep", "tmle"),
-                      estimator_args = list(cv_folds = 5, max_iter = 10,
-                                            tiltmod_tol = 50)) {
+                      estimator_args = list(cv_folds = 5, max_iter = 5,
+                                            tiltmod_tol = 10)) {
   # set defaults
   effect <- match.arg(effect)
   estimator <- match.arg(estimator)

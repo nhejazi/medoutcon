@@ -303,7 +303,7 @@ est_onestep <- function(data,
                         m_names,
                         y_bounds,
                         ext_weights = NULL,
-                        cv_folds = 10) {
+                        cv_folds = 5) {
 
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1)
@@ -334,29 +334,30 @@ est_onestep <- function(data,
   )
 
   # get estimated efficient influence function; re-scale substitution estimator
-  eif_est <- do.call(c, lapply(cv_eif_results[[1]], `[[`, "D_star"))
-  v_star <- do.call(c, lapply(cv_eif_results[[1]], `[[`, "v_star"))
-  v_star_rescaled <- v_star %>%
-    scale_from_unit(max_orig = y_bounds[2], min_orig = y_bounds[1])
-  eif_est_centered <- eif_est - v_star
-  eif_est_rescaled <- eif_est_centered + v_star_rescaled
+  cv_eif_est <- do.call(c, lapply(cv_eif_results[[1]], `[[`, "D_star"))
+  obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
+  cv_eif_est <- cv_eif_est[obs_valid_idx]
+
+  # re-scale efficient influence function
+  eif_est_rescaled <- cv_eif_est %>%
+    scale_from_unit(y_bounds[2], y_bounds[1])
 
   # compute one-step estimate and variance from efficient influence function
   if (is.null(ext_weights)) {
     os_est <- mean(eif_est_rescaled)
-    os_var <- stats::var(eif_est_rescaled) / length(eif_est_rescaled)
+    eif_est_out <- eif_est_rescaled
   } else {
     # compute a re-weighted one-step, with re-weighted influence function
     os_est <- stats::weighted.mean(eif_est_rescaled, ext_weights)
-    eif_est <- eif_est_rescaled * ext_weights
-    os_var <- stats::var(eif_est_rescaled) / length(eif_est_rescaled)
+    eif_est_out <- eif_est_rescaled * ext_weights
   }
+  os_var <- stats::var(eif_est_out) / length(eif_est_out)
 
   # output
   os_est_out <- list(
     theta = os_est,
     var = os_var,
-    eif = (eif_est_rescaled - os_est),
+    eif = (eif_est_out - os_est),
     type = "onestep"
   )
   return(os_est_out)
@@ -429,7 +430,8 @@ est_onestep <- function(data,
 #'
 #' @importFrom dplyr "%>%"
 #' @importFrom assertthat assert_that
-#' @importFrom stats var glm as.formula qlogis plogis coef weighted.mean
+#' @importFrom stats var glm as.formula qlogis plogis coef predict
+#'  weighted.mean
 #' @importFrom origami make_folds cross_validate folds_vfold
 #'
 #' @export
@@ -447,8 +449,8 @@ est_tml <- function(data,
                     y_bounds,
                     ext_weights = NULL,
                     cv_folds = 5,
-                    max_iter = 10,
-                    tiltmod_tol = 50) {
+                    max_iter = 5,
+                    tiltmod_tol = 10) {
 
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1)
@@ -492,24 +494,29 @@ est_tml <- function(data,
   q_prime_Z_natural <- cv_eif_est$q_prime_Z_natural
   r_prime_Z_one <- cv_eif_est$r_prime_Z_one
   r_prime_Z_natural <- cv_eif_est$r_prime_Z_natural
-
   m_prime_Z_one <- cv_eif_est$m_prime_Z_one
   m_prime_Z_zero <- cv_eif_est$m_prime_Z_zero
   m_prime_Z_natural <- cv_eif_est$m_prime
+  h_star_mult <- (g_prime / g_star) * (e_star / e_prime)
 
   # generate inverse weights
   ipw_prime <- as.numeric(data$A == contrast[1]) / g_prime
   ipw_star <- as.numeric(data$A == contrast[2]) / g_star
 
   # prepare for iterative targeting
-  n_iter <- 0
   eif_stop_crit <- FALSE
-  tilt_stop_crit <- 0.001 / log(nrow(data))
+  n_iter <- 0
+  n_obs <- nrow(data)
+  se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
+  tilt_stop_crit <- se_eif / log(n_obs)
+  #tilt_stop_crit <- 0.001 / log(nrow(data))
 
-  # perform iterative targeting for TMLE
+  # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
+    # iterate the iterator
+    n_iter <- n_iter + 1
+
     # compute auxiliary covariate
-    h_star_mult <- (g_prime / g_star) * (e_star / e_prime)
     h_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * h_star_mult
     h_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) * h_star_mult
     h_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * h_star_mult
@@ -538,8 +545,7 @@ est_tml <- function(data,
           m_prime_logit = m_prime_Z_natural_logit,
           h_star = h_star_Z_natural
         )),
-        subset = data$A == contrast[1],
-        weights = data$obs_weights / g_prime,
+        weights = data$obs_weights * ((data$A == contrast[1]) / g_prime),
         family = "binomial",
         start = 0
       )
@@ -560,18 +566,19 @@ est_tml <- function(data,
     m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit +
                                     m_tilt_coef * h_star_Z_zero)
 
+    # compute efficient score for outcome regression component
+    m_score <- ipw_prime * h_star_Z_natural * (data$Y - m_prime_Z_natural)
+
     # fit second tilting model - for the intermediate confounding mechanism
     suppressWarnings(
       q_tilt_fit <- stats::glm(
         stats::as.formula("Z ~ -1 + offset(q_prime_logit) + u_prime_diff"),
         data = data.table::as.data.table(list(
-          A = data$A,
           Z = data$Z,
           u_prime_diff = cv_eif_est$u_int_diff,
           q_prime_logit = q_prime_Z_one_logit
         )),
-        subset = data$A == contrast[1],
-        weights = data$obs_weights / g_prime,
+        weights = data$obs_weights * ((data$A == contrast[1]) / g_prime),
         family = "binomial",
         start = 0
       )
@@ -587,74 +594,71 @@ est_tml <- function(data,
     # update nuisance estimates via tilting models for intermediate confounder
     q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
                                    cv_eif_est$u_int_diff)
-    q_prime_Z_natural <- data$Z * q_prime_Z_one + (1 - data$Z) *
-      (1 - q_prime_Z_one)
+    q_prime_Z_natural <- (data$Z * q_prime_Z_one) + ((1 - data$Z) *
+      (1 - q_prime_Z_one))
 
-    # iterate the iterator and check convergence
-    n_iter <- n_iter + 1
-    eif_stop_crit <- max(abs(c(m_tilt_coef, q_tilt_coef))) < tilt_stop_crit
+    # compute efficient score for intermediate confounder component
+    q_score <- ipw_prime * cv_eif_est$u_int_diff * (data$Z - q_prime_Z_one)
+
+    # check convergence
+    #eif_stop_crit <- max(abs(c(m_tilt_coef, q_tilt_coef))) < tilt_stop_crit
+    #eif_stop_crit <- abs(mean(eif_est - v_star_tmle_rescaled)) < tilt_stop_crit
+    eif_stop_crit <- max(abs(c(mean(m_score), mean(q_score)))) < tilt_stop_crit
   }
 
   # compute updated substitution estimator and prepare for tilting regression
-  v_star_logit <- cv_eif_est$v_star %>%
-    bound_precision() %>%
-    stats::qlogis()
   v_pseudo <- ((m_prime_Z_one * q_prime_Z_one) +
     (m_prime_Z_zero * (1 - q_prime_Z_one))) %>%
     bound_precision()
+  v_star_logit <- cv_eif_est$v_star %>%
+    bound_precision() %>%
+    stats::qlogis()
 
   # fit tilting model for substitution estimator
   suppressWarnings(
     v_tilt_fit <- stats::glm(
       stats::as.formula("v_pseudo ~ offset(v_star_logit)"),
       data = data.table::as.data.table(list(
-        A = data$A,
         v_pseudo = v_pseudo,
         v_star_logit = v_star_logit
       )),
-      subset = data$A == contrast[2],
-      weights = data$obs_weights / g_star,
+      weights = data$obs_weights * ((data$A == contrast[2]) / g_star),
       family = "binomial",
       start = 0
     )
   )
-  v_star_tmle <- stats::plogis(v_star_logit + stats::coef(v_tilt_fit))
-
-  # re-scale back TML estimate, outcome regression, and outcome variable Y
-  v_star_tmle_rescaled <- v_star_tmle %>%
-    scale_from_unit(max_orig = y_bounds[2], min_orig = y_bounds[1])
-  y_rescaled <- data$Y %>%
-    scale_from_unit(max_orig = y_bounds[2], min_orig = y_bounds[1])
-  m_prime_Z_natural_rescaled <- m_prime_Z_natural %>%
-    scale_from_unit(max_orig = y_bounds[2], min_orig = y_bounds[1])
-  h_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * h_star_mult
+  v_star_tmle <- unname(stats::predict(v_tilt_fit, type = "response"))
 
   # define residuals and updated components of efficient influence function
-  resid_y <- y_rescaled - m_prime_Z_natural_rescaled
-  resid_u <- data$Z - q_prime_Z_one
-  resid_v <- v_pseudo - v_star_tmle
-  eif_y <- resid_y * (ipw_prime * h_star_Z_natural /
-                      mean(ipw_prime * h_star_Z_natural))
-  eif_u <- resid_u * (ipw_prime / mean(ipw_prime)) * cv_eif_est$u_int_diff
-  eif_v <- resid_v * (ipw_star / mean(ipw_star))
-  eif_est <- eif_y + eif_u + eif_v + v_star_tmle_rescaled
+  eif_y <- (data$Y - m_prime_Z_natural) * (ipw_prime * h_star_Z_natural /
+                                           mean(ipw_prime * h_star_Z_natural))
+  eif_u <- (data$Z - q_prime_Z_one) * (ipw_prime / mean(ipw_prime)) *
+    cv_eif_est$u_int_diff
+  eif_v <- (v_pseudo - v_star_tmle) * (ipw_star / mean(ipw_star))
+  eif_est <- eif_y + eif_u + eif_v + v_star_tmle
+
+  # re-scale efficient influence function
+  v_star_tmle_rescaled <- v_star_tmle %>%
+    scale_from_unit(y_bounds[2], y_bounds[1])
+  eif_est_rescaled <- eif_est %>%
+    scale_from_unit(y_bounds[2], y_bounds[1])
 
   # compute TML estimator and variance from efficient influence function
   if (is.null(ext_weights)) {
     tml_est <- mean(v_star_tmle_rescaled)
-    tmle_var <- stats::var(eif_est) / length(eif_est)
+    eif_est_out <- eif_est_rescaled
   } else {
     # compute a re-weighted TMLE, with re-weighted influence function
     tml_est <- stats::weighted.mean(v_star_tmle_rescaled, ext_weights)
-    eif_est <- eif_est * ext_weights
-    tmle_var <- stats::var(eif_est) / length(eif_est)
+    eif_est_out <- eif_est_rescaled * ext_weights
   }
+  tmle_var <- stats::var(eif_est_out) / length(eif_est_out)
 
   # output
   tmle_out <- list(
     theta = tml_est,
     var = tmle_var,
-    eif = (eif_est - tml_est),
+    eif = (eif_est_out - tml_est),
     type = "tmle"
   )
   return(tmle_out)

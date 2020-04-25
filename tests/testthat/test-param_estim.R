@@ -15,19 +15,19 @@ set.seed(27158)
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
-n_obs <- 1000
+n_obs <- 5000
 
-# 1) use HAL for testing functionality
-bound_lrnr <- Lrnr_bound$new(bound = 0.0001)
-hal_lrnr <- Lrnr_hal9001$new(family = "binomial", type.measure = "mse",
-                             lambda = exp(seq(-1, -10, length = 1000)),
-                             n_folds = 5, max_degree = NULL)
+# 1) use custom HAL and SL for testing functionality
+mean_lrnr <- Lrnr_mean$new()
 hal_custom_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.halglmnet")
-hal_custom_bounded_lrnr <- Pipeline$new(hal_custom_lrnr, bound_lrnr)
+logistic_metalearner <- make_learner(Lrnr_solnp,
+                                     metalearner_logistic_binomial,
+                                     loss_loglik_binomial)
+sl <- Lrnr_sl$new(learners = list(hal_custom_lrnr, mean_lrnr),
+                  metalearner = logistic_metalearner)
 
 ## nuisance functions with data components as outcomes
-g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  hal_custom_bounded_lrnr
+g_learners <- e_learners <- m_learners <- q_learners <- r_learners <- sl
 
 ## nuisance functions with pseudo-outcomes need Gaussian HAL
 u_learners <- v_learners <- Lrnr_hal9001$new(family = "gaussian",

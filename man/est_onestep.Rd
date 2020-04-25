@@ -18,7 +18,7 @@ est_onestep(
   m_names,
   y_bounds,
   ext_weights = NULL,
-  cv_folds = 10
+  cv_folds = 5
 )
 }
 \arguments{

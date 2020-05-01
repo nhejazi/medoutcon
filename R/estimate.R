@@ -187,7 +187,6 @@ cv_eif <- function(fold,
 
     # return partial pseudo-outcome for v nuisance regression
     out_valid <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
-
     return(out_valid)
   })
   u_int_eif <- do.call(`-`, u_int_eif)
@@ -497,11 +496,11 @@ est_tml <- function(data,
   m_prime_Z_one <- cv_eif_est$m_prime_Z_one
   m_prime_Z_zero <- cv_eif_est$m_prime_Z_zero
   m_prime_Z_natural <- cv_eif_est$m_prime
-  h_star_mult <- (g_prime / g_star) * (e_star / e_prime)
 
-  # generate inverse weights
+  # generate inverse weights and multiplier for auxiliary covariates
   ipw_prime <- as.numeric(data$A == contrast[1]) / g_prime
   ipw_star <- as.numeric(data$A == contrast[2]) / g_star
+  h_star_mult <- (g_prime / g_star) * (e_star / e_prime)
 
   # prepare for iterative targeting
   eif_stop_crit <- FALSE
@@ -509,14 +508,14 @@ est_tml <- function(data,
   n_obs <- nrow(data)
   se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
   tilt_stop_crit <- se_eif / log(n_obs)
-  #tilt_stop_crit <- 0.001 / log(nrow(data))
 
+  browser()
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
     # iterate the iterator
     n_iter <- n_iter + 1
 
-    # compute auxiliary covariate
+    # compute auxiliary covariates from updated estimates
     h_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * h_star_mult
     h_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) * h_star_mult
     h_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * h_star_mult
@@ -531,21 +530,18 @@ est_tml <- function(data,
     m_prime_Z_zero_logit <- m_prime_Z_zero %>%
       bound_precision() %>%
       stats::qlogis()
-    q_prime_Z_one_logit <- q_prime_Z_one %>%
-      bound_precision() %>%
-      stats::qlogis()
 
-    # fit first tilting model - for the outcome mechanism
+    # fit tilting model for the outcome mechanism
     suppressWarnings(
       m_tilt_fit <- stats::glm(
         stats::as.formula("y_scaled ~ -1 + offset(m_prime_logit) + h_star"),
         data = data.table::as.data.table(list(
-          A = data$A,
           y_scaled = data$Y,
           m_prime_logit = m_prime_Z_natural_logit,
           h_star = h_star_Z_natural
         )),
-        weights = data$obs_weights * ((data$A == contrast[1]) / g_prime),
+        weights = data$obs_weights *
+          (as.numeric(data$A == contrast[1]) / g_prime),
         family = "binomial",
         start = 0
       )
@@ -569,7 +565,38 @@ est_tml <- function(data,
     # compute efficient score for outcome regression component
     m_score <- ipw_prime * h_star_Z_natural * (data$Y - m_prime_Z_natural)
 
-    # fit second tilting model - for the intermediate confounding mechanism
+    # NOTE: assuming Z in {0,1}, other cases not supported yet
+    u_prime <- u_out$u_pred
+    u_int_eif <- lapply(c(1, 0), function(z_val) {
+      # intervene on training and validation data sets
+      valid_data_z_interv <- data.table::copy(valid_data)
+      valid_data_z_interv[, `:=`(
+        Z = z_val,
+        A = contrast[1],
+        U_pseudo = u_prime
+      )]
+
+      # predict u(z, a', w) using intervened data with treatment set A = a'
+      u_task_valid_z_interv <- sl3::sl3_Task$new(
+        data = valid_data_z_interv,
+        weights = "obs_weights",
+        covariates = c("Z", "A", w_names),
+        outcome = "U_pseudo",
+        outcome_type = "continuous"
+      )
+
+      # return partial pseudo-outcome for v nuisance regression
+      out_valid <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
+      return(out_valid)
+    })
+    u_int_eif <- do.call(`-`, u_int_eif)
+
+    # perform iterative targeting for intermediate confounding mechanism
+    q_prime_Z_one_logit <- q_prime_Z_one %>%
+      bound_precision() %>%
+      stats::qlogis()
+
+    # fit tilting model for the intermediate confounding mechanism
     suppressWarnings(
       q_tilt_fit <- stats::glm(
         stats::as.formula("Z ~ -1 + offset(q_prime_logit) + u_prime_diff"),
@@ -578,7 +605,8 @@ est_tml <- function(data,
           u_prime_diff = cv_eif_est$u_int_diff,
           q_prime_logit = q_prime_Z_one_logit
         )),
-        weights = data$obs_weights * ((data$A == contrast[1]) / g_prime),
+        weights = data$obs_weights *
+          (as.numeric(data$A == contrast[1]) / g_prime),
         family = "binomial",
         start = 0
       )
@@ -591,20 +619,23 @@ est_tml <- function(data,
     }
     q_tilt_coef <- unname(stats::coef(q_tilt_fit))
 
-    # update nuisance estimates via tilting models for intermediate confounder
+    # update nuisance estimates via tilting model for intermediate confounder
     q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
                                    cv_eif_est$u_int_diff)
     q_prime_Z_natural <- (data$Z * q_prime_Z_one) + ((1 - data$Z) *
       (1 - q_prime_Z_one))
 
-    # compute efficient score for intermediate confounder component
+    # compute efficient score for intermediate confounding component
     q_score <- ipw_prime * cv_eif_est$u_int_diff * (data$Z - q_prime_Z_one)
 
     # check convergence
-    #eif_stop_crit <- max(abs(c(m_tilt_coef, q_tilt_coef))) < tilt_stop_crit
-    #eif_stop_crit <- abs(mean(eif_est - v_star_tmle_rescaled)) < tilt_stop_crit
-    eif_stop_crit <- max(abs(c(mean(m_score), mean(q_score)))) < tilt_stop_crit
+    eif_stop_crit <- abs(c(mean(m_score), mean(q_score))) < tilt_stop_crit
   }
+
+  # update auxiliary covariates after completion of iterative targeting
+  h_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * h_star_mult
+  h_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) * h_star_mult
+  h_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * h_star_mult
 
   # compute updated substitution estimator and prepare for tilting regression
   v_pseudo <- ((m_prime_Z_one * q_prime_Z_one) +
@@ -630,7 +661,7 @@ est_tml <- function(data,
   v_star_tmle <- unname(stats::predict(v_tilt_fit, type = "response"))
 
   # define residuals and updated components of efficient influence function
-  eif_y <- (data$Y - m_prime_Z_natural) * (ipw_prime * h_star_Z_natural /
+  eif_y <- (data$Y - m_prime_Z_natural) * ((ipw_prime * h_star_Z_natural) /
                                            mean(ipw_prime * h_star_Z_natural))
   eif_u <- (data$Z - q_prime_Z_one) * (ipw_prime / mean(ipw_prime)) *
     cv_eif_est$u_int_diff

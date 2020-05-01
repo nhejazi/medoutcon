@@ -678,7 +678,6 @@ fit_nuisance_v <- function(train_data,
 
     ## outcome regression after intervening on mediator-outcome confounder
     m_pred_train_z_interv <- m_out$m_fit$predict(m_reg_train_v_subtask)
-
     q_train_prime_z_val <- (z_val * q_train_prime_Z_one) +
       (1 - z_val) * (1 - q_train_prime_Z_one)
 
@@ -699,7 +698,6 @@ fit_nuisance_v <- function(train_data,
 
     ## outcome regression after intervening on mediator-outcome confounder
     m_pred_valid_z_interv <- m_out$m_fit$predict(m_reg_valid_v_subtask)
-
     q_valid_prime_z_val <- (z_val * q_valid_prime_Z_one) +
       (1 - z_val) * (1 - q_valid_prime_Z_one)
 

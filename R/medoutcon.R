@@ -118,7 +118,7 @@ medoutcon <- function(W,
     # select appropriate component for direct vs indirect effects
     is_effect_direct <- (effect == "direct")
     contrast_grid <- list(switch(2 - is_effect_direct, c(0, 0), c(1, 1)))
-    # this term is needed in the decomposition for both effects
+    # term needed in the decomposition for both effects
     contrast_grid[[2]] <- c(1, 0)
   } else {
     # otherwise, simply estimate for the user-given contrast
@@ -142,9 +142,10 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
-        ext_weights = ext_weights,
-        est_args_os
+        ext_weights = ext_weights
       )
+      onestep_est_args <- unlist(list(onestep_est_args, est_args_os),
+                                 recursive = FALSE)
       est_out <- do.call(est_onestep, onestep_est_args)
     } else if (estimator == "tmle") {
       # TARGETED MINIMUM LOSS ESTIMATOR
@@ -161,9 +162,10 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
-        ext_weights = ext_weights,
-        est_args_tmle
+        ext_weights = ext_weights
       )
+      tmle_est_args <- unlist(list(tmle_est_args, est_args_tmle),
+                              recursive = FALSE)
       est_out <- do.call(est_tml, tmle_est_args)
     }
 

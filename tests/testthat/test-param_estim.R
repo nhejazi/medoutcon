@@ -54,7 +54,7 @@ theta_os <- medoutcon(
   u_learners = u_learners,
   v_learners = v_learners,
   estimator = "onestep",
-  estimator_args = list(cv_folds = 2)
+  estimator_args = list(cv_folds = 2, max_iter = 0, tiltmod_tol = 10)
 )
 summary(theta_os)
 
@@ -71,7 +71,7 @@ theta_tmle <- medoutcon(
   u_learners = u_learners,
   v_learners = v_learners,
   estimator = "tmle",
-  estimator_args = list(cv_folds = 2)
+  estimator_args = list(cv_folds = 2, max_iter = 1, tiltmod_tol = 10)
 )
 summary(theta_tmle)
 

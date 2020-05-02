@@ -17,28 +17,31 @@ aprime <- contrast[1]
 astar <- contrast[2]
 n_obs <- 5000
 
-# 1) use custom HAL and SL for testing functionality
-mean_lrnr <- Lrnr_mean$new()
-hal_custom_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.halglmnet")
-logistic_metalearner <- make_learner(Lrnr_solnp,
-                                     metalearner_logistic_binomial,
-                                     loss_loglik_binomial)
-sl <- Lrnr_sl$new(learners = list(hal_custom_lrnr, mean_lrnr),
-                  metalearner = logistic_metalearner)
-
-## nuisance functions with data components as outcomes
-g_learners <- e_learners <- m_learners <- q_learners <- r_learners <- sl
-
-## nuisance functions with pseudo-outcomes need Gaussian HAL
-u_learners <- v_learners <- Lrnr_hal9001$new(family = "gaussian",
-                                             type.measure = "mse",
-                                             lambda.min.ratio = 1 / n_obs,
-                                             max_degree = NULL, n_folds = 5)
-
-# 2) get data and column names for sl3 tasks (for convenience)
+# 1) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data(n_obs = n_obs)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
+
+# 2) use custom HAL and SL for testing functionality
+mean_lrnr <- Lrnr_mean$new()
+hal_custom_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.halglmnet")
+hal_gaussian_lrnr <- Lrnr_hal9001$new(family = "gaussian",
+                                      type.measure = "mse", n_folds = 5,
+                                      use_min = FALSE, max_degree = NULL,
+                                      lambda.min.ratio = 1 / n_obs)
+sl <- Lrnr_sl$new(learners = list(hal_custom_lrnr,
+                                  hal_gaussian_lrnr,
+                                  mean_lrnr),
+                  metalearner = Lrnr_nnls$new())
+bound_lrnr <- Lrnr_bound$new(bound = 1e-6)
+sl_bounded <- Pipeline$new(sl, bound_lrnr)
+
+## nuisance functions with data components as outcomes
+g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+  sl_bounded
+
+## nuisance functions with pseudo-outcomes need Gaussian HAL
+u_learners <- v_learners <- hal_gaussian_lrnr
 
 # 3) test different estimators
 theta_os <- medoutcon(
@@ -71,7 +74,7 @@ theta_tmle <- medoutcon(
   u_learners = u_learners,
   v_learners = v_learners,
   estimator = "tmle",
-  estimator_args = list(cv_folds = 2, max_iter = 1, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 2, max_iter = 5, tiltmod_tol = 10)
 )
 summary(theta_tmle)
 
@@ -92,26 +95,26 @@ var_indep <- var(eif) / n_obs
 
 # 5) testing one-step estimator
 test_that("One-step estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_indep, tol = 0.05)
+  expect_equal(theta_os$theta, psi_indep, tol = 0.005)
 })
 
 test_that("EIF variance of one-step is close to independent EIF variance", {
-  expect_equal(theta_os$var, var_indep, tol = 0.001)
+  expect_equal(theta_os$var, var_indep, tol = 0.0001)
 })
 
 test_that("Mean of estimated EIF is nearly zero for the one-step", {
-  expect_lt(abs(mean(theta_os$eif)), 1e-10)
+  expect_lt(abs(mean(theta_os$eif)), 1e-7)
 })
 
 # 6) testing TML estimator
 test_that("TML estimate close to independent EIF estimates", {
-  expect_equal(theta_tmle$theta, psi_indep, tol = 0.05)
+  expect_equal(theta_tmle$theta, psi_indep, tol = 0.005)
 })
 
 test_that("EIF variance of TMLE is close to independent EIF variance", {
-  expect_equal(theta_tmle$var, var_indep, tol = 0.001)
+  expect_equal(theta_tmle$var, var_indep, tol = 0.0001)
 })
 
 test_that("Mean of estimated EIF is nearly zero for the TMLE", {
-  expect_lt(abs(mean(theta_tmle$eif)), 1e-10)
+  expect_lt(abs(mean(theta_tmle$eif)), 1e-7)
 })

@@ -335,7 +335,7 @@ est_onestep <- function(data,
   # get estimated efficient influence function; re-scale substitution estimator
   cv_eif_est <- do.call(c, lapply(cv_eif_results[[1]], `[[`, "D_star"))
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
-  cv_eif_est <- cv_eif_est[obs_valid_idx]
+  cv_eif_est <- cv_eif_est[order(obs_valid_idx)]
 
   # re-scale efficient influence function
   eif_est_rescaled <- cv_eif_est %>%
@@ -482,7 +482,7 @@ est_tml <- function(data,
   # concatenate nuisance function and influence function estimates across folds
   cv_eif_est <- do.call(rbind, cv_eif_results[[1]])
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
-  cv_eif_est <- cv_eif_est[obs_valid_idx, ]
+  cv_eif_est <- cv_eif_est[order(obs_valid_idx), ]
 
   # extract nuisance function estimates and auxiliary quantities
   g_prime <- cv_eif_est$g_prime
@@ -509,12 +509,8 @@ est_tml <- function(data,
   se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
   tilt_stop_crit <- se_eif / log(n_obs)
 
-  browser()
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
-    # iterate the iterator
-    n_iter <- n_iter + 1
-
     # compute auxiliary covariates from updated estimates
     h_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * h_star_mult
     h_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) * h_star_mult
@@ -565,32 +561,6 @@ est_tml <- function(data,
     # compute efficient score for outcome regression component
     m_score <- ipw_prime * h_star_Z_natural * (data$Y - m_prime_Z_natural)
 
-    # NOTE: assuming Z in {0,1}, other cases not supported yet
-    u_prime <- u_out$u_pred
-    u_int_eif <- lapply(c(1, 0), function(z_val) {
-      # intervene on training and validation data sets
-      valid_data_z_interv <- data.table::copy(valid_data)
-      valid_data_z_interv[, `:=`(
-        Z = z_val,
-        A = contrast[1],
-        U_pseudo = u_prime
-      )]
-
-      # predict u(z, a', w) using intervened data with treatment set A = a'
-      u_task_valid_z_interv <- sl3::sl3_Task$new(
-        data = valid_data_z_interv,
-        weights = "obs_weights",
-        covariates = c("Z", "A", w_names),
-        outcome = "U_pseudo",
-        outcome_type = "continuous"
-      )
-
-      # return partial pseudo-outcome for v nuisance regression
-      out_valid <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
-      return(out_valid)
-    })
-    u_int_eif <- do.call(`-`, u_int_eif)
-
     # perform iterative targeting for intermediate confounding mechanism
     q_prime_Z_one_logit <- q_prime_Z_one %>%
       bound_precision() %>%
@@ -628,8 +598,9 @@ est_tml <- function(data,
     # compute efficient score for intermediate confounding component
     q_score <- ipw_prime * cv_eif_est$u_int_diff * (data$Z - q_prime_Z_one)
 
-    # check convergence
-    eif_stop_crit <- abs(c(mean(m_score), mean(q_score))) < tilt_stop_crit
+    # check convergence and iterate the iterator
+    eif_stop_crit <- all(abs(c(mean(m_score), mean(q_score))) < tilt_stop_crit)
+    n_iter <- n_iter + 1
   }
 
   # update auxiliary covariates after completion of iterative targeting
@@ -690,6 +661,7 @@ est_tml <- function(data,
     theta = tml_est,
     var = tmle_var,
     eif = (eif_est_out - tml_est),
+    n_iter = n_iter,
     type = "tmle"
   )
   return(tmle_out)

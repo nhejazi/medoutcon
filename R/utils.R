@@ -136,8 +136,7 @@ print.medoutcon <- function(x, ...) {
 #' @importFrom assertthat assert_that
 #'
 #' @keywords internal
-bound_precision <- function(vals, tol = 1e-5) {
-  assertthat::assert_that(!(max(vals) > 1 || min(vals) < 0))
+bound_precision <- function(vals, tol = 1e-6) {
   vals[vals < tol] <- tol
   vals[vals > 1 - tol] <- 1 - tol
   return(vals)

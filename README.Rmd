@@ -40,13 +40,13 @@ intermediate <b>med</b>iator-<b>out</b>come <b>con</b>founder $Z$, itself
 affected by the treatment $A$. While the proposed approach is similar to those
 appearing in @vanderweele2014effect, @rudolph2017robust, and
 @zheng2017longitudinal, `medoutcon` is designed as a software implementation to
-accompany the methodology proposed in @diaz2019nonparametric. Both an efficient
+accompany the methodology proposed in @diaz2020nonparametric. Both an efficient
 one-step bias-corrected estimator with cross-fitting
 [@pfanzagl1985contributions; @zheng2011cross; @chernozhukov2018double] and a
-one-step cross-validated targeted minimum loss (TML) estimator
-[@vdl2011targeted; @zheng2011cross] are made available. `medoutcon` integrates
-with the [`sl3` R package](https://github.com/tlverse/sl3) [@coyle2019sl3] to
-leverage statistical machine learning in the estimation procedure.
+cross-validated targeted minimum loss (TML) estimator [@vdl2011targeted;
+@zheng2011cross] are made available. `medoutcon` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3) [@coyle2019sl3] to leverage statistical
+machine learning in the estimation procedure.
 
 ---
 
@@ -156,12 +156,12 @@ prior to submitting a pull request.
 
 After using the `medoutcon` R package, please cite the following:
 
-        @article{diaz2019nonparametric,
+        @article{diaz2020nonparametric,
           title={Non-parametric efficient causal mediation with intermediate
             confounders},
           author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
             and {van der Laan}, Mark J},
-          year={2019},
+          year={2020},
           url = {https://arxiv.org/abs/1912.09936},
           doi = {},
           journal={},
@@ -177,7 +177,7 @@ After using the `medoutcon` R package, please cite the following:
             intermediate confounding},
           year  = {2020},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.0.7}
+          note = {R package version 0.1.0}
         }
 
 ---

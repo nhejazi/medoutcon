@@ -211,7 +211,7 @@ cv_eif <- function(fold,
 
   # output list
   out <- list(data.table::data.table(
-    # components necessary for fluctuation/tilting step of TMLE
+    # components necessary for fluctuation step of TMLE
     g_prime = g_prime, g_star = g_star, e_prime = e_prime, e_star = e_star,
     q_prime_Z_natural = q_prime_Z_natural, q_prime_Z_one = q_prime_Z_one,
     r_prime_Z_natural = r_prime_Z_natural, r_prime_Z_one = r_prime_Z_one,

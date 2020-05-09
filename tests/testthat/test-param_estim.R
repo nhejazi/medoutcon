@@ -23,22 +23,21 @@ w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
 
 # 2) use custom HAL and SL for testing functionality
+bounding_lrnr <- Lrnr_bound$new(bound = 1e-6)
 mean_lrnr <- Lrnr_mean$new()
 hal_custom_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.halglmnet")
 hal_gaussian_lrnr <- Lrnr_hal9001$new(family = "gaussian",
                                       type.measure = "mse", n_folds = 5,
                                       use_min = FALSE, max_degree = NULL,
                                       lambda.min.ratio = 1 / n_obs)
+hal_bounded_lrnr <- Pipeline$new(hal_gaussian_lrnr, bounding_lrnr)
 sl <- Lrnr_sl$new(learners = list(hal_custom_lrnr,
-                                  hal_gaussian_lrnr,
+                                  hal_bounded_lrnr,
                                   mean_lrnr),
                   metalearner = Lrnr_nnls$new())
-bound_lrnr <- Lrnr_bound$new(bound = 1e-6)
-sl_bounded <- Pipeline$new(sl, bound_lrnr)
 
 ## nuisance functions with data components as outcomes
-g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
-  sl_bounded
+g_learners <- e_learners <- m_learners <- q_learners <- r_learners <- sl
 
 ## nuisance functions with pseudo-outcomes need Gaussian HAL
 u_learners <- v_learners <- hal_gaussian_lrnr
@@ -47,7 +46,6 @@ u_learners <- v_learners <- hal_gaussian_lrnr
 theta_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = data$Z,
   M = data[, ..m_names], Y = data$Y,
-  # effect = "direct",
   contrast = c(0, 1),
   g_learners = g_learners,
   e_learners = e_learners,
@@ -57,14 +55,13 @@ theta_os <- medoutcon(
   u_learners = u_learners,
   v_learners = v_learners,
   estimator = "onestep",
-  estimator_args = list(cv_folds = 2, max_iter = 0, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5, max_iter = 0, tiltmod_tol = 5)
 )
 summary(theta_os)
 
 theta_tmle <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = data$Z,
   M = data[, ..m_names], Y = data$Y,
-  # effect = "direct",
   contrast = c(0, 1),
   g_learners = g_learners,
   e_learners = e_learners,
@@ -74,7 +71,7 @@ theta_tmle <- medoutcon(
   u_learners = u_learners,
   v_learners = v_learners,
   estimator = "tmle",
-  estimator_args = list(cv_folds = 2, max_iter = 5, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5, max_iter = 5, tiltmod_tol = 5)
 )
 summary(theta_tmle)
 

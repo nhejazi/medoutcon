@@ -18,11 +18,11 @@ Authors@R: c(
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
 Description: Efficient estimators of interventional (in)direct effects in the
     presence of mediator-outcome confounding affected by exposure. The effects
-    estimated allow for the impact of the treatment on the outcome through a
+    estimated allow for the impact of the exposure on the outcome through a
     direct path to be disentangled from that through mediators, even in the
     presence of intermediate confounders that complicate such a relationship.
     Currently supported are non-parametric efficient one-step and targeted
-    minimum loss estimators, based on the formulation of Díaz, Hejazi, Rudolph,
+    minimum loss estimators based on the formulation of Díaz, Hejazi, Rudolph,
     and van der Laan (2020) <https://arxiv.org/abs/1912.09936>.
 Depends: R (>= 3.2.0)
 Imports:
@@ -31,7 +31,7 @@ Imports:
     data.table,
     assertthat,
     dplyr,
-    origami (>= 1.0.0),
+    origami (>= 1.0.3),
     hal9001 (>= 0.2.5),
     sl3 (>= 1.3.7),
     glmnet

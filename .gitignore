@@ -7,5 +7,4 @@ inst/doc
 !docs/reference/*.html
 !docs/articles/*.html
 !docs/news/*.html
-vignettes/*.html
 .ipynb_checkpoints

@@ -26,11 +26,11 @@ r_packages:
   - covr
   - data.table
   - origami
+  - hal9001
 
 r_github_packages:
   - r-lib/sessioninfo
   - r-lib/covr
-  - tlverse/hal9001
   - tlverse/sl3
 
 after_success:

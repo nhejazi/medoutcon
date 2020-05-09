@@ -364,7 +364,7 @@ est_onestep <- function(data,
 
 ###############################################################################
 
-#' TMLE for interventional (in)direct effects under intermediate confounding
+#' TMLE for interventional (in)direct effects with intermediate confounding
 #'
 #' @param data A \code{data.table} containing the observed data, with columns
 #'  in the order specified by the NPSEM (Y, M, Z, A, W), with column names set

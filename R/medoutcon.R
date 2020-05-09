@@ -1,81 +1,75 @@
-#' Efficient estimation of stochastic (in)direct effects in the presence of
-#' mediator-outcome confounders affected by exposure
+#' Efficient estimation of interventional (in)direct effects
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar object corresponding
 #'  to a set of baseline covariates.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
 #'  parameter of interest is defined as a location shift of this quantity.
-#' @param Z A \code{numeric} vector corresponding to a mediator-outcome
-#'  confounder affected by treatment (on the causal pathway between intervention
-#'  A, mediator M, and outcome Y, but unaffected itself by the mediator M).
+#' @param Z A \code{numeric} vector corresponding to an intermediate confounder
+#'  affected by treatment (on the causal pathway between the intervention A,
+#'  mediators M, and outcome Y, but unaffected itself by the mediators).
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'  similar corresponding to a set of mediators (on the causal pathway between
 #'  the intervention A and the outcome Y).
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
-#' @param obs_weights A \code{numeric} vector of observation-level weights to be
-#'  incorporated in all procedures estimating nuisance parameters. The default
-#'  is to give all observations equal weighting.
+#' @param obs_weights A \code{numeric} vector of observation-level weights.
+#'  The default is to give all observations equal weighting.
 #' @param ext_weights A \code{numeric} vector of observation-level weights that
 #'  have been computed externally. Such weights are used in the construction of
-#'  a re-weighted one-step estimator or in solving a re-weighted estimating
-#'  equation in the case of the TML estimator. Note that, unlike the argument
-#'  \code{obs_weights}, these weights are not incorporated in the estimation of
-#'  nuisance parameters. Input weights should be normalized. Use with caution.
+#'  re-weighted efficient estimators. Unlike \code{obs_weights}, these weights
+#'  are not incorporated in the estimation of nuisance parameters. These input
+#'  weights should be normalized. Use with caution.
 #' @param effect A \code{character} indicating whether to compute the direct
-#'  effect or the indirect effect as discussed in CITE PAPER. Note that this is
-#'  ignored when the argument \code{contrast} is provided.
+#'  or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
+#'  This is ignored when the argument \code{contrast} is provided.
 #' @param contrast A \code{numeric} double indicating the two values of the
 #'  intervention \code{A} to be compared. The default value of \code{NULL} has
 #'  no effect, as the value of the argument \code{effect} is instead used to
 #'  define the contrasts. To override \code{effect}, provide a \code{numeric}
 #'  double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.
-#' @param g_learners A \code{Stack} object, or other learner class (inheriting
-#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
-#'  from the \code{sl3} package, for use in fitting a model for the propensity
-#'  score, i.e., \eqn{g = P(A | W)}.
-#' @param e_learners A \code{Stack} object, or other learner class (inheriting
-#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
-#'  from the \code{sl3} package, for use in fitting a cleverly parameterized
-#'  propensity score that includes the mediators, i.e., \eqn{e = P(A | M, W)}.
-#' @param m_learners A \code{Stack} object, or other learner class (inheriting
-#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
-#'  from the \code{sl3} package, to be used in fitting the outcome regression.
-#' @param q_learners A \code{Stack} object, or other learner class (inheriting
-#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
-#'  from the \code{sl3} package, to be used in fitting a regression involving
-#'  the mediator-outcome confounder, i.e., \eqn{q(Z | A, W)}.
-#' @param r_learners A \code{Stack} object, or other learner class (inheriting
-#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
-#'  from the \code{sl3} package, to be used in fitting a regression involving
-#'  the mediator-outcome confounder, i.e., \eqn{r(Z | A, M, W)}.
-#' @param u_learners A \code{Stack} object, or other learner class (inheriting
-#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
-#'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e.,
-#'  \eqn{u(Z, A, W) = E[m(A, Z, M, W) * (q(Z | A, W) / r(Z | A, M, W)) *
-#'  (e(a' | M, W) / e(A | M, W)) | Z = z, A = a, W = w]}.
-#' @param v_learners A \code{Stack} object, or other learner class (inheriting
-#'  from \code{Lrnr_base}), containing a single or set of instantiated learners
-#'  from the \code{sl3} package, to be used in fitting a reduced regression
-#'  useful for computing the efficient one-step estimator, i.e.,
-#'  \eqn{v(A, W) = E[\int_z m(a', z, M, W) * q(z | a', W) d \nu(z) |
-#'  A = a, W = w)]}.
+#' @param g_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'  learners from \pkg{sl3}; used to fit a model for the propensity score.
+#' @param e_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'  learners from \pkg{sl3}; used to fit a model for a parameterization of the
+#'  propensity score that conditions on the mediators.
+#' @param m_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'  learners from \pkg{sl3}; used to fit a model for the outcome regression.
+#' @param q_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'  learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+#'  the intermediate confounder, conditioning on the treatment and potential
+#'  baseline covariates.
+#' @param r_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'  learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+#'  the intermediate confounder, conditioning on the mediators, the treatment,
+#'  and potential baseline confounders.
+#' @param u_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'  learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+#'  for in the efficient influence function.
+#' @param v_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'  learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+#'  for in the efficient influence function.
 #' @param estimator The desired estimator of the direct or indirect effect (or
-#'   contrast-specific parameter) to be computed. Currently, the singular option
-#'   is an efficient one-step estimator, though support is planned for classical
-#'   estimators (substitution; inverse probability weighted) and an efficient
-#'   targeted maximum likelihood estimator.
+#'   contrast-specific parameter) to be computed. Both an efficient one-step
+#'   estimator using cross-fitting and a cross-validated targeted minimum loss
+#'   estimator (TMLE) are supported.
 #' @param estimator_args A \code{list} of extra arguments to be passed (via
 #'  \code{...}) to the function call for the specified estimator. The default
-#'  is so chosen as to allow the number of folds used in computing the one-step
-#'  estimator to be easily adjusted.
+#'  is chosen so as to allow the number of folds used in computing the one-step
+#'  or TML estimators to be easily adjusted. In the case of the TML estimator,
+#'  the number of update (fluctuation) iterations is limited, and a tolerance
+#'  is included for the updates introduced by the tilting (fluctuation) models.
 #'
-#' @importFrom data.table as.data.table setnames
-#' @importFrom stats binomial var
-#' @importFrom sl3 Lrnr_glm_fast
+#' @importFrom data.table as.data.table setnames set
+#' @importFrom sl3 Lrnr_glm_fast Lrnr_hal9001
+#' @importFrom stats var
 #'
 #' @export
-#
 medoutcon <- function(W,
                       A,
                       Z,
@@ -85,28 +79,24 @@ medoutcon <- function(W,
                       ext_weights = NULL,
                       effect = c("direct", "indirect"),
                       contrast = NULL,
-                      g_learners =
-                        sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      e_learners =
-                        sl3::Lrnr_glm_fast$new(family = stats::binomial()),
+                      g_learners = sl3::Lrnr_glm_fast$new(),
+                      e_learners = sl3::Lrnr_glm_fast$new(),
                       m_learners = sl3::Lrnr_glm_fast$new(),
-                      q_learners =
-                        sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      r_learners =
-                        sl3::Lrnr_glm_fast$new(family = stats::binomial()),
-                      u_learners = sl3::Lrnr_glm_fast$new(),
-                      v_learners = sl3::Lrnr_glm_fast$new(),
-                      estimator = c(
-                        "onestep",
-                        "tmle",
-                        "ipw",
-                        "sub"
-                      ),
-                      estimator_args = list(cv_folds = 10)) {
+                      q_learners = sl3::Lrnr_glm_fast$new(),
+                      r_learners = sl3::Lrnr_glm_fast$new(),
+                      u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
+                      v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
+                      estimator = c("onestep", "tmle"),
+                      estimator_args = list(cv_folds = 5, max_iter = 5,
+                                            tiltmod_tol = 10)) {
   # set defaults
   effect <- match.arg(effect)
   estimator <- match.arg(estimator)
   estimator_args <- unlist(estimator_args, recursive = FALSE)
+  est_args_os <- estimator_args[names(estimator_args) %in%
+                                names(formals(est_onestep))]
+  est_args_tmle <- estimator_args[names(estimator_args) %in%
+                                  names(formals(est_tml))]
 
   # construct input data structure
   data <- data.table::as.data.table(cbind(Y, M, Z, A, W, obs_weights))
@@ -118,12 +108,17 @@ medoutcon <- function(W,
   )
   data.table::setnames(data, c("Y", m_names, "Z", "A", w_names, "obs_weights"))
 
+  # bound outcome Y in unit interval
+  min_y <- min(data[["Y"]])
+  max_y <- max(data[["Y"]])
+  data.table::set(data, j = "Y", value = scale_to_unit(data[["Y"]]))
+
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {
     # select appropriate component for direct vs indirect effects
     is_effect_direct <- (effect == "direct")
     contrast_grid <- list(switch(2 - is_effect_direct, c(0, 0), c(1, 1)))
-    # this term is needed in the decomposition for both effects
+    # term needed in the decomposition for both effects
     contrast_grid[[2]] <- c(1, 0)
   } else {
     # otherwise, simply estimate for the user-given contrast
@@ -132,13 +127,7 @@ medoutcon <- function(W,
   }
 
   est_params <- lapply(contrast_grid, function(contrast) {
-    if (estimator == "sub") {
-      # SUBSTITUTION ESTIMATOR
-      stop("The substitution estimator is currently under development.")
-    } else if (estimator == "ipw") {
-      # INVERSE PROBABILITY RE-WEIGHTED ESTIMATOR
-      stop("The IPW estimator is currently under development.")
-    } else if (estimator == "onestep") {
+    if (estimator == "onestep") {
       # EFFICIENT ONE-STEP ESTIMATOR
       onestep_est_args <- list(
         data = data,
@@ -152,13 +141,32 @@ medoutcon <- function(W,
         v_learners = v_learners,
         w_names = w_names,
         m_names = m_names,
-        ext_weights = ext_weights,
-        estimator_args
+        y_bounds = c(min_y, max_y),
+        ext_weights = ext_weights
       )
+      onestep_est_args <- unlist(list(onestep_est_args, est_args_os),
+                                 recursive = FALSE)
       est_out <- do.call(est_onestep, onestep_est_args)
     } else if (estimator == "tmle") {
-      # TARGETED MAXIMUM LIKELIHOOD ESTIMATOR
-      stop("The TML estimator is currently under development.")
+      # TARGETED MINIMUM LOSS ESTIMATOR
+      tmle_est_args <- list(
+        data = data,
+        contrast = contrast,
+        g_learners = g_learners,
+        e_learners = e_learners,
+        m_learners = m_learners,
+        q_learners = q_learners,
+        r_learners = r_learners,
+        u_learners = u_learners,
+        v_learners = v_learners,
+        w_names = w_names,
+        m_names = m_names,
+        y_bounds = c(min_y, max_y),
+        ext_weights = ext_weights
+      )
+      tmle_est_args <- unlist(list(tmle_est_args, est_args_tmle),
+                              recursive = FALSE)
+      est_out <- do.call(est_tml, tmle_est_args)
     }
 
     # lazily create output as classed list
@@ -179,7 +187,7 @@ medoutcon <- function(W,
       theta = de_theta_est,
       var = de_var_est,
       eif = de_eif_est,
-      type = "onestep",
+      type = estimator,
       param = "direct_effect",
       outcome = as.numeric(Y)
     )
@@ -196,7 +204,7 @@ medoutcon <- function(W,
       theta = ie_theta_est,
       var = ie_var_est,
       eif = ie_eif_est,
-      type = "onestep",
+      type = estimator,
       param = "indirect_effect",
       outcome = as.numeric(Y)
     )

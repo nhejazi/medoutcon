@@ -4,13 +4,18 @@
 \alias{bound_precision}
 \title{Bounding Numerical Precision}
 \usage{
-bound_precision(vals)
+bound_precision(vals, tol = 1e-06)
 }
 \arguments{
 \item{vals}{A \code{numeric} vector of values in the interval [0, 1].}
+
+\item{tol}{A \code{numeric} indicating the tolerance limit to which extreme
+values should be truncated. Realizations of \code{val} less than \code{tol}
+are truncated to \code{tol} while those greater than (1 - \code{tol}) are
+truncated to (1 - \code{tol}).}
 }
 \description{
-Bounds extreme values to numerical (machine) precision, for use with
-sensitive quantities like estimated propensity scores.
+Bounds extreme values to a specified tolerance level, for use with sensitive
+quantities that must be transformed, e.g., via \code{\link[stats]{qlogis}}.
 }
 \keyword{internal}

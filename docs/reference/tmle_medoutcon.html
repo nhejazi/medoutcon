@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Scale Values to the Unit Interval [0, 1] — scale_to_unit • medoutcon</title>
+<title>Outcome under Joint Stochastic Intervention on Treatment and Mediator — tmle_medoutcon • medoutcon</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,12 @@
 
 
 
-<meta property="og:title" content="Scale Values to the Unit Interval [0, 1] — scale_to_unit" />
-<meta property="og:description" content="Scale Values to the Unit Interval [0, 1]" />
+<meta property="og:title" content="Outcome under Joint Stochastic Intervention on Treatment and Mediator — tmle_medoutcon" />
+<meta property="og:description" content="O = (W, A, Z, Y)
+W = Covariates (possibly multivariate)
+A = Treatment (binary or categorical)
+Z = Mediators (binary or categorical; possibly multivariate)
+Y = Outcome (binary or bounded continuous)" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -92,7 +96,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
+      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounding</a>
     </li>
   </ul>
 </li>
@@ -117,24 +121,64 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Scale Values to the Unit Interval [0, 1]</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>scale_to_unit.Rd</code></div>
+    <h1>Outcome under Joint Stochastic Intervention on Treatment and Mediator</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/tmle3_Spec_medoutcon.R'><code>R/tmle3_Spec_medoutcon.R</code></a></small>
+    <div class="hidden name"><code>tmle_medoutcon.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Scale Values to the Unit Interval [0, 1]</p>
+    <p>O = (W, A, Z, Y)
+W = Covariates (possibly multivariate)
+A = Treatment (binary or categorical)
+Z = Mediators (binary or categorical; possibly multivariate)
+Y = Outcome (binary or bounded continuous)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>scale_to_unit</span>(<span class='no'>vals</span>)</pre>
+    <pre class="usage"><span class='fu'>tmle_medoutcon</span>(<span class='kw'>shift_type</span> <span class='kw'>=</span> <span class='st'>"exptilt"</span>, <span class='no'>delta</span>, <span class='no'>e_learners</span>, <span class='no'>phi_learners</span>,
+  <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10000</span>, <span class='kw'>step_size</span> <span class='kw'>=</span> <span class='fl'>1e-06</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>vals</th>
-      <td><p>A <code>numeric</code> vector of values to be scaled into the interval
-[0, 1].</p></td>
+      <th>shift_type</th>
+      <td><p>A <code>character</code> defining the type of shift to be applied
+to the treatment. By default, this is an exponential tilt intervention.</p></td>
+    </tr>
+    <tr>
+      <th>delta</th>
+      <td><p>A <code>numeric</code>, specification of the magnitude of the
+desired shift.</p></td>
+    </tr>
+    <tr>
+      <th>e_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, to be used in fitting a cleverly parameterized
+propensity score that includes the mediators, i.e., e = P(A | Z, W).</p></td>
+    </tr>
+    <tr>
+      <th>phi_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, to be used in fitting a reduced regression
+useful for computing the efficient one-step estimator, i.e., phi(W) =
+E[m(A = 1, Z, W) - m(A = 0, Z, W) | W).</p></td>
+    </tr>
+    <tr>
+      <th>max_iter</th>
+      <td><p>A <code>numeric</code> setting the total number of iterations to be
+used in the targeted procedure based on universal least favorable submodels.</p></td>
+    </tr>
+    <tr>
+      <th>step_size</th>
+      <td><p>A <code>numeric</code> giving the step size (<code>delta_epsilon</code>
+in <code>tmle3</code>) to be used in the targeted procedure based on universal
+least favorable submodels.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments (currently unused).</p></td>
     </tr>
     </table>
 

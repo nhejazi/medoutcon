@@ -15,7 +15,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis with Mediator-Outcome Confounding
+> Efficient Causal Mediation Analysis with Intermediate Confounders
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -35,25 +35,23 @@ by the treatment \(A\). While the proposed approach is similar to those
 appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et
 al. (2017), and Zheng and van der Laan (2017), `medoutcon` is designed
 as a software implementation to accompany the methodology proposed in
-Díaz et al. (n.d.). Both an efficient one-step bias-corrected estimator
+Díaz et al. (2019). Both an efficient one-step bias-corrected estimator
 with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
 2011; Chernozhukov et al. 2018) and a one-step cross-validated targeted
 minimum loss (TML) estimator (van der Laan and Rose 2011; Zheng and van
 der Laan 2011) are made available. `medoutcon` integrates with the
 [`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to
-leverage statistical machine learning in the estimation procedure and
-expands on the architecture exposed by the [`tmle3` R
-package](https://github.com/tlverse/tmle3) for TML estimation.
+leverage statistical machine learning in the estimation procedure.
 
 -----
 
 ## Installation
 
 Install the most recent *stable release* from GitHub via
-[`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
+[`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ``` r
-devtools::install_github("nhejazi/medoutcon")
+remotes::install_github("nhejazi/medoutcon")
 ```
 
 -----
@@ -66,8 +64,8 @@ presence of mediator(s) (`M`) and a binary mediator-outcome confounder
 (`Z`), consider the following simple example:
 
 ``` r
-library(stringr)
 library(data.table)
+library(tidyverse)
 library(medoutcon)
 
 # produces a simple data set based on ca causal model with mediation
@@ -78,7 +76,7 @@ make_example_data <- function(n_obs = 1000) {
   setnames(W, c("w_1", "w_2"))
 
   # create treatment based on baseline W
-  A <- as.numeric(rbinom(n_obs, 1, prob = rowSums(W)/3 + 0.1))
+  A <- as.numeric(rbinom(n_obs, 1, prob = (rowSums(W) / 3) + 0.1))
 
   # single mediator-outcome confounder
   z_prob <- 1 - plogis((A^2 + rowMeans(W)) / (A + rowSums(W^3) + 0.5))
@@ -102,7 +100,7 @@ make_example_data <- function(n_obs = 1000) {
 
 # set seed and simulate example data
 set.seed(75681)
-example_data <- make_example_data()
+example_data <- make_example_data(10000)
 w_names <- str_subset(colnames(example_data), "w")
 m_names <- str_subset(colnames(example_data), "m")
 
@@ -112,11 +110,29 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           Z = example_data$Z,
                           M = example_data[, ..m_names],
                           Y = example_data$Y,
+                          contrast = c(0, 1),
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
-#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>    -0.4902    -0.2861     -0.082     0.0108 4.6404e-17    onestep
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>       -0.2191       -0.1989       -0.1786         1e-04    1.4501e-17 
+#>     estimator         param 
+#>       onestep contrast_spec
+
+# compute targeted minimum loss estimate
+tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
+                            A = example_data$A,
+                            Z = example_data$Z,
+                            M = example_data[, ..m_names],
+                            Y = example_data$Y,
+                            contrast = c(0, 1),
+                            estimator = "tmle",
+                            estimator_args = list(cv_folds = 3))
+summary(tmle_medoutcon)
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>       -0.3097       -0.2695       -0.2292         4e-04    3.7347e-18 
+#>     estimator         param 
+#>          tmle contrast_spec
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -151,8 +167,8 @@ After using the `medoutcon` R package, please cite the following:
         confounders},
       author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
         and {van der Laan}, Mark J},
-      year={2019+},
-      url = {},
+      year={2019},
+      url = {https://arxiv.org/abs/1912.09936},
       doi = {},
       journal={},
       volume={},
@@ -161,13 +177,13 @@ After using the `medoutcon` R package, please cite the following:
       publisher={}
     }
 
-    @manual{hejazi2019medoutcon,
+    @manual{hejazi2020medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Efficient causal mediation analysis with
+      title = {{medoutcon}: Efficient causal mediation analysis under
         intermediate confounding},
-      year  = {2019},
+      year  = {2020},
       url = {https://github.com/nhejazi/medoutcon},
-      note = {R package version 0.0.4}
+      note = {R package version 0.0.7}
     }
 ```
 
@@ -175,14 +191,14 @@ After using the `medoutcon` R package, please cite the following:
 
 ## License
 
-© 2019 [Nima S. Hejazi](https://nimahejazi.org)
+© 2019-2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2019 Nima S. Hejazi
+    Copyright (c) 2019-2020 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -223,15 +239,15 @@ Parameters.” *The Econometrics Journal* 21 (1).
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
 “sl3: Modern Pipelines for Machine Learning and Super Learning.”
 <https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.3251138>.
+<https://doi.org/10.5281/zenodo.3558317>.
 
 </div>
 
 <div id="ref-diaz2019nonparametric">
 
-Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan. n.d.
-“Non-Parametric Efficient Causal Mediation with Intermediate
-Confounders.”
+Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.
+2019. “Non-Parametric Efficient Causal Mediation with Intermediate
+Confounders.” <https://arxiv.org/abs/1912.09936>.
 
 </div>
 

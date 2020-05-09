@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis with Mediator-Outcome Confounding
+> Efficient Causal Mediation Analysis with Intermediate Confounders
 
 __Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -40,25 +40,23 @@ intermediate <b>med</b>iator-<b>out</b>come <b>con</b>founder $Z$, itself
 affected by the treatment $A$. While the proposed approach is similar to those
 appearing in @vanderweele2014effect, @rudolph2017robust, and
 @zheng2017longitudinal, `medoutcon` is designed as a software implementation to
-accompany the methodology proposed in @diaz2019nonparametric. Both an efficient
+accompany the methodology proposed in @diaz2020nonparametric. Both an efficient
 one-step bias-corrected estimator with cross-fitting
 [@pfanzagl1985contributions; @zheng2011cross; @chernozhukov2018double] and a
-one-step cross-validated targeted minimum loss (TML) estimator
-[@vdl2011targeted; @zheng2011cross] are made available. `medoutcon` integrates
-with the [`sl3` R package](https://github.com/tlverse/sl3) [@coyle2019sl3] to
-leverage statistical machine learning in the estimation procedure and expands on
-the architecture exposed by the [`tmle3` R
-package](https://github.com/tlverse/tmle3) for TML estimation.
+cross-validated targeted minimum loss (TML) estimator [@vdl2011targeted;
+@zheng2011cross] are made available. `medoutcon` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3) [@coyle2019sl3] to leverage statistical
+machine learning in the estimation procedure.
 
 ---
 
 ## Installation
 
 Install the most recent _stable release_ from GitHub via
-[`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
+[`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ```{r gh-master-installation, eval=FALSE}
-devtools::install_github("nhejazi/medoutcon")
+remotes::install_github("nhejazi/medoutcon")
 ```
 
 ---
@@ -71,43 +69,41 @@ mediator(s) (`M`) and a binary mediator-outcome confounder (`Z`), consider the
 following simple example:
 
 ```{r simple_example, message=FALSE, warning=FALSE}
-library(stringr)
 library(data.table)
+library(tidyverse)
 library(medoutcon)
 
 # produces a simple data set based on ca causal model with mediation
-make_example_data <- function(n_obs = 1000) {
-  # baseline covariate -- simple, binary
-  W <- replicate(2, rbinom(n_obs, 1, prob = 0.50))
-  W <- as.data.table(W)
-  setnames(W, c("w_1", "w_2"))
+make_example_data <- function(n_obs = 10000) {
+  ## baseline covariate -- simple, binary
+  w_1 <- rbinom(n_obs, 1, prob = 0.6)
+  w_2 <- rbinom(n_obs, 1, prob = 0.3)
+  w_3 <- rbinom(n_obs, 1, prob = pmin(0.2 + (w_1 + w_2) / 3, 1))
+  w <- cbind(w_1, w_2, w_3)
+  w_names <- paste("W", seq_len(ncol(w)), sep = "_")
 
-  # create treatment based on baseline W
-  A <- as.numeric(rbinom(n_obs, 1, prob = rowSums(W)/3 + 0.1))
+  ## exposure/treatment
+  a <- as.numeric(rbinom(n_obs, 1, prob = g(1, w)))
 
-  # single mediator-outcome confounder
-  z_prob <- 1 - plogis((A^2 + rowMeans(W)) / (A + rowSums(W^3) + 0.5))
-  Z <- rbinom(n_obs, 1, prob = z_prob)
+  ## mediator-outcome confounder affected by treatment
+  z <- rbinom(n_obs, 1, pz(1, a, w))
 
-  # matrix of mediators
-  m1_prob <- plogis((A^2 - Z) / (A + rowMeans(W) + 0.5))
-  m2_prob <- 1 - plogis((A + rowSums(W)) / (Z + 0.5))
-  M1 <- rbinom(n_obs, 1, prob = m1_prob)
-  M2 <- rbinom(n_obs, 1, prob = m2_prob)
-  M <- as.data.table(list(m_1 = M1, m_2 = M2))
+  ## mediator (possibly multivariate)
+  m <- rbinom(n_obs, 1, pm(1, z, a, w))
+  m_names <- "M"
 
-  # create outcome as a linear function + white noise
-  Y <- rowMeans(M) - Z + A - 0.1 * rowSums(W) +
-    rnorm(n_obs, mean = 0, sd = 0.25)
+  ## outcome
+  y <- rbinom(n_obs, 1, my(m, z, a, w))
 
-  # full data structure
-  data <- as.data.table(cbind(Y, M, Z, A, W))
-  return(data)
+  ## construct data for output
+  dat <- as.data.table(cbind(w = w, a = a, z = z, m = m, y = y))
+  setnames(dat, c(w_names, "A", "Z", m_names, "Y"))
+  return(dat)
 }
 
 # set seed and simulate example data
 set.seed(75681)
-example_data <- make_example_data()
+example_data <- make_example_data(1000)
 w_names <- str_subset(colnames(example_data), "w")
 m_names <- str_subset(colnames(example_data), "m")
 
@@ -117,9 +113,21 @@ os_medoutcon <- medoutcon(W = example_data[, ..w_names],
                           Z = example_data$Z,
                           M = example_data[, ..m_names],
                           Y = example_data$Y,
+                          effect = "direct",
                           estimator = "onestep",
                           estimator_args = list(cv_folds = 3))
 summary(os_medoutcon)
+
+# compute targeted minimum loss estimate
+tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
+                            A = example_data$A,
+                            Z = example_data$Z,
+                            M = example_data[, ..m_names],
+                            Y = example_data$Y,
+                            effect = "direct",
+                            estimator = "tmle",
+                            estimator_args = list(cv_folds = 3))
+summary(tmle_medoutcon)
 ```
 
 For details on how to use data adaptive regression (machine learning) techniques
@@ -148,13 +156,13 @@ prior to submitting a pull request.
 
 After using the `medoutcon` R package, please cite the following:
 
-        @article{diaz2019nonparametric,
+        @article{diaz2020nonparametric,
           title={Non-parametric efficient causal mediation with intermediate
             confounders},
           author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
             and {van der Laan}, Mark J},
-          year={2019+},
-          url = {},
+          year={2020},
+          url = {https://arxiv.org/abs/1912.09936},
           doi = {},
           journal={},
           volume={},
@@ -163,27 +171,27 @@ After using the `medoutcon` R package, please cite the following:
           publisher={}
         }
 
-        @manual{hejazi2019medoutcon,
+        @manual{hejazi2020medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-          title = {{medoutcon}: Efficient causal mediation analysis with
+          title = {{medoutcon}: Efficient causal mediation analysis under
             intermediate confounding},
-          year  = {2019},
+          year  = {2020},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.0.4}
+          note = {R package version 0.1.0}
         }
 
 ---
 
 ## License
 
-&copy; 2019 [Nima S. Hejazi](https://nimahejazi.org)
+&copy; 2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:
 ```
 MIT License
 
-Copyright (c) 2019 Nima S. Hejazi
+Copyright (c) 2020 Nima S. Hejazi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -207,3 +215,4 @@ SOFTWARE.
 ---
 
 ## References
+

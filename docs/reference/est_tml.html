@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit pseudo-outcome regression conditioning on treatment and baseline — fit_nuisance_v • medoutcon</title>
+<title>TMLE for stochastic (in)direct effects under intermediate confounding — est_tml • medoutcon</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Fit pseudo-outcome regression conditioning on treatment and baseline — fit_nuisance_v" />
-<meta property="og:description" content="Fit pseudo-outcome regression conditioning on treatment and baseline" />
+<meta property="og:title" content="TMLE for stochastic (in)direct effects under intermediate confounding — est_tml" />
+<meta property="og:description" content="TMLE for stochastic (in)direct effects under intermediate confounding" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -117,80 +117,135 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit pseudo-outcome regression conditioning on treatment and baseline</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/fit_mechanisms.R'><code>R/fit_mechanisms.R</code></a></small>
-    <div class="hidden name"><code>fit_nuisance_v.Rd</code></div>
+    <h1>TMLE for stochastic (in)direct effects under intermediate confounding</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/estim_tml.R'><code>R/estim_tml.R</code></a></small>
+    <div class="hidden name"><code>est_tml.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Fit pseudo-outcome regression conditioning on treatment and baseline</p>
+    <p>TMLE for stochastic (in)direct effects under intermediate confounding</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fit_nuisance_v</span>(
-  <span class='no'>train_data</span>,
-  <span class='no'>valid_data</span>,
+    <pre class="usage"><span class='fu'>est_tml</span>(
+  <span class='no'>data</span>,
   <span class='no'>contrast</span>,
-  <span class='no'>learners</span>,
-  <span class='no'>m_out</span>,
-  <span class='no'>q_out</span>,
+  <span class='no'>g_learners</span>,
+  <span class='no'>e_learners</span>,
+  <span class='no'>m_learners</span>,
+  <span class='no'>q_learners</span>,
+  <span class='no'>r_learners</span>,
+  <span class='no'>u_learners</span>,
+  <span class='no'>v_learners</span>,
+  <span class='no'>w_names</span>,
   <span class='no'>m_names</span>,
-  <span class='no'>w_names</span>
+  <span class='kw'>ext_weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>5</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>train_data</th>
-      <td><p>A <code>data.table</code> containing observed data, with columns
+      <th>data</th>
+      <td><p>A <code>data.table</code> containing the observed data, with columns
 in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
 appropriately based on the original input data. Such a structure is merely
 a convenience utility to passing data around to the various core estimation
 routines and is automatically generated as part of a call to the user-facing
-wrapper function <code>medoutcon</code>.</p></td>
-    </tr>
-    <tr>
-      <th>valid_data</th>
-      <td><p>A holdout data set, with columns exactly matching those
-appearing in the preceding argument <code>data</code>, to be used for estimation
-via cross-fitting. Not optional for this nuisance parameter</p></td>
+wrapper function <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
     </tr>
     <tr>
       <th>contrast</th>
       <td><p>A <code>numeric</code> double indicating the two values of the
-intervention <code>A</code> to be compared. The default value of <code><a href='https://rdrr.io/r/base/c.html'>c(0, 1)</a></code>
-assumes a binary intervention node <code>A</code>, though support for categorical
-interventions is planned for future releases.</p></td>
+intervention <code>A</code> to be compared. The default value of <code>NULL</code> has
+no effect, as the value of the argument <code>effect</code> is instead used to
+define the contrasts. To override <code>effect</code>, provide a <code>numeric</code>
+double vector, giving the values of a' and a* (e.g., <code><a href='https://rdrr.io/r/base/c.html'>c(0, 1)</a></code>.</p></td>
     </tr>
     <tr>
-      <th>learners</th>
-      <td><p><code>Stack</code> object, or other learner class (inheriting
+      <th>g_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting a model for this nuisance
-parameter.</p></td>
+from the <code>sl3</code> package, for use in fitting a model for the propensity
+score, i.e., \(g = P(A | W)\).</p></td>
     </tr>
     <tr>
-      <th>m_out</th>
-      <td><p>Output from the internal function for fitting the outcome
-regression <code><a href='fit_m_mech.html'>fit_m_mech</a></code>.</p></td>
+      <th>e_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, to be used in fitting a cleverly parameterized
+propensity score that includes the mediators, i.e., \(e = P(A | Z, W)\).</p></td>
     </tr>
     <tr>
-      <th>q_out</th>
-      <td><p>Output from the internal function for fitting the mechanism of
-the mediator-outcome confounder relationship with conditioning on mediators,
-i.e., <code><a href='fit_moc_mech.html'>fit_moc_mech</a></code>, setting <code>type = "q"</code>.</p></td>
+      <th>m_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, to be used in fitting the outcome regression.</p></td>
     </tr>
     <tr>
-      <th>m_names</th>
-      <td><p>A <code>character</code> vector of the names of the columns that
-correspond to mediators (M). The input for this argument is automatically
-generated by a call to the wrapper function <code>medoutcon</code>.</p></td>
+      <th>q_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, for use in fitting a regression involving the
+mediator-outcome confounder, i.e., \(q(L | A', W)\).</p></td>
+    </tr>
+    <tr>
+      <th>r_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, to be used in fitting a regression involving
+the mediator-outcome confounder, i.e., \(r(L | A', M, W)\).</p></td>
+    </tr>
+    <tr>
+      <th>u_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, to be used in fitting a reduced regression
+useful for computing the efficient one-step estimator, i.e.,
+\(u(L, A, W) = E[m(A, L, Z, W) * (q(L|A,W) / r(L|A,Z,W)) *
+(e(a'|Z,W) / e(A|Z,W)) | L = l, A = a, W = w]\).</p></td>
+    </tr>
+    <tr>
+      <th>v_learners</th>
+      <td><p>A <code>Stack</code> object, or other learner class (inheriting
+from <code>Lrnr_base</code>), containing a single or set of instantiated learners
+from the <code>sl3</code> package, to be used in fitting a reduced regression
+useful for computing the efficient one-step estimator, i.e.,
+\(v(A,W) = E[\int_z m(a', l, Z, W) * q(l|A',W) d\nu(z) | A = a, W = w)]\).</p></td>
     </tr>
     <tr>
       <th>w_names</th>
       <td><p>A <code>character</code> vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is
-automatically generated by a call to the wrapper function <code>medoutcon</code>.</p></td>
+automatically generated by a call to the wrapper function
+<code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>m_names</th>
+      <td><p>A <code>character</code> vector of the names of the columns that
+correspond to mediators (M). The input for this argument is automatically
+generated by a call to the wrapper function <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>ext_weights</th>
+      <td><p>A <code>numeric</code> vector of observation-level weights that
+have been computed externally. Such weights are used in the construction of
+a re-weighted one-step estimator or in solving a re-weighted estimating
+equation in the case of the TML estimator. Use with caution.</p></td>
+    </tr>
+    <tr>
+      <th>cv_folds</th>
+      <td><p>A <code>numeric</code> integer value specifying the number of folds
+to be created for cross-validation. Use of cross-validation / cross-fitting
+allows for entropy conditions on the one-step estimator to be relaxed. Note:
+for compatibility with <code><a href='http://tlverse.org/origami/reference/make_folds.html'>origami::make_folds</a></code>, this value specified here
+must be greater than or equal to 2; the default is to create 10 folds.</p></td>
+    </tr>
+    <tr>
+      <th>max_iter</th>
+      <td><p>A <code>numeric</code> integer giving the maximum number of steps
+to be taken for the iterative procedure to construct a TML estimator.</p></td>
     </tr>
     </table>
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{print.medoutcon}
 \alias{print.medoutcon}
-\title{Print Method for Stochastic Mediation Parameter Objects}
+\title{Print Method for Interventional Mediation Effect Objects}
 \usage{
 \method{print}{medoutcon}(x, ...)
 }

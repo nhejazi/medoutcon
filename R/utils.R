@@ -1,15 +1,15 @@
-#' Confidence Intervals for Stochastic Mediation Parameter Objects
+#' Confidence Intervals for Interventional Mediation Effects
 #'
 #' Compute confidence intervals for objects of class \code{medoutcon}, which
-#' contain estimates produced by \code{medoutcon}.
+#' contain estimates produced by \code{\link{medoutcon}}.
 #'
 #' @param object An object of class \code{medoutcon}, as produced by invoking
-#'  the function \code{tmle_medoutcon}, for which a confidence interval is to be
-#'  computed.
+#'  the function \code{tmle_medoutcon}, for which a confidence interval is to
+#'  be computed.
 #' @param parm A \code{numeric} vector indicating indices of \code{object$est}
 #'  for which to return confidence intervals.
-#' @param level A \code{numeric} indicating the level of the confidence interval
-#'  to be computed.
+#' @param level A \code{numeric} indicating the level of the confidence
+#'  interval to be computed.
 #' @param ... Other arguments. Not currently used.
 #'
 #' @importFrom stats qnorm qlogis plogis
@@ -18,14 +18,12 @@
 #' @method confint medoutcon
 #'
 #' @export
-#
 confint.medoutcon <- function(object,
                               parm = seq_len(object$theta),
                               level = 0.95,
                               ...) {
-  # inference is currently limited to the one-step efficient estimator
-  # TODO: allow use for TML estimators once impelemented
-  assertthat::assert_that(object$type == "onestep")
+  # inference is currently limited to the efficient estimators
+  assertthat::assert_that(object$type %in% c("onestep", "tmle"))
 
   # first, let's get Z_(1 - alpha)
   ci_norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
@@ -55,13 +53,13 @@ confint.medoutcon <- function(object,
 
 ################################################################################
 
-#' Summary for Stochastic Mediation Parameter Objects
+#' Summary for Interventional Mediation Effect Objects
 #'
 #' Print a convenient summary for objects of \code{S3} class \code{medoutcon}.
 #'
 #' @param object An object of class \code{medoutcon}, as produced by invoking
-#'  the function \code{tmle_medoutcon}, for which a confidence interval is to be
-#'  computed.
+#'  the function \code{\link{medoutcon}}, for which a confidence interval is to
+#'  be computed.
 #' @param ... Other arguments. Not currently used.
 #' @param ci_level A \code{numeric} indicating the level of the confidence
 #'  interval to be computed.
@@ -71,11 +69,10 @@ confint.medoutcon <- function(object,
 #' @method summary medoutcon
 #'
 #' @export
-#
 summary.medoutcon <- function(object,
                               ...,
                               ci_level = 0.95) {
-  # inference is currently limited to the one-step efficient estimator
+  # inference is currently limited to the efficient estimators
   if (object$type %in% c("onestep", "tmle")) {
     # compute confidence interval using the pre-defined method
     ci <- stats::confint(object, level = ci_level)
@@ -103,7 +100,7 @@ summary.medoutcon <- function(object,
 
 ################################################################################
 
-#' Print Method for Stochastic Mediation Parameter Objects
+#' Print Method for Interventional Mediation Effect Objects
 #'
 #' The \code{print} method for objects of class \code{medoutcon}.
 #'
@@ -113,7 +110,6 @@ summary.medoutcon <- function(object,
 #' @method print medoutcon
 #'
 #' @export
-#
 print.medoutcon <- function(x, ...) {
   # inference is currently limited to the one-step efficient estimator
   # TODO: allow use for TML estimators once impelemented
@@ -128,19 +124,21 @@ print.medoutcon <- function(x, ...) {
 
 #' Bounding Numerical Precision
 #'
-#' Bounds extreme values to numerical (machine) precision, for use with
-#' sensitive quantities like estimated propensity scores.
+#' Bounds extreme values to a specified tolerance level, for use with sensitive
+#' quantities that must be transformed, e.g., via \code{\link[stats]{qlogis}}.
 #'
 #' @param vals A \code{numeric} vector of values in the interval [0, 1].
+#' @param tol A \code{numeric} indicating the tolerance limit to which extreme
+#'  values should be truncated. Realizations of \code{val} less than \code{tol}
+#'  are truncated to \code{tol} while those greater than (1 - \code{tol}) are
+#'  truncated to (1 - \code{tol}).
 #'
 #' @importFrom assertthat assert_that
 #'
 #' @keywords internal
-#
-bound_precision <- function(vals) {
-  assertthat::assert_that(!(max(vals) >= 1 | min(vals) <= 0))
-  vals[vals == 0] <- .Machine$double.neg.eps
-  vals[vals == 1] <- 1 - .Machine$double.neg.eps
+bound_precision <- function(vals, tol = 1e-6) {
+  vals[vals < tol] <- tol
+  vals[vals > 1 - tol] <- 1 - tol
   return(vals)
 }
 
@@ -158,9 +156,8 @@ bound_precision <- function(vals) {
 #' @importFrom assertthat assert_that
 #'
 #' @keywords internal
-#
 bound_propensity <- function(vals, bounds = c(0.001, 0.999)) {
-  assertthat::assert_that(!(max(vals) >= 1 | min(vals) <= 0))
+  assertthat::assert_that(!(max(vals) > 1 || min(vals) < 0))
   vals[vals < bounds[1]] <- bounds[1]
   vals[vals > bounds[2]] <- bounds[2]
   return(vals)
@@ -170,11 +167,10 @@ bound_propensity <- function(vals, bounds = c(0.001, 0.999)) {
 
 #' Scale Values to the Unit Interval [0, 1]
 #'
-#' @param vals A \code{numeric} vector of values to be scaled into the interval
-#'  [0, 1].
+#' @param vals A \code{numeric} vector of values to be scaled into the closed
+#'  interval [0, 1].
 #'
 #' @keywords internal
-#
 scale_to_unit <- function(vals) {
   vals_scaled <- (vals - min(vals)) / (max(vals) - min(vals))
   return(vals_scaled)
@@ -182,16 +178,15 @@ scale_to_unit <- function(vals) {
 
 ################################################################################
 
-#' Scale Values to the Original Scale
+#' Scale Values from the Unit Interval [0, 1] to the Original Scale
 #'
 #' @param scaled_vals A \code{numeric} vector of values scaled to lie in the
-#'  interval [0, 1] by use of \code{\link{scale_to_unit}}.
+#'  closed interval [0, 1] by use of \code{\link{scale_to_unit}}.
 #' @param max_orig The maximum of the values on the original scale.
 #' @param min_orig The minimum of the values on the original scale.
 #'
 #' @keywords internal
-#
-scale_to_original <- function(scaled_vals, max_orig, min_orig) {
+scale_from_unit <- function(scaled_vals, max_orig, min_orig) {
   vals_orig <- (scaled_vals * (max_orig - min_orig)) + min_orig
   return(vals_orig)
 }

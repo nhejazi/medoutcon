@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Scale Values to the Unit Interval [0, 1] — scale_to_unit • medoutcon</title>
+<title>NPSEM for Stochastic Mediation Effects with Intermediate Confounding — medoutcon_npsem • medoutcon</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Scale Values to the Unit Interval [0, 1] — scale_to_unit" />
-<meta property="og:description" content="Scale Values to the Unit Interval [0, 1]" />
+<meta property="og:title" content="NPSEM for Stochastic Mediation Effects with Intermediate Confounding — medoutcon_npsem" />
+<meta property="og:description" content="NPSEM for Stochastic Mediation Effects with Intermediate Confounding" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -92,7 +92,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
+      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounding</a>
     </li>
   </ul>
 </li>
@@ -117,24 +117,28 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Scale Values to the Unit Interval [0, 1]</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>scale_to_unit.Rd</code></div>
+    <h1>NPSEM for Stochastic Mediation Effects with Intermediate Confounding</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/tmle3_Spec_medoutcon.R'><code>R/tmle3_Spec_medoutcon.R</code></a></small>
+    <div class="hidden name"><code>medoutcon_npsem.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Scale Values to the Unit Interval [0, 1]</p>
+    <p>NPSEM for Stochastic Mediation Effects with Intermediate Confounding</p>
     </div>
 
-    <pre class="usage"><span class='fu'>scale_to_unit</span>(<span class='no'>vals</span>)</pre>
+    <pre class="usage"><span class='fu'>medoutcon_npsem</span>(<span class='no'>node_list</span>, <span class='kw'>variable_types</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>vals</th>
-      <td><p>A <code>numeric</code> vector of values to be scaled into the interval
-[0, 1].</p></td>
+      <th>node_list</th>
+      <td><p>A <code>list</code> object specifying the different nodes in the
+non-parametric structural equation model.</p></td>
+    </tr>
+    <tr>
+      <th>variable_types</th>
+      <td><p>Used to define how variables are handled. Optional.</p></td>
     </tr>
     </table>
 

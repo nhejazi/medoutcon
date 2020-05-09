@@ -2,14 +2,14 @@
 % Please edit documentation in R/utils.R
 \name{summary.medoutcon}
 \alias{summary.medoutcon}
-\title{Summary for Stochastic Mediation Parameter Objects}
+\title{Summary for Interventional Mediation Effect Objects}
 \usage{
 \method{summary}{medoutcon}(object, ..., ci_level = 0.95)
 }
 \arguments{
 \item{object}{An object of class \code{medoutcon}, as produced by invoking
-the function \code{tmle_medoutcon}, for which a confidence interval is to be
-computed.}
+the function \code{\link{medoutcon}}, for which a confidence interval is to
+be computed.}
 
 \item{...}{Other arguments. Not currently used.}
 

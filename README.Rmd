@@ -104,8 +104,8 @@ make_example_data <- function(n_obs = 1000) {
 
 # set seed and simulate example data
 example_data <- make_example_data()
-w_names <- str_subset(colnames(example_data), "w")
-m_names <- str_subset(colnames(example_data), "m")
+w_names <- str_subset(colnames(example_data), "W")
+m_names <- str_subset(colnames(example_data), "M")
 
 # quick look at the data
 head(example_data)

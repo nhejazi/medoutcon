@@ -115,6 +115,7 @@
 <div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyverse</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">medoutcon</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">1584</span>)
 
 <span class="co"># produces a simple data set based on ca causal model with mediation</span>
 <span class="no">make_example_data</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">n_obs</span> <span class="kw">=</span> <span class="fl">1000</span>) {
@@ -145,13 +146,19 @@
 }
 
 <span class="co"># set seed and simulate example data</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">75681</span>)
 <span class="no">example_data</span> <span class="kw">&lt;-</span> <span class="fu">make_example_data</span>()
-<span class="no">w_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"w"</span>)
-<span class="no">m_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"m"</span>)
+<span class="no">w_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"W"</span>)
+<span class="no">m_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"M"</span>)
 
 <span class="co"># quick look at the data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">example_data</span>)
+<span class="co">#&gt;    W_1 W_2 W_3 A Z M Y</span>
+<span class="co">#&gt; 1:   1   0   1 0 0 0 1</span>
+<span class="co">#&gt; 2:   0   1   0 0 0 1 0</span>
+<span class="co">#&gt; 3:   1   1   1 1 0 1 1</span>
+<span class="co">#&gt; 4:   0   1   1 0 0 1 0</span>
+<span class="co">#&gt; 5:   0   0   0 0 0 1 1</span>
+<span class="co">#&gt; 6:   1   0   1 1 0 1 0</span>
 
 <span class="co"># compute one-step estimate of the interventional direct effect</span>
 <span class="no">os_de</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
@@ -162,6 +169,10 @@
                    <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"direct"</span>,
                    <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"onestep"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">os_de</span>)
+<span class="co">#&gt;        lwr_ci     param_est        upr_ci     param_var      eif_mean </span>
+<span class="co">#&gt;       -0.1884       -0.0726        0.0433        0.0035   -4.4100e-17 </span>
+<span class="co">#&gt;     estimator         param </span>
+<span class="co">#&gt;       onestep direct_effect</span>
 
 <span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span>
 <span class="no">tmle_de</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
@@ -171,7 +182,11 @@
                      <span class="kw">Y</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Y</span>,
                      <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"direct"</span>,
                      <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"tmle"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_de</span>)</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_de</span>)
+<span class="co">#&gt;        lwr_ci     param_est        upr_ci     param_var      eif_mean </span>
+<span class="co">#&gt;        -0.203       -0.0859        0.0311        0.0036    4.4084e-03 </span>
+<span class="co">#&gt;     estimator         param </span>
+<span class="co">#&gt;          tmle direct_effect</span></pre></div>
 <p>For details on how to use data adaptive regression (machine learning) techniques in the estimation of nuisance parameters, consider consulting the vignette that accompanies the package.</p>
 <hr>
 </div>

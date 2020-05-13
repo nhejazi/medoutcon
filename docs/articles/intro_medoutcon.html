@@ -137,7 +137,6 @@
 <a href="#setting-up-the-data-example" class="anchor"></a>Setting up the data example</h2>
 <p>[TO FILL IN]</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyverse</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">medoutcon</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">75681</span>)</pre></body></html></div>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># produces a simple data set based on ca causal model with mediation</span>
@@ -170,8 +169,8 @@
 
 <span class="co"># set seed and simulate example data</span>
 <span class="no">example_data</span> <span class="kw">&lt;-</span> <span class="fu">make_example_data</span>()
-<span class="no">w_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"W"</span>)
-<span class="no">m_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"M"</span>)
+<span class="no">w_names</span> <span class="kw">&lt;-</span> <span class="kw pkg">stringr</span><span class="kw ns">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html">str_subset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"W"</span>)
+<span class="no">m_names</span> <span class="kw">&lt;-</span> <span class="kw pkg">stringr</span><span class="kw ns">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html">str_subset</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"M"</span>)
 
 <span class="co"># quick look at the data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">example_data</span>)</pre></body></html></div>

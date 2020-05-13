@@ -1,7 +1,8 @@
 ---
 title: "Efficient causal mediation analysis with intermediate confounders"
-author: "[Nima Hejazi](https://nimahejazi.org) and [Iván
-  Díaz](https://www.idiaz.xyz/)"
+author: "[Nima Hejazi](https://nimahejazi.org), [Iván
+  Díaz](https://www.idiaz.xyz/), and [Kara
+  Rudolph](https://kararudolph.github.io/)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
@@ -11,112 +12,257 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Background
+# Background and Motivations
 
-An exposure of interest often affects an outcome directly,
-or indirectly by the mediation of some intermediate variables.
-Identifying and quantifying the mechanisms underlying causal effects
-is an increasingly popular endeavor in public health and the social
-sciences, as it can improve understanding of both why and how
-treatments can be effective. Such mechanistic knowledge may be
-arguably even more important in cases where treatments result in
-unanticipated ineffective or even harmful effects. 
+An exposure of interest often affects an outcome directly, or indirectly by the
+mediation of some intermediate variables. Identifying and quantifying the
+mechanisms underlying causal effects is an increasingly popular endeavor in
+public health, medicine, and the social sciences, as knowledge of such
+mechanisms can improve understanding of both _why and how_ treatments can be
+effective. Such mechanistic knowledge may be arguably even more important in
+cases where treatments result in unanticipated ineffective or even harmful
+effects.
 
 Traditional techniques for mediation analysis fare poorly in the face of
 intermediate confounding. Classical parameters like the natural (in)direct
 effects face a lack of identifiability in cases where mediator-outcome (i.e.,
 intermediate) confounders affected by exposure complicate the relationship
-between the exposure, mediators, and outcome. @diaz2020nonparametric provide
-a theoretical and computational study of the properties of the interventional
-(in)direct effect estimands based on the efficiency bound in the non-parametric
-statistical model. Among their contributions, @diaz2020nonparametric
-- derive the efficient influence function (EIF), an important object in
+between the exposure, mediators, and outcome. @diaz2020nonparametric provide a
+theoretical and computational study of the properties of newly developed
+interventional (in)direct effect estimands within the non-parametric statistical
+model. Among their contributions, @diaz2020nonparametric
+- derive the efficient influence function (EIF), an key object in
   semiparametric efficiency theory;
-- use the EIF to develop two asymptotically optimal, non-parametric estimators;
-  that leverage data-adaptive regression for estimation of nuisance parameters;
-  and
+- use the EIF to develop two asymptotically optimal, non-parametric estimators,
+  each of which is capable of leveraging machine learning for the estimation of
+  nuisance parameters; and
 - present theoretical conditions under which their proposed estimators are
-  consistent, rate multiply robust, $n^{1/2}$-consistent and efficient.
+  consistent, multiply robust, and efficient.
 
-Let $A$ denote a categorical treatment variable, let $Y$ denote a
-continuous or binary outcome, let $M$ denote a multivariate mediator,
-let $W$ denote a vector of observed pre-treatment covariates, and let
-$Z$ denote a mediator-outcome confounder affected by treatment. Let
-$O = (W, A, Z, M, Y)$ represent the observed data, and let
-$O_1, \ldots, O_n$ denote a sample of $n$ i.i.d.~observations of
-$O$. We formalize the definition of our counterfactual variables using
-the following non-parametric structural equation model (NPSEM), but
-note that equivalent methods may be developed by taking the
-counterfactual variables as primitives. Assume the data-generating
-process satisfies
-\begin{multline}\label{eq:npsem}
-  W = f_W(U_W);\ A = f_A(W, U_A);\ Z=f_Z(W, A, U_Z);\\
-  M = f_M(W, A, Z, U_M);\ Y = f_Y(W, A, Z, M, U_Y).
-\end{multline}
-In our illustrative example, we have the following exclusion restrictions:
-$M = f_M(W, Z, U_M)$, $Y = f_Y(W, Z, M, U_Y)$, but we present general
-methods for the model (\ref{eq:npsem}). Here, the vector of exogenous factors
-$U=(U_W,U_A,U_Z,U_M,U_Y)$, and the functions $f$, are assumed
-deterministic but unknown. We use $\P$ to denote the distribution
-of $O$, and $\Ps$ to denote the distribution of $(O,U)$. We let
-$\P$ be an element of the nonparametric statistical model defined
-as all continuous densities on $O$ with respect to some dominating
-measure $\nu$. Let $\p$ denote the corresponding probability density
-function, and $\mathcal{W, Z, M}$ denote the range of the respective
-random variables. We let $\E$ and $\E_c$ denote corresponding
-expectation operators, and define $\P f = \int f(o)\dd \P(o)$ for a
-given function $f(o)$. We use $\Pn$ to denote the empirical distribution
-of $O_1, \ldots, O_n$.
+# Problem Setup and Notation
 
-In our discussion, the following additional parameterizations will be
-useful. We use $\g(a \mid w)$ to denote the probability mass function
-of $A=a$ conditional on $W = w$, and $\e(a \mid m, w)$ to denote the
-probability mass function of $A=a$ conditional on $(M, W)=(m,w)$. We
-use $\m(a,z,m,w)$ to denote the outcome regression function
-$\E(Y \mid A = a,Z = z,M = m, W = w)$, and $\q(z \mid a,w)$ and
-$\rr(z \mid a,m,w)$ to denote the corresponding conditional densities
-of $Z$. For a random variable $X$ we let $X_a$ denote the
-counterfactual outcome observed in a hypothetical world in which
-$\P(A=a)=1$. For example, we have $Z_a = f_M(W,a,U_Z)$,
-$M_a=f_M(W,a,Z_a,U_M)$, and $Y_a=f_Y(W,a,Z_a,M_a,U_Y)$. Likewise, we
-let $Y_{a,m} =f_Y(W,a,Z_a,m,U_Y)$ denote the value of the outcome in a
-hypothetical world where $\P(A=a,M=m)=1$.
-
-# Methodology
-
-In this work, we define the total effect of $A$ on $Y$ in terms
-of a contrast between two user-given values $a', a^{\star} \in \mathcal
-A$. Figure \ref{fig:dag} reveals four paths involved in this effect,
-namely $A\rightarrow Y$, $A\rightarrow M \rightarrow Y$,
-$A\rightarrow Z \rightarrow Y$, and
-$A\rightarrow Z \rightarrow M \rightarrow Y$ . One approach to
-mediation analysis considers the \emph{natural direct effect
-(NDE)} and the \emph{natural indirect effect (NIE)}, defined as
-$\E_c(Y_{a',M_{a^{\star}}} - Y_{a^{\star}, M_{a^{\star}}})$ and
-$\E_c(Y_{a',M_{a'}} - Y_{a',M_{a^{\star}}})$, respectively
-\citep{RobinsGreenland92,Pearl01}. In terms of the NPSEM
-(\ref{eq:npsem}), these effects are defined as
+The problem addressed by the work of @diaz2020nonparametric may be represented
+by the following nonparametric structural equation model (NPSEM):
 \begin{align*}
-  \text{NDE} &= \E_c\{f_Y(W,a',Z_{a'},M_{a^{\star}},U_Y) -
-               f_Y(W,a^{\star},Z_{a^{\star}},M_{a^{\star}},U_Y)\}\\
-  \text{NIE} &= \E_c\{f_Y(W,a',Z_{a'},M_{a'},U_Y) -
-               f_Y(W,a',Z_{a'},M_{a^{\star}},U_Y)\}.
+  W &= f_W(U_W); A = f_A(W, U_A); Z=f_Z(W, A, U_Z);\\ \nonumber
+  M &= f_M(W, A, Z, U_M); Y = f_Y(W, A, Z, M, U_Y).
 \end{align*}
-Inspection of the above definitions reveals that the natural direct
-effect measures the effect through paths \emph{not} involving the
-mediator ($A\rightarrow Y$ and $A\rightarrow Z \rightarrow Y$),
-whereas the natural indirect effect measures the effect through paths
-involving the mediator ( $A\rightarrow M \rightarrow Y$ and
-$A\rightarrow Z \rightarrow M \rightarrow Y$). This effect definition
-is appealing because the sum of the natural direct and indirect
-effects equals the average treatment effect
-$\E_c(Y_1-Y_0)$. Unfortunately, natural direct and indirect effects
+In the NPSEM, $W$ denotes a vector of observed pre-treatment covariates, $A$
+denotes a categorical treatment variable, $Z$ denotes an intermediate confounder
+affected by treatment, $M$ denotes a (possibly multivariate) mediator, and $Y$
+denotes a continuous or binary outcome.  The vector of exogenous factors
+$U=(U_W,U_A,U_Z,U_M,U_Y)$, and the functions $f$, are assumed deterministic but
+unknown.  Importantly, the NPSEM encodes a time-ordering between these variables
+and allows the evaluation of counterfactual quantities defined by intervening on
+a set of nodes of the NPSEM.  The observed data unit can be represented by the
+random variable $O = (W, A, Z, M, Y)$; we consider access to $O_1, \ldots, O_n$,
+a sample of $n$ i.i.d.~observations of $O$.
 
-[TODO]
+@diaz2020nonparametric additionally define the following parameterizations,
+familiarity with which will be useful for using the [`medoutcon` `R`
+package](https://github.com/nhejazi/medoutcon). In particular, these authors
+define $\g(a \mid w)$ as the probability mass function of $A = a$ conditional on
+$W = w$ and use $\e(a \mid m, w)$ to denote the probability mass function of $A
+= a$ conditional on $(M, W) = (m, w)$. Further, @diaz2020nonparametric use
+$\m(a, z, m, w)$ to denote the outcome regression function $\mathbb{E}(Y \mid A
+= a, Z = z, M = m, W = w)$, as well as $q(z \mid a,w)$ and $r(z \mid a, m, w)$
+to denote the corresponding conditional densities of $Z$.
 
-# Example
+# Interventional (In)Direct Effects
 
-[TODO]
+@diaz2020nonparametric define the _total effect_ of $A$ on $Y$ in terms of a
+contrast between two user-supplied values $a', a^{\star} \in \mathcal{A}$.
+Examination of the NPSEM reveals that there are four paths involved in this
+effect, namely $A \rightarrow Y$, $A \rightarrow M \rightarrow Y$, $A
+\rightarrow Z \rightarrow Y$, and $A \rightarrow Z \rightarrow M \rightarrow Y$.
+Mediation analysis has classically considered the _natural direct effect_ (NDE)
+and the _natural indirect effect_ (NIE), which are defined as
+$\mathbb{E}_c(Y_{a', M_{a^{\star}}} - Y_{a^{\star}, M_{a^{\star}}})$ and
+$\mathbb{E}_c(Y_{a',M_{a'}} - Y_{a',M_{a^{\star}}})$, respectively. The natural
+direct effect measures the effect through paths _not_ involving the mediator
+($A\rightarrow Y$ and $A\rightarrow Z \rightarrow Y$), whereas the natural
+indirect effect measures the effect through paths involving the mediator
+($A\rightarrow M \rightarrow Y$ and $A\rightarrow Z \rightarrow M \rightarrow
+Y$). As the sum of the natural direct and indirect effects equals the average
+treatment effect $\mathbb{E}_c(Y_1-Y_0)$, this effect decomposition is
+appealing. Unfortunately, the natural direct and indirect effects are
+not generally identified in the presence of an intermediate confounder affected
+by treatment.
+
+To circumvent this issue, @diaz2020nonparametric define the direct and indirect
+effects using stochastic interventions on the mediator, following a strategy
+previously outline by @vanderweele2014effect and @rudolph2017robust, among
+others. Let $G_a$ denote a random draw from the conditional distribution of
+$M_a$ conditional on $W$. Consider the effect of $A$ on $Y$ defined as the
+difference in expected outcome in hypothetical worlds in which $(A,M) = (a',
+G_{a'})$ versus $(A,M) = (a^{\star}, G_{a^{\star}})$ with probability one, which
+may be decomposed into direct and indirect effects as follows
+\begin{equation*}
+\mathbb{E}_c(Y_{a', G_{a'}} - Y_{a^{\star}, G_{a^{\star}}}) =
+  \underbrace{\mathbb{E}_c(Y_{a', G_{a'}} - Y_{a',
+    G_{a^{\star}}})}_{\text{Indirect effect (through $M$)}} +
+  \underbrace{\mathbb{E}_c(Y_{a', G_{a^{\star}}} - Y_{a^{\star},
+      G_{a^{\star}}})}_{\text{Direct effect (not through $M$)}}.
+\end{equation*}
+Like the natural direct effect, this interventional direct effect measures the
+effects through paths not involving the mediator. Likewise, the interventional
+indirect effect measures the effect through paths involving the mediator. Note,
+however, that natural and interventional mediation effects have different
+interpretations. That is, the interventional indirect effect measures the effect
+of fixing the exposure at $a'$ while setting the mediator to a random draw
+$G_{a^{\star}}$ from those with exposure $a'$ versus a random draw $G_{a'}$ from
+those with exposure $a^{\star}$, given covariates $W$. As is clear from the
+effect decomposition, the term $\theta_c = \mathbb{E}_c(Y_{a', G_{a^{\star}}})$
+is required for estimation of both the interventional direct and indirect
+effects; thus, @diaz2020nonparametric focus on estimation of this quantity.
+Importantly, it has been shown that $\theta_c$ is identified by the statistical
+functional
+\begin{equation*}
+  \theta = \int m(a', z, m, w) q(z \mid a', w) p(m \mid a^{\star}, w)
+  p(w) d\nu(w,z,m)
+\end{equation*}
+under a set of standard identifiability conditions [@vanderweele2014effect],
+which are further reviewed in @diaz2020nonparametric.
+
+# Efficient Estimation
+
+@diaz2020nonparametric define two efficient estimators of their interventional
+(in)direct effects. These are based on the one-step estimation and targeted
+minimum loss (TML) estimation frameworks, respectively. Briefly, both estimation
+strategies proceed in two stages, starting by first constructing initial
+estimates of the nuisance parameters present in the EIF, then proceeding to
+apply distinct bias-correction strategies in their second stages. Both
+estimation strategies require an assumption about the behavior of initial
+estimators of the nuisance parameters (specifically, that these lie in a
+so-called Donsker class); however, such an assumption may be avoided by making
+use of cross-validation in fitting initial estimators. Consistent with recent
+theoretical developments, the `medoutcon` `R` package requires the use of
+cross-validation in constructing these initial estimates.
+
+The one-step estimator $\hat{\theta}_{text{os}}$ is constructed by adding the
+empirical mean of the EIF (evaluated at initial estimates of the nuisance
+parameters) to the substitution estimator. By constrast, the TML estimator
+$\hat{\theta}_{\text{tmle}}$ updates the components of the substitution
+estimator via logistic tilting models formulated to ensure that relevant score
+equations appearing in the EIF are (approximately) solved.  While the estimators
+are asymptotically equivalent, TML estimators have been shown to exhibit
+superior finite-sample performance, making them potentially more reliable than
+one-step estimators. For the exact form of the EIF as well as those of the
+one-step and TML estimators, consult @diaz2020nonparametric.
+
+# Data Analysis Example
+
+## Setting up the data example
+
+[TO FILL IN]
+
+```{r setup, message=FALSE, warning=FALSE}
+library(data.table)
+library(tidyverse)
+library(medoutcon)
+set.seed(75681)
+```
+
+```{r example_data, message=FALSE, warning=FALSE}
+# produces a simple data set based on ca causal model with mediation
+make_example_data <- function(n_obs = 1000) {
+  ## baseline covariates
+  w_1 <- rbinom(n_obs, 1, prob = 0.6)
+  w_2 <- rbinom(n_obs, 1, prob = 0.3)
+  w_3 <- rbinom(n_obs, 1, prob = pmin(0.2 + (w_1 + w_2) / 3, 1))
+  w <- cbind(w_1, w_2, w_3)
+  w_names <- paste("W", seq_len(ncol(w)), sep = "_")
+
+  ## exposure
+  a <- as.numeric(rbinom(n_obs, 1, plogis(rowSums(w) - 2)))
+
+  ## mediator-outcome confounder affected by treatment
+  z <- rbinom(n_obs, 1, plogis(rowMeans(-log(2) + w - a) + 0.2))
+
+  ## mediator -- could be multivariate
+  m <- rbinom(n_obs, 1, plogis(rowSums(log(3) * w[, -3] + a - z)))
+  m_names <- "M"
+
+  ## outcome
+  y <- rbinom(n_obs, 1, plogis(1 / (rowSums(w) - z + a + m)))
+
+  ## construct output
+  dat <- as.data.table(cbind(w = w, a = a, z = z, m = m, y = y))
+  setnames(dat, c(w_names, "A", "Z", m_names, "Y"))
+  return(dat)
+}
+
+# set seed and simulate example data
+example_data <- make_example_data()
+w_names <- str_subset(colnames(example_data), "w")
+m_names <- str_subset(colnames(example_data), "m")
+
+# quick look at the data
+head(example_data)
+```
+
+[TO FILL IN]
+
+## Estimating the direct effect
+
+```{r de_os, eval=FALSE, message=FALSE, warning=FALSE}
+# compute one-step estimate of the interventional direct effect
+os_de <- medoutcon(W = example_data[, ..w_names],
+                   A = example_data$A,
+                   Z = example_data$Z,
+                   M = example_data[, ..m_names],
+                   Y = example_data$Y,
+                   effect = "direct",
+                   estimator = "onestep")
+summary(os_de)
+```
+
+[TO FILL IN]
+
+
+```{r de_tmle, eval=FALSE, message=FALSE, warning=FALSE}
+# compute targeted minimum loss estimate of the interventional direct effect
+tmle_de <- medoutcon(W = example_data[, ..w_names],
+                     A = example_data$A,
+                     Z = example_data$Z,
+                     M = example_data[, ..m_names],
+                     Y = example_data$Y,
+                     effect = "direct",
+                     estimator = "tmle")
+summary(tmle_de)
+```
+
+[TO FILL IN]
+
+## Estimating the indirect effect
+
+```{r ie_os, eval=FALSE, message=FALSE, warning=FALSE}
+# compute one-step estimate of the interventional indirect effect
+os_ie <- medoutcon(W = example_data[, ..w_names],
+                   A = example_data$A,
+                   Z = example_data$Z,
+                   M = example_data[, ..m_names],
+                   Y = example_data$Y,
+                   effect = "indirect",
+                   estimator = "onestep")
+summary(os_ie)
+```
+
+[TO FILL IN]
+
+```{r ie_tmle, eval=FALSE, message=FALSE, warning=FALSE}
+# compute targeted minimum loss estimate of the interventional indirect effect
+tmle_ie <- medoutcon(W = example_data[, ..w_names],
+                     A = example_data$A,
+                     Z = example_data$Z,
+                     M = example_data[, ..m_names],
+                     Y = example_data$Y,
+                     effect = "indirect",
+                     estimator = "tmle")
+summary(tmle_ie)
+```
+
+[TO FILL IN]
 
 ## References
 

@@ -6,24 +6,31 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>EIF for stochastic (in)direct effects under mediator-outcome confounding — cv_eif • medoutcon</title>
+<title>EIF for interventional (in)direct effects with intermediate confounding — cv_eif • medoutcon</title>
+
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -31,10 +38,10 @@
 
 
 
-<meta property="og:title" content="EIF for stochastic (in)direct effects under mediator-outcome confounding — cv_eif" />
 
-<meta property="og:description" content="EIF for stochastic (in)direct effects under mediator-outcome confounding" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="EIF for interventional (in)direct effects with intermediate confounding — cv_eif" />
+<meta property="og:description" content="EIF for interventional (in)direct effects with intermediate confounding" />
+
 
 
 
@@ -48,9 +55,10 @@
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -64,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -87,15 +95,14 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_medoutcon.html">Efficient mediation analysis under mediator-outcome confounding affected by exposure</a>
+      <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
     </li>
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/nhejazi/medoutcon">
+  <a href="https://github.com/nhejazi/medoutcon/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -107,25 +114,36 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>EIF for stochastic (in)direct effects under mediator-outcome confounding</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/estim_onestep.R'><code>R/estim_onestep.R</code></a></small>
+    <h1>EIF for interventional (in)direct effects with intermediate confounding</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/estimate.R'><code>R/estimate.R</code></a></small>
     <div class="hidden name"><code>cv_eif.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
-    <p>EIF for stochastic (in)direct effects under mediator-outcome confounding</p>
-    
+    <p>EIF for interventional (in)direct effects with intermediate confounding</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cv_eif</span>(<span class='no'>fold</span>, <span class='no'>data_in</span>, <span class='no'>contrast</span>, <span class='no'>g_lrnr_stack</span>, <span class='no'>e_lrnr_stack</span>, <span class='no'>m_lrnr_stack</span>,
-  <span class='no'>q_lrnr_stack</span>, <span class='no'>r_lrnr_stack</span>, <span class='no'>u_lrnr_stack</span>, <span class='no'>v_lrnr_stack</span>, <span class='no'>w_names</span>, <span class='no'>m_names</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>cv_eif</span>(
+  <span class='no'>fold</span>,
+  <span class='no'>data_in</span>,
+  <span class='no'>contrast</span>,
+  <span class='no'>g_learners</span>,
+  <span class='no'>e_learners</span>,
+  <span class='no'>m_learners</span>,
+  <span class='no'>q_learners</span>,
+  <span class='no'>r_learners</span>,
+  <span class='no'>u_learners</span>,
+  <span class='no'>v_learners</span>,
+  <span class='no'>w_names</span>,
+  <span class='no'>m_names</span>
+)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -135,98 +153,93 @@
 to <code><a href='http://tlverse.org/origami/reference/make_folds.html'>origami::make_folds</a></code>.</p></td>
     </tr>
     <tr>
+      <th>data_in</th>
+      <td><p>A <code>data.table</code> containing the observed data with columns
+are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
+set appropriately based on the input data. Such a structure is merely a
+convenience utility to passing data around to the various core estimation
+routines and is automatically generated by <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
+    </tr>
+    <tr>
       <th>contrast</th>
       <td><p>A <code>numeric</code> double indicating the two values of the
-intervention <code>A</code> to be compared. The default value of <code><a href='https://rdrr.io/r/base/c.html'>c(0, 1)</a></code>
-assumes a binary intervention node <code>A</code>, though support for categorical
-interventions is planned for future releases.</p></td>
+intervention <code>A</code> to be compared. The default value of <code>NULL</code> has
+no effect, as the value of the argument <code>effect</code> is instead used to
+define the contrasts. To override <code>effect</code>, provide a <code>numeric</code>
+double vector, giving the values of a' and a* (e.g., <code><a href='https://rdrr.io/r/base/c.html'>c(0, 1)</a></code>.</p></td>
     </tr>
     <tr>
-      <th>g_lrnr_stack</th>
+      <th>g_learners</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, for use in fitting a model for the propensity
-score, i.e., \(g = P(A | W)\).</p></td>
+from <span class="pkg">sl3</span>, for use in fitting a model for the propensity score, i.e.,
+\(g = P(A | W)\).</p></td>
     </tr>
     <tr>
-      <th>e_lrnr_stack</th>
+      <th>e_learners</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting a cleverly parameterized
-propensity score that includes the mediators, i.e., \(e = P(A | Z, W)\).</p></td>
+from <span class="pkg">sl3</span>, to be used in fitting a cleverly parameterized propensity
+score that includes the mediators, i.e., \(e = P(A | Z, W)\).</p></td>
     </tr>
     <tr>
-      <th>m_lrnr_stack</th>
+      <th>m_learners</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting the outcome regression.</p></td>
+from <span class="pkg">sl3</span>, to be used in fitting the outcome regression.</p></td>
     </tr>
     <tr>
-      <th>q_lrnr_stack</th>
+      <th>q_learners</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting a regression involving
-the mediator-outcome confounder, i.e., \(q(Z | A, W)\).</p></td>
+from <span class="pkg">sl3</span>, for use in fitting a regression involving the
+mediator-outcome confounder, i.e., \(q(Z | A', W)\).</p></td>
     </tr>
     <tr>
-      <th>r_lrnr_stack</th>
+      <th>r_learners</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting a regression involving
-the mediator-outcome confounder, i.e., \(r(Z | A, M, W)\).</p></td>
+from <span class="pkg">sl3</span>, to be used in fitting a regression involving the
+mediator-outcome confounder, i.e., \(r(Z | A', M, W)\).</p></td>
     </tr>
     <tr>
-      <th>u_lrnr_stack</th>
+      <th>u_learners</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting a reduced regression
-appearing in the efficient influence function, i.e.,
-\(u(L, A, W) = E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) * (e(a'|M,W) /
-e(A|M,W)) | Z = z, A = a, W = w]\).</p></td>
+from <span class="pkg">sl3</span>, to be used in fitting a reduced regression, i.e.,
+\(u(Z, A, W) = E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) *
+(e(a'|M,W) / e(A|M,W)) | Z = z, A = a, W = w]\).</p></td>
     </tr>
     <tr>
-      <th>v_lrnr_stack</th>
+      <th>v_learners</th>
       <td><p>A <code>Stack</code> object, or other learner class (inheriting
 from <code>Lrnr_base</code>), containing a single or set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting a reduced regression
-useful for computing the efficient one-step estimator, i.e.,
-\(v(A,W) = E[\int_z m(a', z, M, W) * q(z | A', W) d\nu(z) | A = a,
-W = w)]\).</p></td>
+from <span class="pkg">sl3</span>, to be used in fitting a reduced regression, i.e.,
+\(v(A,W) = E[\int_m m(a', Z, M, W) * q(z|A',W) d\nu(m) | A=a, W=w)]\).</p></td>
     </tr>
     <tr>
       <th>w_names</th>
       <td><p>A <code>character</code> vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is
-automatically generated by a call to the wrapper function
-<code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
+automatically generated by <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
     </tr>
     <tr>
       <th>m_names</th>
       <td><p>A <code>character</code> vector of the names of the columns that
 correspond to mediators (M). The input for this argument is automatically
-generated by a call to the wrapper function <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>data_ing</th>
-      <td><p>A <code>data.table</code> containing the observed data with columns
-are in the order specified by the NPSEM (Y, M, Z, A, W), with column names
-set appropriately based on the input data. Such a structure is merely a
-convenience utility to passing data around to the various core estimation
-routines and is automatically generated as part of a call to the user-facing
-wrapper function <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
+generated by <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
     </tr>
     </table>
-    
+
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-                </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -234,13 +247,16 @@ wrapper function <code><a href='medoutcon.html'>medoutcon</a></code>.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

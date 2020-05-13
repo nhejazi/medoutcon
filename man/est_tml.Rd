@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate.R
 \name{est_tml}
 \alias{est_tml}
-\title{TMLE for interventional (in)direct effects under intermediate confounding}
+\title{TMLE for interventional (in)direct effects with intermediate confounding}
 \usage{
 est_tml(
   data,
@@ -101,5 +101,5 @@ taken when performing TMLE updates based on logistic tilting models. When
 the step size of a given update exceeds this value, the update is avoided.}
 }
 \description{
-TMLE for interventional (in)direct effects under intermediate confounding
+TMLE for interventional (in)direct effects with intermediate confounding
 }

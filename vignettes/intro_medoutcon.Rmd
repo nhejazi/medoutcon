@@ -154,7 +154,13 @@ one-step and TML estimators, consult @diaz2020nonparametric.
 
 ## Setting up the data example
 
-[TO FILL IN]
+Now, we'll take a look at how to estimate the interventional direct and indirect
+effects using a simulated data example. @diaz2020nonparametric illustrate the
+use of their estimators of these effects in an application in which they seek to
+elucidate the mechanisms behind the unintended harmful effects that a housing
+intervention had on adolescent girls' risk behavior.
+
+First, let's load a few required packages and set a seed for our simulation.
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(data.table)
@@ -162,7 +168,14 @@ library(medoutcon)
 set.seed(75681)
 ```
 
-```{r example_data, message=FALSE, warning=FALSE}
+Next, we'll generate a very simple simulated dataset. The function
+`make_example_data`, defined below, generates three binary baseline covariates
+$W = (W_1, W_2, W_3)$, a binary exposure variable $A$, a single binary mediateor
+$M$ an intermediate confounder $Z$ that affects the mediator $M$ and is itself
+affected by the exposure $A$, and, finally, a binary outcome $Y$ that is a
+function of $(W, A, Z, M)$.
+
+```{r make_example_data, message=FALSE, warning=FALSE}
 # produces a simple data set based on ca causal model with mediation
 make_example_data <- function(n_obs = 1000) {
   ## baseline covariates
@@ -195,14 +208,86 @@ make_example_data <- function(n_obs = 1000) {
 example_data <- make_example_data()
 w_names <- stringr::str_subset(colnames(example_data), "W")
 m_names <- stringr::str_subset(colnames(example_data), "M")
+```
 
+Now, let's take a quick look at our simulated data:
+
+```{r example_data, message=FALSE, warning=FALSE}
 # quick look at the data
 head(example_data)
 ```
 
-[TO FILL IN]
+As noted above, all covariates in our dataset are binary; however, note that
+this need not be the case for using our methodology --- in particular, the only
+current limitation is that the intermediate confounder $Z$ must be binary when
+using our implemented TML estimator of the (in)direct effects.
+
+Using this dataset, we'll proceed to estimate the interventional (in)direct
+effects. In order to do so, we'll need to estimate several nuisance parameters,
+including the exposure mechanism ($g(A \mid W)$), a re-parameterized exposure
+mechanism that conditions on the mediators ($e(A \mid M, W)$), the outcome
+mechanism ($m(Y \mid M, Z, A, W$), and two variants of the intermediate
+confounding mechanism ($q(Z \mid A, S)$ and $r(Z \mid M, A, W)$). In order to
+estimate each of these nuisance parameters flexibly, we'll rely on data adaptive
+regression strategies in order to avoid the potential for (parametric) model
+misspecification.
+
+<!--
+Note that there are two additional nuisance parameters that must also be
+estimated ($u$ and $v$), which are themselves functions of the other nuisance
+parameters.  We recommend estimating these via the highly adaptive lasso, which
+is the...
+-->
+
+## Ensemble learning of nuisance functions
+
+As we'd like to rely on flexible, data adaptive regression strategies for
+estimating each of the nuisance parameters $(g, e, m, q, r)$, we require a
+method for choosing among or combining the wide variety of available regression
+strategies. For this, we recommend the use of the Super Learner algorithm for
+ensemble machine learning [@vdl2007super].  The recently developed [`sl3` R
+package](https://tlverse.org/sl3) [@coyle2020sl3] provides a unified interface
+for deploying a wide variety of machine learning algorithms (simply called
+_learners_ in the `sl3` nomenclature) as well as for constructing Super Learner
+ensemble models of such learners. For a complete guide on using the `sl3` R
+package, consider consulting https://tlverse.org/sl3, or https://tlverse.org
+(and https://github.com/tlverse) for the `tlverse` ecosystem, of which `sl3` is
+an integral part.
+
+To construct an ensemble learner using a handful of popular machine learning
+algorithms, we'll first instantiate variants of learners from the appropriate
+classes for each algorithm, and then create a Super Learner ensemble via the
+`Lrnr_sl` class. Below, we demonstrate the construction of a relatively simple
+ensemble learner based on a modeling library including main-terms GLMs, Lasso
+regression, ridge regression, elastic net regression, and extreme gradient
+boosted trees (`xgboost`):
+
+```{r make_sl, message=FALSE, warning=FALSE}
+# instantiate learners
+xgb_binary_lrnr <- Lrnr_xgboost$new(nrounds = 50, objective = "reg:logistic")
+enet_binary_lrnr <- Lrnr_glmnet$new(alpha = 0.5, family = "binomial",
+                                    nfolds = 3)
+lasso_binary_lrnr <- Lrnr_glmnet$new(alpha = 1, family = "binomial",
+                                     nfolds = 3)
+fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
+binary_lrnr_lib <- Stack$new(enet_binary_lrnr, lasso_binary_lrnr,
+                             fglm_binary_lrnr, xgb_binary_lrnr)
+
+# create metalearner and super learner ensemble
+logistic_metalearner <- make_learner(Lrnr_solnp,
+                                     metalearner_logistic_binomial,
+                                     loss_loglik_binomial)
+sl_binary_lrnr <- Lrnr_sl$new(learners = binary_lrnr_lib,
+                              metalearner = logistic_metalearner)
+```
+
+Having constructed our Super Learner, we're now ready to estimate each of the
+interventional effects using the efficient estimators exposed in the `medoutcon`
+package.
 
 ## Estimating the direct effect
+
+[TO FILL IN]
 
 ```{r de_os, eval=FALSE, message=FALSE, warning=FALSE}
 # compute one-step estimate of the interventional direct effect
@@ -211,6 +296,11 @@ os_de <- medoutcon(W = example_data[, ..w_names],
                    Z = example_data$Z,
                    M = example_data[, ..m_names],
                    Y = example_data$Y,
+                   g_learners = sl_lrnr,
+                   e_learners = sl_lrnr,
+                   m_learners = sl_lrnr,
+                   q_learners = sl_lrnr,
+                   r_learners = slr_lrnr,
                    effect = "direct",
                    estimator = "onestep")
 summary(os_de)
@@ -218,6 +308,7 @@ summary(os_de)
 
 [TO FILL IN]
 
+[TO FILL IN]
 
 ```{r de_tmle, eval=FALSE, message=FALSE, warning=FALSE}
 # compute targeted minimum loss estimate of the interventional direct effect
@@ -226,10 +317,17 @@ tmle_de <- medoutcon(W = example_data[, ..w_names],
                      Z = example_data$Z,
                      M = example_data[, ..m_names],
                      Y = example_data$Y,
+                     g_learners = sl_lrnr,
+                     e_learners = sl_lrnr,
+                     m_learners = sl_lrnr,
+                     q_learners = sl_lrnr,
+                     r_learners = slr_lrnr,
                      effect = "direct",
                      estimator = "tmle")
 summary(tmle_de)
 ```
+
+[TO FILL IN]
 
 [TO FILL IN]
 
@@ -242,10 +340,17 @@ os_ie <- medoutcon(W = example_data[, ..w_names],
                    Z = example_data$Z,
                    M = example_data[, ..m_names],
                    Y = example_data$Y,
+                   g_learners = sl_lrnr,
+                   e_learners = sl_lrnr,
+                   m_learners = sl_lrnr,
+                   q_learners = sl_lrnr,
+                   r_learners = slr_lrnr,
                    effect = "indirect",
                    estimator = "onestep")
 summary(os_ie)
 ```
+
+[TO FILL IN]
 
 [TO FILL IN]
 
@@ -256,6 +361,11 @@ tmle_ie <- medoutcon(W = example_data[, ..w_names],
                      Z = example_data$Z,
                      M = example_data[, ..m_names],
                      Y = example_data$Y,
+                     g_learners = sl_lrnr,
+                     e_learners = sl_lrnr,
+                     m_learners = sl_lrnr,
+                     q_learners = sl_lrnr,
+                     r_learners = slr_lrnr,
                      effect = "indirect",
                      estimator = "tmle")
 summary(tmle_ie)

@@ -34,28 +34,32 @@
 #'
 #' @return An object of class \code{SL.halglmnet} with a fitted \code{glmnet}
 #'  object and corresponding predictions based on the input data.
-SL.halglmnet <- function (Y, X, newX, family, obsWeights,
+SL.halglmnet <- function(Y, X, newX, family, obsWeights,
                          id, alpha = 1, nfolds = 5, nlambda = 1000,
                          useMin = TRUE, loss = "mse", ...) {
-    # NOTE: `family` is ignored to allow use of `lambda.min.ratio`
-    if (!is.matrix(X)) {
-        formula <- stats::as.formula(paste("~ -1 + .^", eval(ncol(X))))
-        X <- stats::model.matrix(formula, X)
-        newX <- stats::model.matrix(formula, newX)
-    }
-    fitCV <- glmnet::cv.glmnet(x = X, y = Y, weights = obsWeights,
-                               lambda = NULL, type.measure = loss,
-                               alpha = alpha, nfolds = nfolds,
-                               family = "gaussian",
-                               nlambda = nlambda,
-                               lambda.min.ratio = 1 / nrow(X),
-                               ...)
-    pred <- stats::predict(fitCV, newx = newX, type = "response",
-                           s = ifelse(useMin, "lambda.min", "lambda.1se"))
-    fit <- list(object = fitCV, useMin = useMin)
-    class(fit) <- "SL.halglmnet"
-    out <- list(pred = pred, fit = fit)
-    return(out)
+  # NOTE: `family` is ignored to allow use of `lambda.min.ratio`
+  if (!is.matrix(X)) {
+    formula <- stats::as.formula(paste("~ -1 + .^", eval(ncol(X))))
+    X <- stats::model.matrix(formula, X)
+    newX <- stats::model.matrix(formula, newX)
+  }
+  fitCV <- glmnet::cv.glmnet(
+    x = X, y = Y, weights = obsWeights,
+    lambda = NULL, type.measure = loss,
+    alpha = alpha, nfolds = nfolds,
+    family = "gaussian",
+    nlambda = nlambda,
+    lambda.min.ratio = 1 / nrow(X),
+    ...
+  )
+  pred <- stats::predict(fitCV,
+    newx = newX, type = "response",
+    s = ifelse(useMin, "lambda.min", "lambda.1se")
+  )
+  fit <- list(object = fitCV, useMin = useMin)
+  class(fit) <- "SL.halglmnet"
+  out <- list(pred = pred, fit = fit)
+  return(out)
 }
 
 ################################################################################
@@ -80,34 +84,44 @@ SL.halglmnet <- function (Y, X, newX, family, obsWeights,
 #'  object based on the provided \code{newdata}.
 predict.SL.halglmnet <- function(object, newdata, remove_extra_cols = FALSE,
                                  add_missing_cols = FALSE, ...) {
-    if (!is.matrix(newdata)) {
-        formula <- stats::as.formula(paste("~ -1 + .^", eval(ncol(newdata))))
-        newdata <- stats::model.matrix(formula, newdata)
+  if (!is.matrix(newdata)) {
+    formula <- stats::as.formula(paste("~ -1 + .^", eval(ncol(newdata))))
+    newdata <- stats::model.matrix(formula, newdata)
+  }
+  original_cols <- rownames(object$object$glmnet.fit$beta)
+  if (remove_extra_cols) {
+    extra_cols <- setdiff(colnames(newdata), original_cols)
+    if (length(extra_cols) > 0) {
+      warning(paste(
+        "Removing extra columns in prediction data:",
+        paste(extra_cols, collapse = ", ")
+      ))
+      newdata <- newdata[, !colnames(newdata) %in% extra_cols,
+        drop = FALSE
+      ]
     }
-    original_cols = rownames(object$object$glmnet.fit$beta)
-    if (remove_extra_cols) {
-        extra_cols <- setdiff(colnames(newdata), original_cols)
-        if (length(extra_cols) > 0) {
-            warning(paste("Removing extra columns in prediction data:",
-                paste(extra_cols, collapse = ", ")))
-            newdata <- newdata[, !colnames(newdata) %in% extra_cols,
-                               drop = FALSE]
-        }
+  }
+  if (add_missing_cols) {
+    missing_cols <- setdiff(original_cols, colnames(newdata))
+    if (length(missing_cols) > 0) {
+      warning(paste(
+        "Adding missing columns in prediction data:",
+        paste(missing_cols, collapse = ", ")
+      ))
+      new_cols <- matrix(0,
+        nrow = nrow(newdata),
+        ncol = length(missing_cols)
+      )
+      colnames(new_cols) <- missing_cols
+      newdata <- cbind(newdata, new_cols)
+      newdata <- newdata[, original_cols]
     }
-    if (add_missing_cols) {
-        missing_cols <- setdiff(original_cols, colnames(newdata))
-        if (length(missing_cols) > 0) {
-            warning(paste("Adding missing columns in prediction data:",
-                          paste(missing_cols, collapse = ", ")))
-            new_cols <- matrix(0, nrow = nrow(newdata),
-                               ncol = length(missing_cols))
-            colnames(new_cols) <- missing_cols
-            newdata <- cbind(newdata, new_cols)
-            newdata <- newdata[, original_cols]
-        }
-    }
-    pred <- stats::predict(object$object, newx = newdata, type = "response",
-                           s = ifelse(object$useMin, "lambda.min",
-                                      "lambda.1se"))
-    return(pred)
+  }
+  pred <- stats::predict(object$object,
+    newx = newdata, type = "response",
+    s = ifelse(object$useMin, "lambda.min",
+      "lambda.1se"
+    )
+  )
+  return(pred)
 }

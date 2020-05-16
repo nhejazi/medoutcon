@@ -87,16 +87,18 @@ medoutcon <- function(W,
                       u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       estimator = c("onestep", "tmle"),
-                      estimator_args = list(cv_folds = 5, max_iter = 5,
-                                            tiltmod_tol = 10)) {
+                      estimator_args = list(
+                        cv_folds = 5, max_iter = 5,
+                        tiltmod_tol = 10
+                      )) {
   # set defaults
   effect <- match.arg(effect)
   estimator <- match.arg(estimator)
   estimator_args <- unlist(estimator_args, recursive = FALSE)
   est_args_os <- estimator_args[names(estimator_args) %in%
-                                names(formals(est_onestep))]
+    names(formals(est_onestep))]
   est_args_tmle <- estimator_args[names(estimator_args) %in%
-                                  names(formals(est_tml))]
+    names(formals(est_tml))]
 
   # construct input data structure
   data <- data.table::as.data.table(cbind(Y, M, Z, A, W, obs_weights))
@@ -145,7 +147,8 @@ medoutcon <- function(W,
         ext_weights = ext_weights
       )
       onestep_est_args <- unlist(list(onestep_est_args, est_args_os),
-                                 recursive = FALSE)
+        recursive = FALSE
+      )
       est_out <- do.call(est_onestep, onestep_est_args)
     } else if (estimator == "tmle") {
       # TARGETED MINIMUM LOSS ESTIMATOR
@@ -165,7 +168,8 @@ medoutcon <- function(W,
         ext_weights = ext_weights
       )
       tmle_est_args <- unlist(list(tmle_est_args, est_args_tmle),
-                              recursive = FALSE)
+        recursive = FALSE
+      )
       est_out <- do.call(est_tml, tmle_est_args)
     }
 

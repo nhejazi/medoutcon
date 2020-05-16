@@ -119,7 +119,7 @@ Importantly, it has been shown that $\theta_c$ is identified by the statistical
 functional
 \begin{equation*}
   \theta = \int m(a', z, m, w) q(z \mid a', w) p(m \mid a^{\star}, w)
-  p(w) d\nu(w,z,m)
+    p(w) d\nu(w,z,m)
 \end{equation*}
 under a set of standard identifiability conditions [@vanderweele2014effect],
 which are further reviewed in @diaz2020nonparametric.
@@ -165,6 +165,7 @@ First, let's load a few required packages and set a seed for our simulation.
 ```{r setup, message=FALSE, warning=FALSE}
 library(data.table)
 library(medoutcon)
+library(sl3)
 set.seed(75681)
 ```
 
@@ -206,6 +207,7 @@ make_example_data <- function(n_obs = 1000) {
 
 # set seed and simulate example data
 example_data <- make_example_data()
+n_obs <- nrow(example_data)
 w_names <- stringr::str_subset(colnames(example_data), "W")
 m_names <- stringr::str_subset(colnames(example_data), "M")
 ```
@@ -257,39 +259,83 @@ an integral part.
 To construct an ensemble learner using a handful of popular machine learning
 algorithms, we'll first instantiate variants of learners from the appropriate
 classes for each algorithm, and then create a Super Learner ensemble via the
-`Lrnr_sl` class. Below, we demonstrate the construction of a relatively simple
-ensemble learner based on a modeling library including main-terms GLMs, Lasso
-regression, ridge regression, elastic net regression, and extreme gradient
-boosted trees (`xgboost`):
+`Lrnr_sl` class. Below, we demonstrate the construction of an ensemble learner
+based on a modeling library including an intercept model, a main-terms GLM,
+$\ell_1$-penalized Lasso regression, $\ell_2$-penalized ridge regression, an
+elastic net regression that equally weights $\ell_1$ and $\ell_2$ penalties,
+extreme gradient boosted trees (`xgboost`), and the highly adaptive lasso (HAL):
 
 ```{r make_sl, message=FALSE, warning=FALSE}
 # instantiate learners
-xgb_binary_lrnr <- Lrnr_xgboost$new(nrounds = 50, objective = "reg:logistic")
-enet_binary_lrnr <- Lrnr_glmnet$new(alpha = 0.5, family = "binomial",
-                                    nfolds = 3)
-lasso_binary_lrnr <- Lrnr_glmnet$new(alpha = 1, family = "binomial",
-                                     nfolds = 3)
-fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
-binary_lrnr_lib <- Stack$new(enet_binary_lrnr, lasso_binary_lrnr,
-                             fglm_binary_lrnr, xgb_binary_lrnr)
+mean_lrnr <- Lrnr_mean$new()
+fglm_lrnr <- Lrnr_glm_fast$new(family = binomial())
+lasso_lrnr <- Lrnr_glmnet$new(alpha = 1, family = "binomial", nfolds = 3)
+ridge_lrnr <- Lrnr_glmnet$new(alpha = 0, family = "binomial", nfolds = 3)
+enet_lrnr <- Lrnr_glmnet$new(alpha = 0.5, family = "binomial", nfolds = 3)
+xgb_lrnr <- Lrnr_xgboost$new(nrounds = 50, objective = "reg:logistic")
 
-# create metalearner and super learner ensemble
-logistic_metalearner <- make_learner(Lrnr_solnp,
-                                     metalearner_logistic_binomial,
-                                     loss_loglik_binomial)
-sl_binary_lrnr <- Lrnr_sl$new(learners = binary_lrnr_lib,
-                              metalearner = logistic_metalearner)
+# for HAL, use linear probability formulation, with bounding in unit interval
+hal_gaussian_lrnr <- Lrnr_hal9001$new(max_degree = 3, n_folds = 3,
+                                      use_min = FALSE, type.measure = "mse",
+                                      nlambda = 200, family = "gaussian",
+                                      lambda.min.ratio = 1 / n_obs)
+bound_lrnr <- Lrnr_bound$new(bound = 1e-6)
+hal_bounded_lrnr <- Pipeline$new(hal_gaussian_lrnr, bound_lrnr)
+
+# create learner library and instantiate super learner ensemble
+lrnr_lib <- Stack$new(mean_lrnr, fglm_lrnr, enet_lrnr, lasso_lrnr, ridge_lrnr,
+                      xgb_lrnr, hal_bounded_lrnr)
+sl_lrnr <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 ```
 
-Having constructed our Super Learner, we're now ready to estimate each of the
+While we recommend the use of a Super Learner ensemble model like the one
+constructed above in practice, such a library will be too computationally
+intensive for our examples. To reduce computation time, we construct a simpler
+library, using only a subset of the above learning algorithms:
+
+```{r make_simple_sl, message=FALSE, warning=FALSE}
+# create simpler learner library and instantiate super learner ensemble
+lrnr_lib <- Stack$new(mean_lrnr, fglm_lrnr, lasso_lrnr, xgb_lrnr)
+sl_lrnr <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
+```
+
+Having set up our ensemble learner, we're now ready to estimate each of the
 interventional effects using the efficient estimators exposed in the `medoutcon`
 package.
 
 ## Estimating the direct effect
 
-[TO FILL IN]
+We're now ready to estimate the interventional direct effect. This direct effect
+is computed as a contrast between the interventions $(a' = 1, a^{\star} = 0)$
+and $(a' = 0, a^{\star} = 0)$. In particular, our efficient estimators of the
+interventional direct effect proceed by constructing estimators
+$\hat{theta}(a' = 1, a^{\star} = 0)$ and $\hat{theta}(a' = 0, a^{\star} = 0)$.
+Then, an efficient estimator of the direct effect is available by application
+of the delta method, that is, $\hat{theta}^{\text{DE}} =
+\hat{theta}(a' = 1, a^{\star} = 0) - \hat{theta}(a' = 0, a^{\star} = 0)$.
+Applying the same principle to the EIF estimates, one can derive variance
+estimates and construct Wald-style confidence intervals for
+$\hat{theta}^{\text{DE}}$.
 
-```{r de_os, eval=FALSE, message=FALSE, warning=FALSE}
+The `medoutcon` package makes the estimation task quite simple, as only a single
+call to the eponymous `medoutcon` function is required. As demonstrated below,
+we need only feed in each component of the observed data $O = (W, A, Z, M, Y)$
+(of which $W$ and $M$ can be multivariate), specify the effect type, and the
+estimator. Additionally, for each nuisance parameter we may specify a separate
+regression function --- in the examples below, we use the Super Learner ensemble
+constructed above for fitting each nuisance function, but this need not be the
+case.
+
+First, we examine the one-step estimator of the interventional direct effect.
+Recall that the one-step estimator is constructed by adding the mean of the EIF
+(evaluated at initial estimates of the nuisance parameters) to the substitution
+estimator. As noted above, this is done separately for each of the two contrasts
+$(a' = 0, a^{\star} = 0)$ and $(a' = 1, a^{\star} = 0)$. Thus, the one-step
+estimator of this direct effect is constructed by application of the delta
+method to each of the one-step estimators (and EIF) for these individual
+contrasts.
+
+```{r de_os, message=FALSE, warning=FALSE}
 # compute one-step estimate of the interventional direct effect
 os_de <- medoutcon(W = example_data[, ..w_names],
                    A = example_data$A,
@@ -300,17 +346,24 @@ os_de <- medoutcon(W = example_data[, ..w_names],
                    e_learners = sl_lrnr,
                    m_learners = sl_lrnr,
                    q_learners = sl_lrnr,
-                   r_learners = slr_lrnr,
+                   r_learners = sl_lrnr,
                    effect = "direct",
-                   estimator = "onestep")
+                   estimator = "onestep",
+                   estimator_args = list(cv_folds = 2))
 summary(os_de)
 ```
 
-[TO FILL IN]
+From the output of the summary method, we note that the one-step estimate of
+the interventional direct effect $\hat{theta}_{text{os}}^{\text{DE}}$ is
+`r round(os_de$theta, 3)`, with a 95% confidence interval CI:
+[`r round(unname(confint(os_de, 0.95)[1]), 3)`,
+`r round(unname(confint(os_de, 0.95)[3]), 3)`].
 
-[TO FILL IN]
+Next, let's compare the one-step estimate to the TML estimate. Analogous to the
+case of the one-step estimator, the TML estimator can be evaluated via a single
+call to the `medoutcon` function:
 
-```{r de_tmle, eval=FALSE, message=FALSE, warning=FALSE}
+```{r de_tmle, message=FALSE, warning=FALSE}
 # compute targeted minimum loss estimate of the interventional direct effect
 tmle_de <- medoutcon(W = example_data[, ..w_names],
                      A = example_data$A,
@@ -321,19 +374,44 @@ tmle_de <- medoutcon(W = example_data[, ..w_names],
                      e_learners = sl_lrnr,
                      m_learners = sl_lrnr,
                      q_learners = sl_lrnr,
-                     r_learners = slr_lrnr,
+                     r_learners = sl_lrnr,
                      effect = "direct",
-                     estimator = "tmle")
+                     estimator = "tmle",
+                     estimator_args = list(cv_folds = 2, max_iter = 5))
 summary(tmle_de)
 ```
 
-[TO FILL IN]
-
-[TO FILL IN]
+From the output of the summary method, we note that the TML estimate of the
+interventional direct effect $\hat{theta}_{text{tmle}}^{\text{DE}}$ is
+`r round(tmle_de$theta, 3)`, with a 95% confidence interval CI:
+[`r round(unname(confint(tmle_de, 0.95)[1]), 3)`,
+`r round(unname(confint(tmle_de, 0.95)[3]), 3)`].
 
 ## Estimating the indirect effect
 
-```{r ie_os, eval=FALSE, message=FALSE, warning=FALSE}
+Estimation of the interventional indirect effect proceeds similarly to the
+strategy discussed above for the corresponding direct effect. An efficient
+estimator can be computed as a contrast between the interventions $(a' = 1,
+a^{\star} = 0)$ and $(a' = 1, a^{\star} = 1)$. Specifically, our efficient
+estimators of the interventional indirect effect proceed by constructing
+estimators $\hat{theta}(a' = 1, a^{\star} = 0)$ and $\hat{theta}(a' = 1,
+a^{\star} = 1)$.  Then, application of the delta method yields an efficient
+estimator of the indirect effect, that is, $\hat{theta}^{\text{IE}} =
+\hat{theta}(a' = 1, a^{\star} = 0) - \hat{theta}(a' = 1, a^{\star} = 1)$.  The
+same principle may be applied to the EIF estimates to derive variance estimates
+and construct asymptotically correct Wald-style confidence intervals for
+$\hat{theta}^{\text{IE}}$.
+
+Now, we examine the one-step estimator of the interventional indirect effect.
+The one-step estimator is constructed by adding the mean of the EIF
+(evaluated at initial estimates of the nuisance parameters) to the substitution
+estimator. As noted above, this is done separately for each of the two contrasts
+$(a' = 1, a^{\star} = 1)$ and $(a' = 1, a^{\star} = 0)$. Thus, the one-step
+estimator of this indirect effect is constructed by application of the delta
+method to each of the one-step estimators (and EIF) for these individual
+contrasts.
+
+```{r ie_os, message=FALSE, warning=FALSE}
 # compute one-step estimate of the interventional indirect effect
 os_ie <- medoutcon(W = example_data[, ..w_names],
                    A = example_data$A,
@@ -344,17 +422,23 @@ os_ie <- medoutcon(W = example_data[, ..w_names],
                    e_learners = sl_lrnr,
                    m_learners = sl_lrnr,
                    q_learners = sl_lrnr,
-                   r_learners = slr_lrnr,
+                   r_learners = sl_lrnr,
                    effect = "indirect",
                    estimator = "onestep")
 summary(os_ie)
 ```
 
-[TO FILL IN]
+From the output of the summary method, we note that the one-step estimate of
+the interventional indirect effect $\hat{theta}_{text{os}}^{\text{IE}}$ is
+`r round(os_ie$theta, 3)`, with a 95% confidence interval CI:
+[`r round(unname(confint(os_ie, 0.95)[1]), 3)`,
+`r round(unname(confint(os_ie, 0.95)[3]), 3)`].
 
-[TO FILL IN]
+As before, let's compare the one-step estimate to the TML estimate. Analogous
+to the case of the one-step estimator, the TML estimator can be evaluated via a
+single call to the `medoutcon` function, as demonstrated below
 
-```{r ie_tmle, eval=FALSE, message=FALSE, warning=FALSE}
+```{r ie_tmle, message=FALSE, warning=FALSE}
 # compute targeted minimum loss estimate of the interventional indirect effect
 tmle_ie <- medoutcon(W = example_data[, ..w_names],
                      A = example_data$A,
@@ -365,13 +449,17 @@ tmle_ie <- medoutcon(W = example_data[, ..w_names],
                      e_learners = sl_lrnr,
                      m_learners = sl_lrnr,
                      q_learners = sl_lrnr,
-                     r_learners = slr_lrnr,
+                     r_learners = sl_lrnr,
                      effect = "indirect",
                      estimator = "tmle")
 summary(tmle_ie)
 ```
 
-[TO FILL IN]
+From the output of the summary method, we note that the TML estimate of the
+interventional indirect effect $\hat{theta}_{text{tmle}}^{\text{IE}}$ is
+`r round(tmle_ie$theta, 3)`, with a 95% confidence interval CI:
+[`r round(unname(confint(tmle_ie, 0.95)[1]), 3)`,
+`r round(unname(confint(tmle_ie, 0.95)[3]), 3)`].
 
 ## References
 

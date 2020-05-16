@@ -545,18 +545,18 @@ est_tml <- function(data,
     if (is.na(stats::coef(m_tilt_fit))) {
       m_tilt_fit$coefficients <- 0
     } else if (!m_tilt_fit$converged || abs(max(stats::coef(m_tilt_fit))) >
-               tiltmod_tol) {
+      tiltmod_tol) {
       m_tilt_fit$coefficients <- 0
     }
     m_tilt_coef <- unname(stats::coef(m_tilt_fit))
 
     # update nuisance estimates via tilting models for outcome
     m_prime_Z_natural <- stats::plogis(m_prime_Z_natural_logit +
-                                       m_tilt_coef * h_star_Z_natural)
+      m_tilt_coef * h_star_Z_natural)
     m_prime_Z_one <- stats::plogis(m_prime_Z_one_logit +
-                                   m_tilt_coef * h_star_Z_one)
+      m_tilt_coef * h_star_Z_one)
     m_prime_Z_zero <- stats::plogis(m_prime_Z_zero_logit +
-                                    m_tilt_coef * h_star_Z_zero)
+      m_tilt_coef * h_star_Z_zero)
 
     # compute efficient score for outcome regression component
     m_score <- ipw_prime * h_star_Z_natural * (data$Y - m_prime_Z_natural)
@@ -584,14 +584,14 @@ est_tml <- function(data,
     if (is.na(stats::coef(q_tilt_fit))) {
       q_tilt_fit$coefficients <- 0
     } else if (!q_tilt_fit$converged || abs(max(stats::coef(q_tilt_fit))) >
-               tiltmod_tol) {
+      tiltmod_tol) {
       q_tilt_fit$coefficients <- 0
     }
     q_tilt_coef <- unname(stats::coef(q_tilt_fit))
 
     # update nuisance estimates via tilting model for intermediate confounder
     q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
-                                   cv_eif_est$u_int_diff)
+      cv_eif_est$u_int_diff)
     q_prime_Z_natural <- (data$Z * q_prime_Z_one) + ((1 - data$Z) *
       (1 - q_prime_Z_one))
 
@@ -633,7 +633,7 @@ est_tml <- function(data,
 
   # define residuals and updated components of efficient influence function
   eif_y <- (data$Y - m_prime_Z_natural) * ((ipw_prime * h_star_Z_natural) /
-                                           mean(ipw_prime * h_star_Z_natural))
+    mean(ipw_prime * h_star_Z_natural))
   eif_u <- (data$Z - q_prime_Z_one) * (ipw_prime / mean(ipw_prime)) *
     cv_eif_est$u_int_diff
   eif_v <- (v_pseudo - v_star_tmle) * (ipw_star / mean(ipw_star))

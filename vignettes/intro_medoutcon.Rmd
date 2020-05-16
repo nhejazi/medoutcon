@@ -31,6 +31,7 @@ between the exposure, mediators, and outcome. @diaz2020nonparametric provide a
 theoretical and computational study of the properties of newly developed
 interventional (in)direct effect estimands within the non-parametric statistical
 model. Among their contributions, @diaz2020nonparametric
+
 - derive the efficient influence function (EIF), an key object in
   semiparametric efficiency theory;
 - use the EIF to develop two asymptotically optimal, non-parametric estimators,
@@ -167,6 +168,7 @@ library(data.table)
 library(medoutcon)
 library(sl3)
 set.seed(75681)
+n_obs <- 500      # number of observations in our simulated dataset
 ```
 
 Next, we'll generate a very simple simulated dataset. The function
@@ -206,8 +208,7 @@ make_example_data <- function(n_obs = 1000) {
 }
 
 # set seed and simulate example data
-example_data <- make_example_data()
-n_obs <- nrow(example_data)
+example_data <- make_example_data(n_obs)
 w_names <- stringr::str_subset(colnames(example_data), "W")
 m_names <- stringr::str_subset(colnames(example_data), "M")
 ```
@@ -229,7 +230,7 @@ effects. In order to do so, we'll need to estimate several nuisance parameters,
 including the exposure mechanism $g(A \mid W)$, a re-parameterized exposure
 mechanism that conditions on the mediators $e(A \mid M, W)$, the outcome
 mechanism $m(Y \mid M, Z, A, W)$, and two variants of the intermediate
-confounding mechanism $q(Z \mid A, S)$ and $r(Z \mid M, A, W)$. In order to
+confounding mechanism $q(Z \mid A, W)$ and $r(Z \mid M, A, W)$. In order to
 estimate each of these nuisance parameters flexibly, we'll rely on data adaptive
 regression strategies in order to avoid the potential for (parametric) model
 misspecification.
@@ -322,9 +323,9 @@ call to the eponymous `medoutcon` function is required. As demonstrated below,
 we need only feed in each component of the observed data $O = (W, A, Z, M, Y)$
 (of which $W$ and $M$ can be multivariate), specify the effect type, and the
 estimator. Additionally, for each nuisance parameter we may specify a separate
-regression function --- in the examples below, we use the Super Learner ensemble
-constructed above for fitting each nuisance function, but this need not be the
-case.
+regression function --- in the examples below, we use the simpler Super Learner
+ensemble constructed above for fitting each nuisance function, but this need not
+be the case (i.e., different estimators may be used for each nuisance function).
 
 First, we examine the one-step estimator of the interventional direct effect.
 Recall that the one-step estimator is constructed by adding the mean of the EIF
@@ -384,7 +385,10 @@ From the output of the summary method, we note that the TML estimate of the
 interventional direct effect $\hat{\theta}_{\text{tmle}}^{\text{DE}}$ is
 `r round(tmle_de$theta, 3)`, with 95% confidence interval
 [`r round(unname(confint(tmle_de, 0.95)[1]), 3)`,
-`r round(unname(confint(tmle_de, 0.95)[3]), 3)`].
+`r round(unname(confint(tmle_de, 0.95)[3]), 3)`]. Here, we recall that the TML
+estimator generally exhibits better finite-sample performance than the one-step
+estimator [@vdl2011targeted, @vdl2018targeted], so the TML estimate is likely to
+be more reliable in our modest sample size of $n = $`r n_obs`.
 
 ## Estimating the indirect effect
 
@@ -457,7 +461,9 @@ From the output of the summary method, we note that the TML estimate of the
 interventional indirect effect $\hat{\theta}_{\text{tmle}}^{\text{IE}}$ is
 `r round(tmle_ie$theta, 3)`, with 95% confidence interval
 [`r round(unname(confint(tmle_ie, 0.95)[1]), 3)`,
-`r round(unname(confint(tmle_ie, 0.95)[3]), 3)`].
+`r round(unname(confint(tmle_ie, 0.95)[3]), 3)`]. As before, the TML estimator
+provides better finite-sample performance than the one-step estimator, so it may
+be preferred in this example.
 
 ## References
 

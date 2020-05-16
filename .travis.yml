@@ -26,7 +26,10 @@ r_packages:
   - covr
   - data.table
   - origami
+  - glmnet
   - hal9001
+  - speedglm
+  - xgboost
 
 r_github_packages:
   - r-lib/sessioninfo

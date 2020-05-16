@@ -56,15 +56,15 @@ unknown.  Importantly, the NPSEM encodes a time-ordering between these variables
 and allows the evaluation of counterfactual quantities defined by intervening on
 a set of nodes of the NPSEM.  The observed data unit can be represented by the
 random variable $O = (W, A, Z, M, Y)$; we consider access to $O_1, \ldots, O_n$,
-a sample of $n$ i.i.d.~observations of $O$.
+a sample of $n$ i.i.d. observations of $O$.
 
 @diaz2020nonparametric additionally define the following parameterizations,
 familiarity with which will be useful for using the [`medoutcon` `R`
 package](https://github.com/nhejazi/medoutcon). In particular, these authors
-define $\g(a \mid w)$ as the probability mass function of $A = a$ conditional on
-$W = w$ and use $\e(a \mid m, w)$ to denote the probability mass function of $A
+define $g(a \mid w)$ as the probability mass function of $A = a$ conditional on
+$W = w$ and use $e(a \mid m, w)$ to denote the probability mass function of $A
 = a$ conditional on $(M, W) = (m, w)$. Further, @diaz2020nonparametric use
-$\m(a, z, m, w)$ to denote the outcome regression function $\mathbb{E}(Y \mid A
+$m(a, z, m, w)$ to denote the outcome regression function $\mathbb{E}(Y \mid A
 = a, Z = z, M = m, W = w)$, as well as $q(z \mid a,w)$ and $r(z \mid a, m, w)$
 to denote the corresponding conditional densities of $Z$.
 
@@ -139,7 +139,7 @@ use of cross-validation in fitting initial estimators. Consistent with recent
 theoretical developments, the `medoutcon` `R` package requires the use of
 cross-validation in constructing these initial estimates.
 
-The one-step estimator $\hat{\theta}_{text{os}}$ is constructed by adding the
+The one-step estimator $\hat{\theta}_{\text{os}}$ is constructed by adding the
 empirical mean of the EIF (evaluated at initial estimates of the nuisance
 parameters) to the substitution estimator. By constrast, the TML estimator
 $\hat{\theta}_{\text{tmle}}$ updates the components of the substitution
@@ -226,10 +226,10 @@ using our implemented TML estimator of the (in)direct effects.
 
 Using this dataset, we'll proceed to estimate the interventional (in)direct
 effects. In order to do so, we'll need to estimate several nuisance parameters,
-including the exposure mechanism ($g(A \mid W)$), a re-parameterized exposure
-mechanism that conditions on the mediators ($e(A \mid M, W)$), the outcome
-mechanism ($m(Y \mid M, Z, A, W$), and two variants of the intermediate
-confounding mechanism ($q(Z \mid A, S)$ and $r(Z \mid M, A, W)$). In order to
+including the exposure mechanism $g(A \mid W)$, a re-parameterized exposure
+mechanism that conditions on the mediators $e(A \mid M, W)$, the outcome
+mechanism $m(Y \mid M, Z, A, W)$, and two variants of the intermediate
+confounding mechanism $q(Z \mid A, S)$ and $r(Z \mid M, A, W)$. In order to
 estimate each of these nuisance parameters flexibly, we'll rely on data adaptive
 regression strategies in order to avoid the potential for (parametric) model
 misspecification.
@@ -262,7 +262,7 @@ classes for each algorithm, and then create a Super Learner ensemble via the
 `Lrnr_sl` class. Below, we demonstrate the construction of an ensemble learner
 based on a modeling library including an intercept model, a main-terms GLM,
 $\ell_1$-penalized Lasso regression, $\ell_2$-penalized ridge regression, an
-elastic net regression that equally weights $\ell_1$ and $\ell_2$ penalties,
+elastic net regression that equally weights the $\ell_1$ and $\ell_2$ penalties,
 extreme gradient boosted trees (`xgboost`), and the highly adaptive lasso (HAL):
 
 ```{r make_sl, message=FALSE, warning=FALSE}
@@ -309,13 +309,13 @@ We're now ready to estimate the interventional direct effect. This direct effect
 is computed as a contrast between the interventions $(a' = 1, a^{\star} = 0)$
 and $(a' = 0, a^{\star} = 0)$. In particular, our efficient estimators of the
 interventional direct effect proceed by constructing estimators
-$\hat{theta}(a' = 1, a^{\star} = 0)$ and $\hat{theta}(a' = 0, a^{\star} = 0)$.
+$\hat{\theta}(a' = 1, a^{\star} = 0)$ and $\hat{\theta}(a' = 0, a^{\star} = 0)$.
 Then, an efficient estimator of the direct effect is available by application
-of the delta method, that is, $\hat{theta}^{\text{DE}} =
-\hat{theta}(a' = 1, a^{\star} = 0) - \hat{theta}(a' = 0, a^{\star} = 0)$.
+of the delta method, that is, $\hat{\theta}^{\text{DE}} =
+\hat{\theta}(a' = 1, a^{\star} = 0) - \hat{\theta}(a' = 0, a^{\star} = 0)$.
 Applying the same principle to the EIF estimates, one can derive variance
-estimates and construct Wald-style confidence intervals for
-$\hat{theta}^{\text{DE}}$.
+estimates and construct asymptotically correct Wald-style confidence intervals
+for $\hat{\theta}^{\text{DE}}$.
 
 The `medoutcon` package makes the estimation task quite simple, as only a single
 call to the eponymous `medoutcon` function is required. As demonstrated below,
@@ -332,8 +332,7 @@ Recall that the one-step estimator is constructed by adding the mean of the EIF
 estimator. As noted above, this is done separately for each of the two contrasts
 $(a' = 0, a^{\star} = 0)$ and $(a' = 1, a^{\star} = 0)$. Thus, the one-step
 estimator of this direct effect is constructed by application of the delta
-method to each of the one-step estimators (and EIF) for these individual
-contrasts.
+method to each of the one-step estimators (and EIFs) for these contrasts.
 
 ```{r de_os, message=FALSE, warning=FALSE}
 # compute one-step estimate of the interventional direct effect
@@ -354,8 +353,8 @@ summary(os_de)
 ```
 
 From the output of the summary method, we note that the one-step estimate of
-the interventional direct effect $\hat{theta}_{text{os}}^{\text{DE}}$ is
-`r round(os_de$theta, 3)`, with a 95% confidence interval CI:
+the interventional direct effect $\hat{\theta}_{\text{os}}^{\text{DE}}$ is
+`r round(os_de$theta, 3)`, with 95% confidence interval
 [`r round(unname(confint(os_de, 0.95)[1]), 3)`,
 `r round(unname(confint(os_de, 0.95)[3]), 3)`].
 
@@ -382,8 +381,8 @@ summary(tmle_de)
 ```
 
 From the output of the summary method, we note that the TML estimate of the
-interventional direct effect $\hat{theta}_{text{tmle}}^{\text{DE}}$ is
-`r round(tmle_de$theta, 3)`, with a 95% confidence interval CI:
+interventional direct effect $\hat{\theta}_{\text{tmle}}^{\text{DE}}$ is
+`r round(tmle_de$theta, 3)`, with 95% confidence interval
 [`r round(unname(confint(tmle_de, 0.95)[1]), 3)`,
 `r round(unname(confint(tmle_de, 0.95)[3]), 3)`].
 
@@ -394,13 +393,13 @@ strategy discussed above for the corresponding direct effect. An efficient
 estimator can be computed as a contrast between the interventions $(a' = 1,
 a^{\star} = 0)$ and $(a' = 1, a^{\star} = 1)$. Specifically, our efficient
 estimators of the interventional indirect effect proceed by constructing
-estimators $\hat{theta}(a' = 1, a^{\star} = 0)$ and $\hat{theta}(a' = 1,
+estimators $\hat{\theta}(a' = 1, a^{\star} = 0)$ and $\hat{\theta}(a' = 1,
 a^{\star} = 1)$.  Then, application of the delta method yields an efficient
-estimator of the indirect effect, that is, $\hat{theta}^{\text{IE}} =
-\hat{theta}(a' = 1, a^{\star} = 0) - \hat{theta}(a' = 1, a^{\star} = 1)$.  The
+estimator of the indirect effect, that is, $\hat{\theta}^{\text{IE}} =
+\hat{\theta}(a' = 1, a^{\star} = 0) - \hat{\theta}(a' = 1, a^{\star} = 1)$. The
 same principle may be applied to the EIF estimates to derive variance estimates
 and construct asymptotically correct Wald-style confidence intervals for
-$\hat{theta}^{\text{IE}}$.
+$\hat{\theta}^{\text{IE}}$.
 
 Now, we examine the one-step estimator of the interventional indirect effect.
 The one-step estimator is constructed by adding the mean of the EIF
@@ -408,8 +407,7 @@ The one-step estimator is constructed by adding the mean of the EIF
 estimator. As noted above, this is done separately for each of the two contrasts
 $(a' = 1, a^{\star} = 1)$ and $(a' = 1, a^{\star} = 0)$. Thus, the one-step
 estimator of this indirect effect is constructed by application of the delta
-method to each of the one-step estimators (and EIF) for these individual
-contrasts.
+method to each of the one-step estimators (and EIFs) for the contrasts.
 
 ```{r ie_os, message=FALSE, warning=FALSE}
 # compute one-step estimate of the interventional indirect effect
@@ -429,8 +427,8 @@ summary(os_ie)
 ```
 
 From the output of the summary method, we note that the one-step estimate of
-the interventional indirect effect $\hat{theta}_{text{os}}^{\text{IE}}$ is
-`r round(os_ie$theta, 3)`, with a 95% confidence interval CI:
+the interventional indirect effect $\hat{\theta}_{\text{os}}^{\text{IE}}$ is
+`r round(os_ie$theta, 3)`, with 95% confidence interval
 [`r round(unname(confint(os_ie, 0.95)[1]), 3)`,
 `r round(unname(confint(os_ie, 0.95)[3]), 3)`].
 
@@ -456,8 +454,8 @@ summary(tmle_ie)
 ```
 
 From the output of the summary method, we note that the TML estimate of the
-interventional indirect effect $\hat{theta}_{text{tmle}}^{\text{IE}}$ is
-`r round(tmle_ie$theta, 3)`, with a 95% confidence interval CI:
+interventional indirect effect $\hat{\theta}_{\text{tmle}}^{\text{IE}}$ is
+`r round(tmle_ie$theta, 3)`, with 95% confidence interval
 [`r round(unname(confint(tmle_ie, 0.95)[1]), 3)`,
 `r round(unname(confint(tmle_ie, 0.95)[3]), 3)`].
 

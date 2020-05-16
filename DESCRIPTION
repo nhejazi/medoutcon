@@ -43,7 +43,9 @@ Suggests:
     stringr,
     tibble,
     hal9001 (>= 0.2.5),
-    SuperLearner
+    SuperLearner,
+    speedglm,
+    xgboost
 Remotes: github::tlverse/sl3@master
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon

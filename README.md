@@ -243,7 +243,7 @@ Parameters.” *The Econometrics Journal* 21 (1).
 <div id="ref-coyle2020sl3">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
-“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+“`sl3`: Modern Pipelines for Machine Learning and Super Learning.”
 <https://github.com/tlverse/sl3>.
 <https://doi.org/10.5281/zenodo.1342293>.
 

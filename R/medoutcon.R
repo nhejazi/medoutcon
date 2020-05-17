@@ -84,7 +84,7 @@ medoutcon <- function(W,
                       r_learners = sl3::Lrnr_glm_fast$new(),
                       u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
-                      estimator = c("onestep", "tmle"),
+                      estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5, max_iter = 5,
                         tiltmod_tol = 10

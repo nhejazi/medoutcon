@@ -118,5 +118,5 @@ test_that("EIF variance of TMLE is close to independent EIF variance", {
 })
 
 test_that("Mean of estimated EIF is very small for the TMLE", {
-  expect_lt(abs(mean(theta_tmle$eif)), 1e-10)
+  expect_lt(abs(mean(theta_tmle$eif)), 1e-7)
 })

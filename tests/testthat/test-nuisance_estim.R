@@ -133,11 +133,11 @@ u_out <- fit_nuisance_u(
   train_data = data,
   valid_data = data_a_prime,
   learners = u_learners,
-  m_out = m_out,
+  b_out = b_out,
   q_out = q_out,
   r_out = r_out,
-  e_out = e_out,
   g_out = g_out,
+  h_out = h_out,
   w_names = w_names
 )
 test_that("Estimates of pseudo-outcome regression are close to the truth", {
@@ -154,7 +154,7 @@ v_out <- fit_nuisance_v(
   valid_data = data_a_star,
   contrast = contrast,
   learners = v_learners,
-  m_out = m_out,
+  b_out = b_out,
   q_out = q_out,
   m_names = m_names,
   w_names = w_names

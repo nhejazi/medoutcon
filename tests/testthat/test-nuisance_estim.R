@@ -1,6 +1,5 @@
 context("Estimators of nuisance parameters match manual analogs closely")
-source("utils_eif.R")
-source("utils_data.R")
+source("utils_example.R")
 
 # packages
 library(data.table)

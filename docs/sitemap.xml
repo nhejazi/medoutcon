@@ -13,10 +13,7 @@
     <loc>https://code.nimahejazi.org/medoutcon/reference/confint.medoutcon.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medoutcon/reference/cv_eif_os.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/medoutcon/reference/cv_eif_tml.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/cv_eif.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/est_onestep.html</loc>
@@ -46,7 +43,7 @@
     <loc>https://code.nimahejazi.org/medoutcon/reference/print.medoutcon.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medoutcon/reference/scale_to_original.html</loc>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/scale_from_unit.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/scale_to_unit.html</loc>

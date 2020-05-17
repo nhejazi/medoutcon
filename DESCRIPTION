@@ -1,6 +1,6 @@
 Package: medoutcon
 Title: Efficient Causal Mediation Analysis With Intermediate Confounders
-Version: 0.0.9
+Version: 0.1.0
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -23,16 +23,14 @@ Description: Efficient estimators of interventional (in)direct effects in the
     presence of intermediate confounders that complicate such a relationship.
     Currently supported are non-parametric efficient one-step and targeted
     minimum loss estimators based on the formulation of Díaz, Hejazi, Rudolph,
-    and van der Laan (2020) <https://arxiv.org/abs/1912.09936>.
+    and van der Laan (2020) <arxiv:1912.09936>.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
-    methods,
     data.table,
     assertthat,
     dplyr,
     origami (>= 1.0.3),
-    hal9001 (>= 0.2.5),
     sl3 (>= 1.3.7),
     glmnet
 Suggests:
@@ -44,8 +42,10 @@ Suggests:
     nnls,
     stringr,
     tibble,
+    hal9001 (>= 0.2.5),
     SuperLearner,
-    caret
+    speedglm,
+    xgboost
 Remotes: github::tlverse/sl3@master
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon

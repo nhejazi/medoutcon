@@ -23,14 +23,17 @@ environment:
     WARNINGS_ARE_ERRORS: 0
     R_ARCH: x64
     USE_RTOOLS: true
+    R_REMOTES_STANDALONE: true
+    R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
 
   matrix:
     - R_VERSION: release
 
 build_script:
+  - travis-tool.sh install_github r-lib/covr
+  - travis-tool.sh install_github r-lib/sessioninfo
+  - travis-tool.sh install_github tlverse/sl3
   - travis-tool.sh install_deps
-  - travis-tool.sh install_github r-lib/sessioninfo r-lib/covr
-  - travis-tool.sh install_github tlverse/hal9001 tlverse/sl3
 
 test_script:
   - travis-tool.sh run_tests

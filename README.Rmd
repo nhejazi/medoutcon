@@ -19,14 +19,14 @@ knitr::opts_chunk$set(
 [![Travis-CI Build Status](https://travis-ci.org/nhejazi/medoutcon.svg?branch=master)](https://travis-ci.org/nhejazi/medoutcon)
 [![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/medoutcon?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/medoutcon)
 [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 > Efficient Causal Mediation Analysis with Intermediate Confounders
 
 __Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
-Rudolph](http://biostat.jhsph.edu/~krudolph/)
+Rudolph](https://kararudolph.github.io/)
 
 ---
 
@@ -43,7 +43,7 @@ appearing in @vanderweele2014effect, @rudolph2017robust, and
 accompany the methodology proposed in @diaz2020nonparametric. Both an efficient
 one-step bias-corrected estimator with cross-fitting
 [@pfanzagl1985contributions; @zheng2011cross; @chernozhukov2018double] and a
-cross-validated targeted minimum loss (TML) estimator [@vdl2011targeted;
+cross-validated targeted minimum loss estimator (TMLE) [@vdl2011targeted;
 @zheng2011cross] are made available. `medoutcon` integrates with the [`sl3` R
 package](https://github.com/tlverse/sl3) [@coyle2019sl3] to leverage statistical
 machine learning in the estimation procedure.
@@ -63,71 +63,72 @@ remotes::install_github("nhejazi/medoutcon")
 
 ## Example
 
-To illustrate how `medoutcon` may be used to estimate stochastic (in)direct
-effects of the treatment (`A`) on the outcome (`Y`) in the presence of
-mediator(s) (`M`) and a binary mediator-outcome confounder (`Z`), consider the
-following simple example:
+To illustrate how `medoutcon` may be used to estimate stochastic interventional
+(in)direct effects of the exposure (`A`) on the outcome (`Y`) in the presence of
+mediator(s) (`M`) and a mediator-outcome confounder (`Z`), consider the
+following working example:
 
-```{r simple_example, message=FALSE, warning=FALSE}
+```{r example, message=FALSE, warning=FALSE}
 library(data.table)
 library(tidyverse)
 library(medoutcon)
+set.seed(1584)
 
 # produces a simple data set based on ca causal model with mediation
-make_example_data <- function(n_obs = 10000) {
-  ## baseline covariate -- simple, binary
+make_example_data <- function(n_obs = 1000) {
+  ## baseline covariates
   w_1 <- rbinom(n_obs, 1, prob = 0.6)
   w_2 <- rbinom(n_obs, 1, prob = 0.3)
   w_3 <- rbinom(n_obs, 1, prob = pmin(0.2 + (w_1 + w_2) / 3, 1))
   w <- cbind(w_1, w_2, w_3)
   w_names <- paste("W", seq_len(ncol(w)), sep = "_")
 
-  ## exposure/treatment
-  a <- as.numeric(rbinom(n_obs, 1, prob = g(1, w)))
+  ## exposure
+  a <- as.numeric(rbinom(n_obs, 1, plogis(rowSums(w) - 2)))
 
   ## mediator-outcome confounder affected by treatment
-  z <- rbinom(n_obs, 1, pz(1, a, w))
+  z <- rbinom(n_obs, 1, plogis(rowMeans(-log(2) + w - a) + 0.2))
 
-  ## mediator (possibly multivariate)
-  m <- rbinom(n_obs, 1, pm(1, z, a, w))
+  ## mediator -- could be multivariate
+  m <- rbinom(n_obs, 1, plogis(rowSums(log(3) * w[, -3] + a - z)))
   m_names <- "M"
 
   ## outcome
-  y <- rbinom(n_obs, 1, my(m, z, a, w))
+  y <- rbinom(n_obs, 1, plogis(1 / (rowSums(w) - z + a + m)))
 
-  ## construct data for output
+  ## construct output
   dat <- as.data.table(cbind(w = w, a = a, z = z, m = m, y = y))
   setnames(dat, c(w_names, "A", "Z", m_names, "Y"))
   return(dat)
 }
 
 # set seed and simulate example data
-set.seed(75681)
-example_data <- make_example_data(1000)
-w_names <- str_subset(colnames(example_data), "w")
-m_names <- str_subset(colnames(example_data), "m")
+example_data <- make_example_data()
+w_names <- str_subset(colnames(example_data), "W")
+m_names <- str_subset(colnames(example_data), "M")
 
-# compute one-step estimate
-os_medoutcon <- medoutcon(W = example_data[, ..w_names],
-                          A = example_data$A,
-                          Z = example_data$Z,
-                          M = example_data[, ..m_names],
-                          Y = example_data$Y,
-                          effect = "direct",
-                          estimator = "onestep",
-                          estimator_args = list(cv_folds = 3))
-summary(os_medoutcon)
+# quick look at the data
+head(example_data)
 
-# compute targeted minimum loss estimate
-tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
-                            A = example_data$A,
-                            Z = example_data$Z,
-                            M = example_data[, ..m_names],
-                            Y = example_data$Y,
-                            effect = "direct",
-                            estimator = "tmle",
-                            estimator_args = list(cv_folds = 3))
-summary(tmle_medoutcon)
+# compute one-step estimate of the interventional direct effect
+os_de <- medoutcon(W = example_data[, ..w_names],
+                   A = example_data$A,
+                   Z = example_data$Z,
+                   M = example_data[, ..m_names],
+                   Y = example_data$Y,
+                   effect = "direct",
+                   estimator = "onestep")
+summary(os_de)
+
+# compute targeted minimum loss estimate of the interventional direct effect
+tmle_de <- medoutcon(W = example_data[, ..w_names],
+                     A = example_data$A,
+                     Z = example_data$Z,
+                     M = example_data[, ..m_names],
+                     Y = example_data$Y,
+                     effect = "direct",
+                     estimator = "tmle")
+summary(tmle_de)
 ```
 
 For details on how to use data adaptive regression (machine learning) techniques

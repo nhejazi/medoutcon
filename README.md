@@ -9,9 +9,9 @@ Status](https://travis-ci.org/nhejazi/medoutcon.svg?branch=master)](https://trav
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/medoutcon?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/medoutcon)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
@@ -19,7 +19,7 @@ license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://openso
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
-Rudolph](http://biostat.jhsph.edu/~krudolph/)
+Rudolph](https://kararudolph.github.io/)
 
 -----
 
@@ -35,13 +35,14 @@ by the treatment \(A\). While the proposed approach is similar to those
 appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et
 al. (2017), and Zheng and van der Laan (2017), `medoutcon` is designed
 as a software implementation to accompany the methodology proposed in
-Díaz et al. (2019). Both an efficient one-step bias-corrected estimator
+Díaz et al. (2020). Both an efficient one-step bias-corrected estimator
 with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
-2011; Chernozhukov et al. 2018) and a one-step cross-validated targeted
-minimum loss (TML) estimator (van der Laan and Rose 2011; Zheng and van
-der Laan 2011) are made available. `medoutcon` integrates with the
-[`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to
-leverage statistical machine learning in the estimation procedure.
+2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
+loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
+Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3)
+(<span class="citeproc-not-found" data-reference-id="coyle2019sl3">**???**</span>)
+to leverage statistical machine learning in the estimation procedure.
 
 -----
 
@@ -59,80 +60,86 @@ remotes::install_github("nhejazi/medoutcon")
 ## Example
 
 To illustrate how `medoutcon` may be used to estimate stochastic
-(in)direct effects of the treatment (`A`) on the outcome (`Y`) in the
-presence of mediator(s) (`M`) and a binary mediator-outcome confounder
-(`Z`), consider the following simple example:
+interventional (in)direct effects of the exposure (`A`) on the outcome
+(`Y`) in the presence of mediator(s) (`M`) and a mediator-outcome
+confounder (`Z`), consider the following working example:
 
 ``` r
 library(data.table)
 library(tidyverse)
 library(medoutcon)
+set.seed(1584)
 
 # produces a simple data set based on ca causal model with mediation
 make_example_data <- function(n_obs = 1000) {
-  # baseline covariate -- simple, binary
-  W <- replicate(2, rbinom(n_obs, 1, prob = 0.50))
-  W <- as.data.table(W)
-  setnames(W, c("w_1", "w_2"))
+  ## baseline covariates
+  w_1 <- rbinom(n_obs, 1, prob = 0.6)
+  w_2 <- rbinom(n_obs, 1, prob = 0.3)
+  w_3 <- rbinom(n_obs, 1, prob = pmin(0.2 + (w_1 + w_2) / 3, 1))
+  w <- cbind(w_1, w_2, w_3)
+  w_names <- paste("W", seq_len(ncol(w)), sep = "_")
 
-  # create treatment based on baseline W
-  A <- as.numeric(rbinom(n_obs, 1, prob = (rowSums(W) / 3) + 0.1))
+  ## exposure
+  a <- as.numeric(rbinom(n_obs, 1, plogis(rowSums(w) - 2)))
 
-  # single mediator-outcome confounder
-  z_prob <- 1 - plogis((A^2 + rowMeans(W)) / (A + rowSums(W^3) + 0.5))
-  Z <- rbinom(n_obs, 1, prob = z_prob)
+  ## mediator-outcome confounder affected by treatment
+  z <- rbinom(n_obs, 1, plogis(rowMeans(-log(2) + w - a) + 0.2))
 
-  # matrix of mediators
-  m1_prob <- plogis((A^2 - Z) / (A + rowMeans(W) + 0.5))
-  m2_prob <- 1 - plogis((A + rowSums(W)) / (Z + 0.5))
-  M1 <- rbinom(n_obs, 1, prob = m1_prob)
-  M2 <- rbinom(n_obs, 1, prob = m2_prob)
-  M <- as.data.table(list(m_1 = M1, m_2 = M2))
+  ## mediator -- could be multivariate
+  m <- rbinom(n_obs, 1, plogis(rowSums(log(3) * w[, -3] + a - z)))
+  m_names <- "M"
 
-  # create outcome as a linear function + white noise
-  Y <- rowMeans(M) - Z + A - 0.1 * rowSums(W) +
-    rnorm(n_obs, mean = 0, sd = 0.25)
+  ## outcome
+  y <- rbinom(n_obs, 1, plogis(1 / (rowSums(w) - z + a + m)))
 
-  # full data structure
-  data <- as.data.table(cbind(Y, M, Z, A, W))
-  return(data)
+  ## construct output
+  dat <- as.data.table(cbind(w = w, a = a, z = z, m = m, y = y))
+  setnames(dat, c(w_names, "A", "Z", m_names, "Y"))
+  return(dat)
 }
 
 # set seed and simulate example data
-set.seed(75681)
-example_data <- make_example_data(10000)
-w_names <- str_subset(colnames(example_data), "w")
-m_names <- str_subset(colnames(example_data), "m")
+example_data <- make_example_data()
+w_names <- str_subset(colnames(example_data), "W")
+m_names <- str_subset(colnames(example_data), "M")
 
-# compute one-step estimate
-os_medoutcon <- medoutcon(W = example_data[, ..w_names],
-                          A = example_data$A,
-                          Z = example_data$Z,
-                          M = example_data[, ..m_names],
-                          Y = example_data$Y,
-                          contrast = c(0, 1),
-                          estimator = "onestep",
-                          estimator_args = list(cv_folds = 3))
-summary(os_medoutcon)
-#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>       -0.2191       -0.1989       -0.1786         1e-04    1.4501e-17 
-#>     estimator         param 
-#>       onestep contrast_spec
+# quick look at the data
+head(example_data)
+#>    W_1 W_2 W_3 A Z M Y
+#> 1:   1   0   1 0 0 0 1
+#> 2:   0   1   0 0 0 1 0
+#> 3:   1   1   1 1 0 1 1
+#> 4:   0   1   1 0 0 1 0
+#> 5:   0   0   0 0 0 1 1
+#> 6:   1   0   1 1 0 1 0
 
-# compute targeted minimum loss estimate
-tmle_medoutcon <- medoutcon(W = example_data[, ..w_names],
-                            A = example_data$A,
-                            Z = example_data$Z,
-                            M = example_data[, ..m_names],
-                            Y = example_data$Y,
-                            contrast = c(0, 1),
-                            estimator = "tmle",
-                            estimator_args = list(cv_folds = 3))
-summary(tmle_medoutcon)
+# compute one-step estimate of the interventional direct effect
+os_de <- medoutcon(W = example_data[, ..w_names],
+                   A = example_data$A,
+                   Z = example_data$Z,
+                   M = example_data[, ..m_names],
+                   Y = example_data$Y,
+                   effect = "direct",
+                   estimator = "onestep")
+summary(os_de)
 #>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>       -0.3097       -0.2695       -0.2292         4e-04    3.7347e-18 
+#>       -0.1884       -0.0726        0.0433        0.0035   -4.4100e-17 
 #>     estimator         param 
-#>          tmle contrast_spec
+#>       onestep direct_effect
+
+# compute targeted minimum loss estimate of the interventional direct effect
+tmle_de <- medoutcon(W = example_data[, ..w_names],
+                     A = example_data$A,
+                     Z = example_data$Z,
+                     M = example_data[, ..m_names],
+                     Y = example_data$Y,
+                     effect = "direct",
+                     estimator = "tmle")
+summary(tmle_de)
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>        -0.203       -0.0859        0.0311        0.0036    4.4084e-03 
+#>     estimator         param 
+#>          tmle direct_effect
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -162,12 +169,12 @@ prior to submitting a pull request.
 After using the `medoutcon` R package, please cite the following:
 
 ``` 
-    @article{diaz2019nonparametric,
+    @article{diaz2020nonparametric,
       title={Non-parametric efficient causal mediation with intermediate
         confounders},
       author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
         and {van der Laan}, Mark J},
-      year={2019},
+      year={2020},
       url = {https://arxiv.org/abs/1912.09936},
       doi = {},
       journal={},
@@ -183,7 +190,7 @@ After using the `medoutcon` R package, please cite the following:
         intermediate confounding},
       year  = {2020},
       url = {https://github.com/nhejazi/medoutcon},
-      note = {R package version 0.0.7}
+      note = {R package version 0.1.0}
     }
 ```
 
@@ -191,14 +198,14 @@ After using the `medoutcon` R package, please cite the following:
 
 ## License
 
-© 2019-2020 [Nima S. Hejazi](https://nimahejazi.org)
+© 2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2019-2020 Nima S. Hejazi
+    Copyright (c) 2020 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -234,19 +241,10 @@ Parameters.” *The Econometrics Journal* 21 (1).
 
 </div>
 
-<div id="ref-coyle2019sl3">
-
-Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
-“sl3: Modern Pipelines for Machine Learning and Super Learning.”
-<https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.3558317>.
-
-</div>
-
-<div id="ref-diaz2019nonparametric">
+<div id="ref-diaz2020nonparametric">
 
 Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.
-2019. “Non-Parametric Efficient Causal Mediation with Intermediate
+2020. “Non-Parametric Efficient Causal Mediation with Intermediate
 Confounders.” <https://arxiv.org/abs/1912.09936>.
 
 </div>

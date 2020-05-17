@@ -1,6 +1,5 @@
 context("Estimators of parameter and EIF match manual analogs closely")
-source("utils_eif.R")
-source("utils_data.R")
+source("utils_example.R")
 
 # packages
 library(data.table)
@@ -24,17 +23,23 @@ m_names <- str_subset(colnames(data), "M")
 
 # 2) use custom HAL and SL for testing functionality
 bounding_lrnr <- Lrnr_bound$new(bound = 1e-6)
+fglm_lrnr <- Lrnr_glm_fast$new()
 mean_lrnr <- Lrnr_mean$new()
-hal_custom_lrnr <- make_learner(Lrnr_pkg_SuperLearner, "SL.halglmnet")
-hal_gaussian_lrnr <- Lrnr_hal9001$new(family = "gaussian",
-                                      type.measure = "mse", n_folds = 5,
-                                      use_min = FALSE, max_degree = NULL,
-                                      lambda.min.ratio = 1 / n_obs)
+hal_gaussian_lrnr <- Lrnr_hal9001$new(
+  family = "gaussian",
+  type.measure = "mse", n_folds = 5,
+  use_min = FALSE, max_degree = NULL,
+  lambda.min.ratio = 1 / n_obs
+)
 hal_bounded_lrnr <- Pipeline$new(hal_gaussian_lrnr, bounding_lrnr)
-sl <- Lrnr_sl$new(learners = list(hal_custom_lrnr,
-                                  hal_bounded_lrnr,
-                                  mean_lrnr),
-                  metalearner = Lrnr_nnls$new())
+sl <- Lrnr_sl$new(
+  learners = list(
+    hal_bounded_lrnr,
+    fglm_lrnr,
+    mean_lrnr
+  ),
+  metalearner = Lrnr_nnls$new()
+)
 
 ## nuisance functions with data components as outcomes
 g_learners <- e_learners <- m_learners <- q_learners <- r_learners <- sl

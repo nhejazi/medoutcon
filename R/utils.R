@@ -1,11 +1,10 @@
-#' Confidence Intervals for Interventional Mediation Effects
+#' Confidence intervals for interventional mediation effect estimates
 #'
 #' Compute confidence intervals for objects of class \code{medoutcon}, which
 #' contain estimates produced by \code{\link{medoutcon}}.
 #'
 #' @param object An object of class \code{medoutcon}, as produced by invoking
-#'  the function \code{tmle_medoutcon}, for which a confidence interval is to
-#'  be computed.
+#'  \code{\link{medoutcon}}, for which a confidence interval is to be computed.
 #' @param parm A \code{numeric} vector indicating indices of \code{object$est}
 #'  for which to return confidence intervals.
 #' @param level A \code{numeric} indicating the level of the confidence
@@ -51,15 +50,14 @@ confint.medoutcon <- function(object,
   return(ci_out)
 }
 
-################################################################################
+###############################################################################
 
-#' Summary for Interventional Mediation Effect Objects
+#' Summary for interventional mediation effect estimate objects
 #'
 #' Print a convenient summary for objects of \code{S3} class \code{medoutcon}.
 #'
 #' @param object An object of class \code{medoutcon}, as produced by invoking
-#'  the function \code{\link{medoutcon}}, for which a confidence interval is to
-#'  be computed.
+#'  \code{\link{medoutcon}}.
 #' @param ... Other arguments. Not currently used.
 #' @param ci_level A \code{numeric} indicating the level of the confidence
 #'  interval to be computed.
@@ -98,9 +96,9 @@ summary.medoutcon <- function(object,
   print(noquote(out))
 }
 
-################################################################################
+###############################################################################
 
-#' Print Method for Interventional Mediation Effect Objects
+#' Print method for interventional mediation effect estimate objects
 #'
 #' The \code{print} method for objects of class \code{medoutcon}.
 #'
@@ -120,9 +118,9 @@ print.medoutcon <- function(x, ...) {
   }
 }
 
-################################################################################
+###############################################################################
 
-#' Bounding Numerical Precision
+#' Bounding to numerical precision
 #'
 #' Bounds extreme values to a specified tolerance level, for use with sensitive
 #' quantities that must be transformed, e.g., via \code{\link[stats]{qlogis}}.
@@ -142,9 +140,9 @@ bound_precision <- function(vals, tol = 1e-6) {
   return(vals)
 }
 
-################################################################################
+###############################################################################
 
-#' Bounding Propensity Scores
+#' Bounding propensity scores
 #'
 #' Bounds estimated propensity score values to be within a specified range.
 #'
@@ -163,9 +161,9 @@ bound_propensity <- function(vals, bounds = c(0.001, 0.999)) {
   return(vals)
 }
 
-################################################################################
+###############################################################################
 
-#' Scale Values to the Unit Interval [0, 1]
+#' Scale values to the unit interval
 #'
 #' @param vals A \code{numeric} vector of values to be scaled into the closed
 #'  interval [0, 1].
@@ -176,9 +174,9 @@ scale_to_unit <- function(vals) {
   return(vals_scaled)
 }
 
-################################################################################
+###############################################################################
 
-#' Scale Values from the Unit Interval [0, 1] to the Original Scale
+#' Scale values from the unit interval to their original scale
 #'
 #' @param scaled_vals A \code{numeric} vector of values scaled to lie in the
 #'  closed interval [0, 1] by use of \code{\link{scale_to_unit}}.

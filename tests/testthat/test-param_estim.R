@@ -105,7 +105,7 @@ test_that("EIF variance of one-step is close to independent EIF variance", {
 })
 
 test_that("Mean of estimated EIF is nearly zero for the one-step", {
-  expect_lt(abs(mean(theta_os$eif)), 1e-7)
+  expect_lt(abs(mean(theta_os$eif)), 1e-10)
 })
 
 # 6) testing TML estimator
@@ -117,6 +117,6 @@ test_that("EIF variance of TMLE is close to independent EIF variance", {
   expect_equal(theta_tmle$var, var_indep, tol = 0.0001)
 })
 
-test_that("Mean of estimated EIF is nearly zero for the TMLE", {
-  expect_lt(abs(mean(theta_tmle$eif)), 1e-7)
+test_that("Mean of estimated EIF is very small for the TMLE", {
+  expect_lt(abs(mean(theta_tmle$eif)), 1e-4)
 })

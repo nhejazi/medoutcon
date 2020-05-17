@@ -63,9 +63,9 @@ a sample of $n$ i.i.d. observations of $O$.
 familiarity with which will be useful for using the [`medoutcon` `R`
 package](https://github.com/nhejazi/medoutcon). In particular, these authors
 define $g(a \mid w)$ as the probability mass function of $A = a$ conditional on
-$W = w$ and use $e(a \mid m, w)$ to denote the probability mass function of $A
+$W = w$ and use $h(a \mid m, w)$ to denote the probability mass function of $A
 = a$ conditional on $(M, W) = (m, w)$. Further, @diaz2020nonparametric use
-$m(a, z, m, w)$ to denote the outcome regression function $\mathbb{E}(Y \mid A
+$b(a, z, m, w)$ to denote the outcome regression function $\mathbb{E}(Y \mid A
 = a, Z = z, M = m, W = w)$, as well as $q(z \mid a,w)$ and $r(z \mid a, m, w)$
 to denote the corresponding conditional densities of $Z$.
 
@@ -119,7 +119,7 @@ effects; thus, @diaz2020nonparametric focus on estimation of this quantity.
 Importantly, it has been shown that $\theta_c$ is identified by the statistical
 functional
 \begin{equation*}
-  \theta = \int m(a', z, m, w) q(z \mid a', w) p(m \mid a^{\star}, w)
+  \theta = \int b(a', z, m, w) q(z \mid a', w) p(m \mid a^{\star}, w)
     p(w) d\nu(w,z,m)
 \end{equation*}
 under a set of standard identifiability conditions [@vanderweele2014effect],
@@ -230,8 +230,8 @@ using our implemented TML estimator of the (in)direct effects.
 Using this dataset, we'll proceed to estimate the interventional (in)direct
 effects. In order to do so, we'll need to estimate several nuisance parameters,
 including the exposure mechanism $g(A \mid W)$, a re-parameterized exposure
-mechanism that conditions on the mediators $e(A \mid M, W)$, the outcome
-mechanism $m(Y \mid M, Z, A, W)$, and two variants of the intermediate
+mechanism that conditions on the mediators $h(A \mid M, W)$, the outcome
+mechanism $b(Y \mid M, Z, A, W)$, and two variants of the intermediate
 confounding mechanism $q(Z \mid A, W)$ and $r(Z \mid M, A, W)$. In order to
 estimate each of these nuisance parameters flexibly, we'll rely on data adaptive
 regression strategies in order to avoid the potential for (parametric) model
@@ -247,7 +247,7 @@ is the...
 ## Ensemble learning of nuisance functions
 
 As we'd like to rely on flexible, data adaptive regression strategies for
-estimating each of the nuisance parameters $(g, e, m, q, r)$, we require a
+estimating each of the nuisance parameters $(g, h, b, q, r)$, we require a
 method for choosing among or combining the wide variety of available regression
 strategies. For this, we recommend the use of the Super Learner algorithm for
 ensemble machine learning [@vdl2007super].  The recently developed [`sl3` R
@@ -345,8 +345,8 @@ os_de <- medoutcon(W = example_data[, ..w_names],
                    M = example_data[, ..m_names],
                    Y = example_data$Y,
                    g_learners = sl_lrnr,
-                   e_learners = sl_lrnr,
-                   m_learners = sl_lrnr,
+                   h_learners = sl_lrnr,
+                   b_learners = sl_lrnr,
                    q_learners = sl_lrnr,
                    r_learners = sl_lrnr,
                    effect = "direct",
@@ -373,8 +373,8 @@ tmle_de <- medoutcon(W = example_data[, ..w_names],
                      M = example_data[, ..m_names],
                      Y = example_data$Y,
                      g_learners = sl_lrnr,
-                     e_learners = sl_lrnr,
-                     m_learners = sl_lrnr,
+                     h_learners = sl_lrnr,
+                     b_learners = sl_lrnr,
                      q_learners = sl_lrnr,
                      r_learners = sl_lrnr,
                      effect = "direct",
@@ -423,8 +423,8 @@ os_ie <- medoutcon(W = example_data[, ..w_names],
                    M = example_data[, ..m_names],
                    Y = example_data$Y,
                    g_learners = sl_lrnr,
-                   e_learners = sl_lrnr,
-                   m_learners = sl_lrnr,
+                   h_learners = sl_lrnr,
+                   b_learners = sl_lrnr,
                    q_learners = sl_lrnr,
                    r_learners = sl_lrnr,
                    effect = "indirect",
@@ -450,8 +450,8 @@ tmle_ie <- medoutcon(W = example_data[, ..w_names],
                      M = example_data[, ..m_names],
                      Y = example_data$Y,
                      g_learners = sl_lrnr,
-                     e_learners = sl_lrnr,
-                     m_learners = sl_lrnr,
+                     h_learners = sl_lrnr,
+                     b_learners = sl_lrnr,
                      q_learners = sl_lrnr,
                      r_learners = sl_lrnr,
                      effect = "indirect",

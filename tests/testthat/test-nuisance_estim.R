@@ -15,7 +15,7 @@ astar <- contrast[2]
 set.seed(27158)
 
 # set up learners for each nuisance parameter
-g_learners <- e_learners <- m_learners <- q_learners <- r_learners <-
+g_learners <- h_learners <- b_learners <- q_learners <- r_learners <-
   u_learners <- v_learners <- Lrnr_hal9001$new(
     family = "gaussian",
     lambda.min.ratio = 1e-5,
@@ -45,40 +45,40 @@ test_that("Estimates of propensity score are close to the truth", {
     tol = 0.03
   )
 })
-test_that("MSE of propensity score g estimates is sufficiently low", {
+test_that("MSE of propensity score estimates is sufficiently low", {
   g_mse <- mean((g_out$treat_est_train$treat_pred_A_star - g(astar, w))^2)
   expect_lt(g_mse, 0.001)
 })
 
 ## fit propensity score conditioning on mediators
-e_out <- fit_treat_mech(
+h_out <- fit_treat_mech(
   train_data = data, valid_data = data, contrast = c(aprime, astar),
-  learners = e_learners, w_names = w_names,
-  m_names = m_names, type = "e"
+  learners = h_learners, w_names = w_names,
+  m_names = m_names, type = "h"
 )
 test_that("Estimates of mediator propensity score are close to the truth", {
-  expect_equal(e_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
+  expect_equal(h_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
     tol = 0.04
   )
 })
 test_that("MSE of mediator propensity score estimates is sufficiently low", {
-  e_mse <- mean((e_out$treat_est_train$treat_pred_A_prime - e(aprime, m, w))^2)
-  expect_lt(e_mse, 0.001)
+  h_mse <- mean((h_out$treat_est_train$treat_pred_A_prime - e(aprime, m, w))^2)
+  expect_lt(h_mse, 0.001)
 })
 
 ## fit outcome regression
-m_out <- fit_m_mech(
+b_out <- fit_out_mech(
   train_data = data, valid_data = data, contrast = c(aprime, astar),
-  learners = m_learners, m_names = m_names, w_names = w_names
+  learners = b_learners, m_names = m_names, w_names = w_names
 )
-test_that("Estimates of outcome regression m are close to the truth", {
-  expect_equal(m_out$m_est_train$m_pred_A_prime, my(m, z, aprime, w),
+test_that("Estimates of outcome regression are close to the truth", {
+  expect_equal(b_out$b_est_train$b_pred_A_prime, my(m, z, aprime, w),
     tol = 0.05
   )
 })
-test_that("MSE of outcome regression m estimates is sufficiently low", {
-  m_mse <- mean((m_out$m_est_train$m_pred_A_prime - my(m, z, aprime, w))^2)
-  expect_lt(m_mse, 0.005)
+test_that("MSE of outcome regression estimates is sufficiently low", {
+  b_mse <- mean((b_out$b_est_train$b_pred_A_prime - my(m, z, aprime, w))^2)
+  expect_lt(b_mse, 0.005)
 })
 
 ## fit mediator-outcome confounder regression, excluding mediator(s)
@@ -91,12 +91,12 @@ q_out <- fit_moc_mech(
   w_names = w_names,
   type = "q"
 )
-test_that("Estimates of MOC regression q are close to the truth", {
+test_that("Estimates of confounder regression q are close to the truth", {
   expect_equal(q_out$moc_est_train_Z_one$moc_pred_A_prime, pz(1, aprime, w),
     tol = 0.04
   )
 })
-test_that("MSE of MOC regression q estimates is sufficiently low", {
+test_that("MSE of confounder regression q estimates is sufficiently low", {
   q_mse <- mean((q_out$moc_est_train_Z_one$moc_pred_A_prime -
     pz(1, aprime, w))^2)
   expect_lt(q_mse, 0.001)
@@ -112,13 +112,13 @@ r_out <- fit_moc_mech(
   w_names = w_names,
   type = "r"
 )
-test_that("Estimates of MOC regression r are close to the truth", {
+test_that("Estimates of confounder regression r are close to the truth", {
   expect_equal(r_out$moc_est_train_Z_one$moc_pred_A_prime,
     r(1, aprime, m, w),
     tol = 0.07
   )
 })
-test_that("MSE of MOC regression r estimates is sufficiently low", {
+test_that("MSE of confounder regression r estimates is sufficiently low", {
   r_mse <- mean((r_out$moc_est_train_Z_one$moc_pred_A_prime -
     r(1, aprime, m, w))^2)
   expect_lt(r_mse, 0.002)

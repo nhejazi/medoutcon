@@ -160,11 +160,11 @@ fit_treat_mech <- function(train_data,
 #' @importFrom data.table as.data.table copy setnames ":="
 #' @importFrom sl3 sl3_Task
 fit_out_mech <- function(train_data,
-                       valid_data = NULL,
-                       contrast,
-                       learners,
-                       m_names,
-                       w_names) {
+                         valid_data = NULL,
+                         contrast,
+                         learners,
+                         m_names,
+                         w_names) {
   ##  construct task for propensity score fit
   b_natural_task <- sl3::sl3_Task$new(
     data = train_data,

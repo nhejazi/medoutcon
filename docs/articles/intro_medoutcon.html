@@ -116,8 +116,8 @@
 <div id="interventional-indirect-effects" class="section level1">
 <h1 class="hasAnchor">
 <a href="#interventional-indirect-effects" class="anchor"></a>Interventional (In)Direct Effects</h1>
-<p><span class="citation">Díaz et al. (2020)</span> define the <em>total effect</em> of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> in terms of a contrast between two user-supplied values <span class="math inline">\(a', a^{\star} \in \mathcal{A}\)</span>. Examination of the NPSEM reveals that there are four paths involved in this effect, namely <span class="math inline">\(A \rightarrow Y\)</span>, <span class="math inline">\(A \rightarrow M \rightarrow Y\)</span>, <span class="math inline">\(A \rightarrow Z \rightarrow Y\)</span>, and <span class="math inline">\(A \rightarrow Z \rightarrow M \rightarrow Y\)</span>. Mediation analysis has classically considered the <em>natural direct effect</em> (NDE) and the <em>natural indirect effect</em> (NIE), which are defined as <span class="math inline">\(\mathbb{E}_c(Y_{a', M_{a^{\star}}} - Y_{a^{\star}, M_{a^{\star}}})\)</span> and <span class="math inline">\(\mathbb{E}_c(Y_{a',M_{a'}} - Y_{a',M_{a^{\star}}})\)</span>, respectively. The natural direct effect measures the effect through paths <em>not</em> involving the mediator (<span class="math inline">\(A\rightarrow Y\)</span> and <span class="math inline">\(A\rightarrow Z \rightarrow Y\)</span>), whereas the natural indirect effect measures the effect through paths involving the mediator (<span class="math inline">\(A\rightarrow M \rightarrow Y\)</span> and <span class="math inline">\(A\rightarrow Z \rightarrow M \rightarrow Y\)</span>). As the sum of the natural direct and indirect effects equals the average treatment effect <span class="math inline">\(\mathbb{E}_c(Y_1-Y_0)\)</span>, this effect decomposition is appealing. Unfortunately, the natural direct and indirect effects are not generally identified in the presence of an intermediate confounder affected by treatment.</p>
-<p>To circumvent this issue, <span class="citation">Díaz et al. (2020)</span> define the direct and indirect effects using stochastic interventions on the mediator, following a strategy previously outline by <span class="citation">VanderWeele, Vansteelandt, and Robins (2014)</span> and <span class="citation">Rudolph et al. (2017)</span>, among others. Let <span class="math inline">\(G_a\)</span> denote a random draw from the conditional distribution of <span class="math inline">\(M_a\)</span> conditional on <span class="math inline">\(W\)</span>. Consider the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> defined as the difference in expected outcome in hypothetical worlds in which <span class="math inline">\((A,M) = (a', G_{a'})\)</span> versus <span class="math inline">\((A,M) = (a^{\star}, G_{a^{\star}})\)</span> with probability one, which may be decomposed into direct and indirect effects as follows <span class="math display">\[\begin{equation*}
+<p><span class="citation">Díaz et al. (2020)</span> define the <em>total effect</em> of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> in terms of a contrast between two user-supplied values <span class="math inline">\(a', a^{\star} \in \mathcal{A}\)</span>. Examination of the NPSEM reveals that there are four paths involved in this effect, namely <span class="math inline">\(A \rightarrow Y\)</span>, <span class="math inline">\(A \rightarrow M \rightarrow Y\)</span>, <span class="math inline">\(A \rightarrow Z \rightarrow Y\)</span>, and <span class="math inline">\(A \rightarrow Z \rightarrow M \rightarrow Y\)</span>. Mediation analysis has classically considered the <em>natural direct effect</em> (NDE) and the <em>natural indirect effect</em> (NIE), which are defined as <span class="math inline">\(\mathbb{E}_c(Y_{a', M_{a^{\star}}} - Y_{a^{\star}, M_{a^{\star}}})\)</span> and <span class="math inline">\(\mathbb{E}_c(Y_{a',M_{a'}} - Y_{a',M_{a^{\star}}})\)</span>, respectively. The natural direct effect measures the effect through paths <em>not</em> involving the mediator (<span class="math inline">\(A \rightarrow Y\)</span> and <span class="math inline">\(A \rightarrow Z \rightarrow Y\)</span>), whereas the natural indirect effect measures the effect through paths involving the mediator (<span class="math inline">\(A \rightarrow M \rightarrow Y\)</span> and <span class="math inline">\(A \rightarrow Z \rightarrow M \rightarrow Y\)</span>). As the sum of the natural direct and indirect effects equals the average treatment effect <span class="math inline">\(\mathbb{E}_c(Y_1-Y_0)\)</span>, this effect decomposition is appealing. Unfortunately, the natural direct and indirect effects are not generally identified in the presence of an intermediate confounder affected by treatment.</p>
+<p>To circumvent this issue, <span class="citation">Díaz et al. (2020)</span> define the direct and indirect effects using stochastic interventions on the mediator, following a strategy previously outlined by <span class="citation">VanderWeele, Vansteelandt, and Robins (2014)</span> and <span class="citation">Rudolph et al. (2017)</span>, among others. Let <span class="math inline">\(G_a\)</span> denote a random draw from the conditional distribution of <span class="math inline">\(M_a\)</span> conditional on <span class="math inline">\(W\)</span>. Consider the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> defined as the difference in expected outcome in hypothetical worlds in which <span class="math inline">\((A,M) = (a', G_{a'})\)</span> versus <span class="math inline">\((A,M) = (a^{\star}, G_{a^{\star}})\)</span> with probability one, which may be decomposed into direct and indirect effects as follows <span class="math display">\[\begin{equation*}
 \mathbb{E}_c(Y_{a', G_{a'}} - Y_{a^{\star}, G_{a^{\star}}}) =
   \underbrace{\mathbb{E}_c(Y_{a', G_{a'}} - Y_{a',
     G_{a^{\star}}})}_{\text{Indirect effect (through $M$)}} +
@@ -131,7 +131,7 @@
 <div id="efficient-estimation" class="section level1">
 <h1 class="hasAnchor">
 <a href="#efficient-estimation" class="anchor"></a>Efficient Estimation</h1>
-<p><span class="citation">Díaz et al. (2020)</span> define two efficient estimators of their interventional (in)direct effects. These are based on the one-step estimation and targeted minimum loss (TML) estimation frameworks, respectively. Briefly, both estimation strategies proceed in two stages, starting by first constructing initial estimates of the nuisance parameters present in the EIF, then proceeding to apply distinct bias-correction strategies in their second stages. Both estimation strategies require an assumption about the behavior of initial estimators of the nuisance parameters (specifically, that these lie in a so-called Donsker class); however, such an assumption may be avoided by making use of cross-validation in fitting initial estimators. Consistent with recent theoretical developments, the <code>medoutcon</code> <code>R</code> package requires the use of cross-validation in constructing these initial estimates.</p>
+<p><span class="citation">Díaz et al. (2020)</span> define two efficient estimators of their interventional (in)direct effects. These are based on the one-step estimation and targeted minimum loss (TML) estimation frameworks, respectively. Briefly, both estimation strategies proceed in two stages, starting by first constructing initial estimates of the nuisance parameters present in the EIF, then proceeding to apply distinct bias-correction strategies in their second stages. Both estimation strategies require an assumption about the behavior of initial estimators of the nuisance parameters (specifically, that these lie in a Donsker class); however, the need for such an assumption may be avoided by making use of cross-validation in the fitting fo initial estimators. The <code>medoutcon</code> <code>R</code> package requires the use of cross-validation in the construction of these initial estimates, resulting in cross-fitted one-step and and cross-validated TML estimators <span class="citation">(Klaassen 1987; Zheng and van der Laan 2011; Chernozhukov et al. 2018)</span>.</p>
 <p>The one-step estimator <span class="math inline">\(\hat{\theta}_{\text{os}}\)</span> is constructed by adding the empirical mean of the EIF (evaluated at initial estimates of the nuisance parameters) to the substitution estimator. By constrast, the TML estimator <span class="math inline">\(\hat{\theta}_{\text{tmle}}\)</span> updates the components of the substitution estimator via logistic tilting models formulated to ensure that relevant score equations appearing in the EIF are (approximately) solved. While the estimators are asymptotically equivalent, TML estimators have been shown to exhibit superior finite-sample performance, making them potentially more reliable than one-step estimators. For the exact form of the EIF as well as those of the one-step and TML estimators, consult <span class="citation">Díaz et al. (2020)</span>.</p>
 </div>
 <div id="data-analysis-example" class="section level1">
@@ -252,10 +252,10 @@ is the...
                    <span class="kw">estimator_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">cv_folds</span> <span class="kw">=</span> <span class="fl">2</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">os_de</span>)</pre></body></html></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##       -0.1019        0.0193        0.1406        0.0038    1.0099e-17 
+##       -0.0804        0.0297        0.1398        0.0032    6.3003e-17 
 ##     estimator         param 
 ##       onestep direct_effect</code></pre>
-<p>From the output of the summary method, we note that the one-step estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{DE}}\)</span> is 0.019, with 95% confidence interval [-0.102, 0.141].</p>
+<p>From the output of the summary method, we note that the one-step estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{DE}}\)</span> is 0.03, with 95% confidence interval [-0.08, 0.14].</p>
 <p>Next, let’s compare the one-step estimate to the TML estimate. Analogous to the case of the one-step estimator, the TML estimator can be evaluated via a single call to the <code>medoutcon</code> function:</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span>
 <span class="no">tmle_de</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
@@ -273,10 +273,10 @@ is the...
                      <span class="kw">estimator_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">cv_folds</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">max_iter</span> <span class="kw">=</span> <span class="fl">5</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_de</span>)</pre></body></html></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##       -0.1036       -0.0012        0.1013        0.0027   -6.5875e-04 
+##       -0.0653        0.0292        0.1236        0.0023    5.1979e-03 
 ##     estimator         param 
 ##          tmle direct_effect</code></pre>
-<p>From the output of the summary method, we note that the TML estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{DE}}\)</span> is -0.001, with 95% confidence interval [-0.104, 0.101]. Here, we recall that the TML estimator generally exhibits better finite-sample performance than the one-step estimator <span class="citation">(van der Laan and Rose 2011, <span class="citation">@vdl2018targeted</span>)</span>, so the TML estimate is likely to be more reliable in our modest sample size of $n = $500.</p>
+<p>From the output of the summary method, we note that the TML estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{DE}}\)</span> is 0.029, with 95% confidence interval [-0.065, 0.124]. Here, we recall that the TML estimator generally exhibits better finite-sample performance than the one-step estimator <span class="citation">(van der Laan and Rose 2011, 2018)</span>, so the TML estimate is likely to be more reliable in our modest sample size of <span class="math inline">\(n =\)</span> 500.</p>
 </div>
 <div id="estimating-the-indirect-effect" class="section level2">
 <h2 class="hasAnchor">
@@ -298,10 +298,10 @@ is the...
                    <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"onestep"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">os_ie</span>)</pre></body></html></div>
 <pre><code>##          lwr_ci       param_est          upr_ci       param_var        eif_mean 
-##          -0.257         -0.1596         -0.0622          0.0025     -1.1373e-17 
+##         -0.2627         -0.1743         -0.0859           0.002      4.7546e-17 
 ##       estimator           param 
 ##         onestep indirect_effect</code></pre>
-<p>From the output of the summary method, we note that the one-step estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{IE}}\)</span> is -0.16, with 95% confidence interval [-0.257, -0.062].</p>
+<p>From the output of the summary method, we note that the one-step estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{IE}}\)</span> is -0.174, with 95% confidence interval [-0.263, -0.086].</p>
 <p>As before, let’s compare the one-step estimate to the TML estimate. Analogous to the case of the one-step estimator, the TML estimator can be evaluated via a single call to the <code>medoutcon</code> function, as demonstrated below</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="co"># compute targeted minimum loss estimate of the interventional indirect effect</span>
 <span class="no">tmle_ie</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
@@ -318,20 +318,26 @@ is the...
                      <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"tmle"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_ie</span>)</pre></body></html></div>
 <pre><code>##          lwr_ci       param_est          upr_ci       param_var        eif_mean 
-##         -0.1996         -0.1382         -0.0768           0.001     -9.2561e-04 
+##         -0.1787         -0.1127         -0.0466          0.0011      4.3890e-04 
 ##       estimator           param 
 ##            tmle indirect_effect</code></pre>
-<p>From the output of the summary method, we note that the TML estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{IE}}\)</span> is -0.138, with 95% confidence interval [-0.2, -0.077]. As before, the TML estimator provides better finite-sample performance than the one-step estimator, so it may be preferred in this example.</p>
+<p>From the output of the summary method, we note that the TML estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{IE}}\)</span> is -0.113, with 95% confidence interval [-0.179, -0.047]. As before, the TML estimator provides better finite-sample performance than the one-step estimator, so it may be preferred in this example.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-chernozhukov2018double">
+<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. 2018. “Double/Debiased Machine Learning for Treatment and Structural Parameters.” <em>The Econometrics Journal</em> 21 (1). <a href="https://doi.org/10.1111/ectj.12097" class="uri">https://doi.org/10.1111/ectj.12097</a>.</p>
+</div>
 <div id="ref-coyle2020sl3">
 <p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020. “sl3: Modern Pipelines for Machine Learning and Super Learning.” <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.1342293" class="uri">https://doi.org/10.5281/zenodo.1342293</a>.</p>
 </div>
 <div id="ref-diaz2020nonparametric">
 <p>Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan. 2020. “Non-Parametric Efficient Causal Mediation with Intermediate Confounders.” <a href="https://arxiv.org/abs/1912.09936" class="uri">https://arxiv.org/abs/1912.09936</a>.</p>
+</div>
+<div id="ref-klaassen1987consistent">
+<p>Klaassen, Chris AJ. 1987. “Consistent Estimation of the Influence Function of Locally Asymptotically Linear Estimators.” <em>The Annals of Statistics</em>. JSTOR, 1548–62.</p>
 </div>
 <div id="ref-rudolph2017robust">
 <p>Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan. 2017. “Robust and Flexible Estimation of Stochastic Mediation Effects: A Proposed Method and Example in a Randomized Trial Setting.” <em>Epidemiologic Methods</em> 7 (1). De Gruyter.</p>
@@ -347,6 +353,9 @@ is the...
 </div>
 <div id="ref-vanderweele2014effect">
 <p>VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014. “Effect Decomposition in the Presence of an Exposure-Induced Mediator-Outcome Confounder.” <em>Epidemiology (Cambridge, Mass.)</em> 25 (2). NIH Public Access: 300.</p>
+</div>
+<div id="ref-zheng2011cross">
+<p>Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted Minimum-Loss-Based Estimation.” In <em>Targeted Learning</em>, 459–74. Springer.</p>
 </div>
 </div>
 </div>

@@ -81,9 +81,9 @@ and the _natural indirect effect_ (NIE), which are defined as
 $\mathbb{E}_c(Y_{a', M_{a^{\star}}} - Y_{a^{\star}, M_{a^{\star}}})$ and
 $\mathbb{E}_c(Y_{a',M_{a'}} - Y_{a',M_{a^{\star}}})$, respectively. The natural
 direct effect measures the effect through paths _not_ involving the mediator
-($A\rightarrow Y$ and $A\rightarrow Z \rightarrow Y$), whereas the natural
+($A \rightarrow Y$ and $A \rightarrow Z \rightarrow Y$), whereas the natural
 indirect effect measures the effect through paths involving the mediator
-($A\rightarrow M \rightarrow Y$ and $A\rightarrow Z \rightarrow M \rightarrow
+($A \rightarrow M \rightarrow Y$ and $A \rightarrow Z \rightarrow M \rightarrow
 Y$). As the sum of the natural direct and indirect effects equals the average
 treatment effect $\mathbb{E}_c(Y_1-Y_0)$, this effect decomposition is
 appealing. Unfortunately, the natural direct and indirect effects are
@@ -92,7 +92,7 @@ by treatment.
 
 To circumvent this issue, @diaz2020nonparametric define the direct and indirect
 effects using stochastic interventions on the mediator, following a strategy
-previously outline by @vanderweele2014effect and @rudolph2017robust, among
+previously outlined by @vanderweele2014effect and @rudolph2017robust, among
 others. Let $G_a$ denote a random draw from the conditional distribution of
 $M_a$ conditional on $W$. Consider the effect of $A$ on $Y$ defined as the
 difference in expected outcome in hypothetical worlds in which $(A,M) = (a',
@@ -134,11 +134,13 @@ strategies proceed in two stages, starting by first constructing initial
 estimates of the nuisance parameters present in the EIF, then proceeding to
 apply distinct bias-correction strategies in their second stages. Both
 estimation strategies require an assumption about the behavior of initial
-estimators of the nuisance parameters (specifically, that these lie in a
-so-called Donsker class); however, such an assumption may be avoided by making
-use of cross-validation in fitting initial estimators. Consistent with recent
-theoretical developments, the `medoutcon` `R` package requires the use of
-cross-validation in constructing these initial estimates.
+estimators of the nuisance parameters (specifically, that these lie in a Donsker
+class); however, the need for such an assumption may be avoided by making use of
+cross-validation in the fitting fo initial estimators. The `medoutcon` `R`
+package requires the use of cross-validation in the construction of these
+initial estimates, resulting in cross-fitted one-step and and cross-validated
+TML estimators [@klaassen1987consistent; @zheng2011cross;
+@chernozhukov2018double].
 
 The one-step estimator $\hat{\theta}_{\text{os}}$ is constructed by adding the
 empirical mean of the EIF (evaluated at initial estimates of the nuisance
@@ -387,8 +389,8 @@ interventional direct effect $\hat{\theta}_{\text{tmle}}^{\text{DE}}$ is
 [`r round(unname(confint(tmle_de, 0.95)[1]), 3)`,
 `r round(unname(confint(tmle_de, 0.95)[3]), 3)`]. Here, we recall that the TML
 estimator generally exhibits better finite-sample performance than the one-step
-estimator [@vdl2011targeted, @vdl2018targeted], so the TML estimate is likely to
-be more reliable in our modest sample size of $n = $`r n_obs`.
+estimator [@vdl2011targeted; @vdl2018targeted], so the TML estimate is likely to
+be more reliable in our modest sample size of $n =$ `r n_obs`.
 
 ## Estimating the indirect effect
 

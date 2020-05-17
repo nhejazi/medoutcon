@@ -40,9 +40,8 @@ with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
 loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
 Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3)
-(<span class="citeproc-not-found" data-reference-id="coyle2019sl3">**???**</span>)
-to leverage statistical machine learning in the estimation procedure.
+package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to leverage
+statistical machine learning in the estimation procedure.
 
 -----
 
@@ -238,6 +237,15 @@ Christian Hansen, Whitney Newey, and James Robins. 2018.
 “Double/Debiased Machine Learning for Treatment and Structural
 Parameters.” *The Econometrics Journal* 21 (1).
 <https://doi.org/10.1111/ectj.12097>.
+
+</div>
+
+<div id="ref-coyle2020sl3">
+
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
+“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+<https://github.com/tlverse/sl3>.
+<https://doi.org/10.5281/zenodo.1342293>.
 
 </div>
 

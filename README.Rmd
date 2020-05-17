@@ -45,7 +45,7 @@ one-step bias-corrected estimator with cross-fitting
 [@pfanzagl1985contributions; @zheng2011cross; @chernozhukov2018double] and a
 cross-validated targeted minimum loss estimator (TMLE) [@vdl2011targeted;
 @zheng2011cross] are made available. `medoutcon` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3) [@coyle2019sl3] to leverage statistical
+package](https://github.com/tlverse/sl3) [@coyle2020sl3] to leverage statistical
 machine learning in the estimation procedure.
 
 ---

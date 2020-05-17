@@ -2,7 +2,7 @@
 % Please edit documentation in R/medoutcon.R
 \name{medoutcon}
 \alias{medoutcon}
-\title{Efficient estimation of interventional (in)direct effects}
+\title{Efficient estimation of stochastic interventional (in)direct effects}
 \usage{
 medoutcon(
   W,
@@ -15,8 +15,8 @@ medoutcon(
   effect = c("direct", "indirect"),
   contrast = NULL,
   g_learners = sl3::Lrnr_glm_fast$new(),
-  e_learners = sl3::Lrnr_glm_fast$new(),
-  m_learners = sl3::Lrnr_glm_fast$new(),
+  h_learners = sl3::Lrnr_glm_fast$new(),
+  b_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(),
   r_learners = sl3::Lrnr_glm_fast$new(),
   u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
@@ -46,10 +46,8 @@ the intervention A and the outcome Y).}
 The default is to give all observations equal weighting.}
 
 \item{ext_weights}{A \code{numeric} vector of observation-level weights that
-have been computed externally. Such weights are used in the construction of
-re-weighted efficient estimators. Unlike \code{obs_weights}, these weights
-are not incorporated in the estimation of nuisance parameters. These input
-weights should be normalized. Use with caution.}
+have been computed externally, such as survey sampling weights. Such
+weights are used in the construction of re-weighted efficient estimators.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct
 or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
@@ -65,12 +63,12 @@ double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.}
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a model for the propensity score.}
 
-\item{e_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+\item{h_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a model for a parameterization of the
 propensity score that conditions on the mediators.}
 
-\item{m_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+\item{b_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a model for the outcome regression.}
 
@@ -109,5 +107,5 @@ the number of update (fluctuation) iterations is limited, and a tolerance
 is included for the updates introduced by the tilting (fluctuation) models.}
 }
 \description{
-Efficient estimation of interventional (in)direct effects
+Efficient estimation of stochastic interventional (in)direct effects
 }

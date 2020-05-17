@@ -283,7 +283,7 @@ fit_out_mech <- function(train_data,
     ## add natural treatment estimates to post-intervention predictions
     out_b_est[[1]] <- cbind(b_natural_pred_train, out_b_est[[1]])
     out_b_est[[2]] <- cbind(b_natural_pred_valid, out_b_est[[2]])
-    lapply(out_m_est, function(x) {
+    lapply(out_b_est, function(x) {
       data.table::setnames(x, c(
         "b_pred_A_natural",
         "b_pred_A_prime",

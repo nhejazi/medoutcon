@@ -2,14 +2,13 @@
 % Please edit documentation in R/utils.R
 \name{confint.medoutcon}
 \alias{confint.medoutcon}
-\title{Confidence Intervals for Interventional Mediation Effects}
+\title{Confidence intervals for interventional mediation effect estimates}
 \usage{
 \method{confint}{medoutcon}(object, parm = seq_len(object$theta), level = 0.95, ...)
 }
 \arguments{
 \item{object}{An object of class \code{medoutcon}, as produced by invoking
-the function \code{tmle_medoutcon}, for which a confidence interval is to
-be computed.}
+\code{\link{medoutcon}}, for which a confidence interval is to be computed.}
 
 \item{parm}{A \code{numeric} vector indicating indices of \code{object$est}
 for which to return confidence intervals.}

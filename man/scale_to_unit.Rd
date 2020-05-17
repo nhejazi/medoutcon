@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{scale_to_unit}
 \alias{scale_to_unit}
-\title{Scale Values to the Unit Interval [0, 1]}
+\title{Scale values to the unit interval}
 \usage{
 scale_to_unit(vals)
 }
@@ -11,6 +11,6 @@ scale_to_unit(vals)
 interval [0, 1].}
 }
 \description{
-Scale Values to the Unit Interval [0, 1]
+Scale values to the unit interval
 }
 \keyword{internal}

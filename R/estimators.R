@@ -123,8 +123,7 @@ cv_eif <- function(fold,
     type = "r"
   )
 
-  # extract components and re-name for ease of generating influence function
-  # NOTE: we only do this for observations in the validation set
+  # extract components; NOTE: only do this for observations in validation set
   b_prime <- b_out$b_est_valid$b_pred_A_prime
   h_star <- h_out$treat_est_valid$treat_pred_A_star
   g_star <- g_out$treat_est_valid$treat_pred_A_star
@@ -138,7 +137,7 @@ cv_eif <- function(fold,
   # need pseudo-outcome regressions with intervention set to a contrast
   # NOTE: training fits of these nuisance functions must be performed using the
   #       data corresponding to the natural intervention value but predictions
-  #       are only needed for u(z,a',w) and v(a*,w) as per the EIF
+  #       are only needed for u(z,a',w) and v(a*,w) as per form of the EIF
   valid_data_a_prime <- data.table::copy(valid_data)[, A := contrast[1]]
   valid_data_a_star <- data.table::copy(valid_data)[, A := contrast[2]]
   u_out <- fit_nuisance_u(

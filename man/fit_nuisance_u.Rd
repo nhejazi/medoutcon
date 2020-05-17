@@ -8,11 +8,11 @@ fit_nuisance_u(
   train_data,
   valid_data,
   learners,
-  m_out,
+  b_out,
   q_out,
   r_out,
   g_out,
-  e_out,
+  h_out,
   w_names
 )
 }
@@ -31,8 +31,8 @@ via cross-fitting. NOT optional for this nuisance parameter.}
 from \code{\link[sl3]{Lrnr_base}}), containing a set of learners from
 \pkg{sl3}, to be used in fitting a model for this nuisance parameter.}
 
-\item{m_out}{Output from the internal function for fitting the outcome
-regression \code{\link{fit_m_mech}}.}
+\item{b_out}{Output from the internal function for fitting the outcome
+regression \code{\link{fit_out_mech}}.}
 
 \item{q_out}{Output from the internal function for fitting the mechanism of
 the intermediate confounder while conditioning on mediators, i.e.,
@@ -45,7 +45,7 @@ the intermediate confounder without conditioning on mediators, i.e.,
 \item{g_out}{Output from the internal function for fitting the treatment
 mechanism without conditioning on mediators \code{\link{fit_treat_mech}}.}
 
-\item{e_out}{Output from the internal function for fitting the treatment
+\item{h_out}{Output from the internal function for fitting the treatment
 mechanism conditioning on the mediators \code{\link{fit_treat_mech}}.}
 
 \item{w_names}{A \code{character} vector of the names of the columns that

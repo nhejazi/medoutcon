@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{bound_propensity}
 \alias{bound_propensity}
-\title{Bounding Propensity Scores}
+\title{Bounding propensity scores}
 \usage{
 bound_propensity(vals, bounds = c(0.001, 0.999))
 }

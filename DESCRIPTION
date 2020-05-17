@@ -31,8 +31,7 @@ Imports:
     assertthat,
     dplyr,
     origami (>= 1.0.3),
-    sl3 (>= 1.3.7),
-    glmnet
+    sl3 (>= 1.3.7)
 Suggests:
     testthat,
     knitr,

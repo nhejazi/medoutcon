@@ -61,7 +61,7 @@ remotes::install_github("nhejazi/medoutcon")
 To illustrate how `medoutcon` may be used to estimate stochastic
 interventional (in)direct effects of the exposure (`A`) on the outcome
 (`Y`) in the presence of mediator(s) (`M`) and a mediator-outcome
-confounder (`Z`), consider the following working example:
+confounder (`Z`), consider the following example:
 
 ``` r
 library(data.table)

@@ -13,7 +13,7 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'  intervention \code{A} to be compared. The default value of \code{NULL} has
 #'  no effect, as the value of the argument \code{effect} is instead used to
 #'  define the contrasts. To override \code{effect}, provide a \code{numeric}
-#'  double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.
+#'  double vector, giving the values of a' and a*, e.g., \code{c(0, 1)}.
 #' @param g_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a model for the propensity score.
@@ -236,7 +236,7 @@ cv_eif <- function(fold,
 #'  intervention \code{A} to be compared. The default value of \code{NULL} has
 #'  no effect, as the value of the argument \code{effect} is instead used to
 #'  define the contrasts. To override \code{effect}, provide a \code{numeric}
-#'  double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.
+#'  double vector, giving the values of a' and a*, e.g., \code{c(0, 1)}.
 #' @param g_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a model for the propensity score.
@@ -306,13 +306,13 @@ est_onestep <- function(data,
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1)
 
-  # create folds for use with origami::cross_validate
+  # create cross-validation folds
   folds <- origami::make_folds(data,
     fold_fun = origami::folds_vfold,
     V = cv_folds
   )
 
-  # perform the cv_eif procedure on a per-fold basis
+  # estimate the EIF on a per-fold basis
   cv_eif_results <- origami::cross_validate(
     cv_fun = cv_eif,
     folds = folds,
@@ -331,7 +331,7 @@ est_onestep <- function(data,
     .combine = FALSE
   )
 
-  # get estimated efficient influence function; re-scale substitution estimator
+  # get estimated efficient influence function
   cv_eif_est <- do.call(c, lapply(cv_eif_results[[1]], `[[`, "D_star"))
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
   cv_eif_est <- cv_eif_est[order(obs_valid_idx)]
@@ -374,7 +374,7 @@ est_onestep <- function(data,
 #'  intervention \code{A} to be compared. The default value of \code{NULL} has
 #'  no effect, as the value of the argument \code{effect} is instead used to
 #'  define the contrasts. To override \code{effect}, provide a \code{numeric}
-#'  double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.
+#'  double vector, giving the values of a' and a*, e.g., \code{c(0, 1)}.
 #' @param g_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a model for the propensity score.
@@ -453,7 +453,7 @@ est_tml <- function(data,
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1)
 
-  # create folds for use with origami::cross_validate
+  # create cross-validation folds
   folds <- origami::make_folds(data,
     fold_fun = origami::folds_vfold,
     V = cv_folds
@@ -478,7 +478,7 @@ est_tml <- function(data,
     .combine = FALSE
   )
 
-  # concatenate nuisance function and influence function estimates across folds
+  # concatenate nuisance function and influence function estimates
   cv_eif_est <- do.call(rbind, cv_eif_results[[1]])
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
   cv_eif_est <- cv_eif_est[order(obs_valid_idx), ]

@@ -11,8 +11,8 @@ utils::globalVariables(c("..w_names", "A", "Z", "V_pseudo"))
 #'  appearing in the preceding argument \code{train_data}, to be used for
 #'  estimation via cross-fitting. Optional, defaulting to \code{NULL}.
 #' @param contrast A \code{numeric} double indicating the two values of the
-#'  intervention "A" to be compared. The default of \code{c(0, 1)} assumes a
-#'  binary intervention node "A".
+#'  intervention \code{A} to be compared. The default value of \code{c(0, 1)}
+#'  assumes a binary intervention node \code{A}.
 #' @param learners \code{\link[sl3]{Stack}}, or other learner class (inheriting
 #'  from \code{\link[sl3]{Lrnr_base}}), containing a set of learners from
 #'  \pkg{sl3}, to be used in fitting a propensity score models, i.e., g :=
@@ -496,7 +496,7 @@ fit_moc_mech <- function(train_data,
   return(out)
 }
 
-################################################################################
+###############################################################################
 
 #' Fit pseudo-outcome regression conditioning on mediator-outcome confounder
 #'

@@ -26,8 +26,8 @@ appearing in the preceding argument \code{train_data}, to be used for
 estimation via cross-fitting. Optional, defaulting to \code{NULL}.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
-intervention "A" to be compared. The default of \code{c(0, 1)} assumes a
-binary intervention node "A".}
+intervention \code{A} to be compared. The default value of \code{c(0, 1)}
+assumes a binary intervention node \code{A}.}
 
 \item{learners}{\code{\link[sl3]{Stack}}, or other learner class (inheriting
 from \code{\link[sl3]{Lrnr_base}}), containing a set of learners from

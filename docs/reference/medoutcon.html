@@ -194,7 +194,8 @@ weights are used in the construction of re-weighted efficient estimators.</p></t
       <th>effect</th>
       <td><p>A <code>character</code> indicating whether to compute the direct
 or the indirect effect as discussed in &lt;https://arxiv.org/abs/1912.09936&gt;.
-This is ignored when the argument <code>contrast</code> is provided.</p></td>
+This is ignored when the argument <code>contrast</code> is provided. By default,
+the direct effect is estimated.</p></td>
     </tr>
     <tr>
       <th>contrast</th>
@@ -202,7 +203,7 @@ This is ignored when the argument <code>contrast</code> is provided.</p></td>
 intervention <code>A</code> to be compared. The default value of <code>NULL</code> has
 no effect, as the value of the argument <code>effect</code> is instead used to
 define the contrasts. To override <code>effect</code>, provide a <code>numeric</code>
-double vector, giving the values of a' and a* (e.g., <code><a href='https://rdrr.io/r/base/c.html'>c(0, 1)</a></code>.</p></td>
+double vector, giving the values of a' and a*, e.g., <code><a href='https://rdrr.io/r/base/c.html'>c(0, 1)</a></code>.</p></td>
     </tr>
     <tr>
       <th>g_learners</th>
@@ -258,7 +259,7 @@ for in the efficient influence function.</p></td>
       <td><p>The desired estimator of the direct or indirect effect (or
 contrast-specific parameter) to be computed. Both an efficient one-step
 estimator using cross-fitting and a cross-validated targeted minimum loss
-estimator (TMLE) are supported.</p></td>
+estimator (TMLE) are available. The default is the TML estimator.</p></td>
     </tr>
     <tr>
       <th>estimator_args</th>

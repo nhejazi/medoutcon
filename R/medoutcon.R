@@ -18,12 +18,13 @@
 #'  weights are used in the construction of re-weighted efficient estimators.
 #' @param effect A \code{character} indicating whether to compute the direct
 #'  or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
-#'  This is ignored when the argument \code{contrast} is provided.
+#'  This is ignored when the argument \code{contrast} is provided. By default,
+#'  the direct effect is estimated.
 #' @param contrast A \code{numeric} double indicating the two values of the
 #'  intervention \code{A} to be compared. The default value of \code{NULL} has
 #'  no effect, as the value of the argument \code{effect} is instead used to
 #'  define the contrasts. To override \code{effect}, provide a \code{numeric}
-#'  double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.
+#'  double vector, giving the values of a' and a*, e.g., \code{c(0, 1)}.
 #' @param g_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a model for the propensity score.
@@ -55,7 +56,7 @@
 #' @param estimator The desired estimator of the direct or indirect effect (or
 #'   contrast-specific parameter) to be computed. Both an efficient one-step
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
-#'   estimator (TMLE) are supported.
+#'   estimator (TMLE) are available. The default is the TML estimator.
 #' @param estimator_args A \code{list} of extra arguments to be passed (via
 #'  \code{...}) to the function call for the specified estimator. The default
 #'  is chosen so as to allow the number of folds used in computing the one-step

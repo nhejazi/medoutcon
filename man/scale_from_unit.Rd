@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{scale_from_unit}
 \alias{scale_from_unit}
-\title{Scale Values from the Unit Interval [0, 1] to the Original Scale}
+\title{Scale values from the unit interval to their original scale}
 \usage{
 scale_from_unit(scaled_vals, max_orig, min_orig)
 }
@@ -15,6 +15,6 @@ closed interval [0, 1] by use of \code{\link{scale_to_unit}}.}
 \item{min_orig}{The minimum of the values on the original scale.}
 }
 \description{
-Scale Values from the Unit Interval [0, 1] to the Original Scale
+Scale values from the unit interval to their original scale
 }
 \keyword{internal}

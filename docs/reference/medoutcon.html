@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Efficient estimation of interventional (in)direct effects — medoutcon • medoutcon</title>
+<title>Efficient estimation of stochastic interventional (in)direct effects — medoutcon • medoutcon</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Efficient estimation of interventional (in)direct effects — medoutcon" />
-<meta property="og:description" content="Efficient estimation of interventional (in)direct effects" />
+<meta property="og:title" content="Efficient estimation of stochastic interventional (in)direct effects — medoutcon" />
+<meta property="og:description" content="Efficient estimation of stochastic interventional (in)direct effects" />
 
 
 
@@ -120,13 +120,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Efficient estimation of interventional (in)direct effects</h1>
+    <h1>Efficient estimation of stochastic interventional (in)direct effects</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/medoutcon.R'><code>R/medoutcon.R</code></a></small>
     <div class="hidden name"><code>medoutcon.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Efficient estimation of interventional (in)direct effects</p>
+    <p>Efficient estimation of stochastic interventional (in)direct effects</p>
     </div>
 
     <pre class="usage"><span class='fu'>medoutcon</span>(
@@ -140,13 +140,13 @@
   <span class='kw'>effect</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"direct"</span>, <span class='st'>"indirect"</span>),
   <span class='kw'>contrast</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>g_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>e_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>m_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
+  <span class='kw'>h_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
+  <span class='kw'>b_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
   <span class='kw'>q_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
   <span class='kw'>r_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
   <span class='kw'>u_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span>$<span class='fu'>new</span>(<span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>5</span>),
   <span class='kw'>v_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span>$<span class='fu'>new</span>(<span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>5</span>),
-  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"onestep"</span>, <span class='st'>"tmle"</span>),
+  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
   <span class='kw'>estimator_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>tiltmod_tol</span> <span class='kw'>=</span> <span class='fl'>10</span>)
 )</pre>
 
@@ -187,10 +187,8 @@ The default is to give all observations equal weighting.</p></td>
     <tr>
       <th>ext_weights</th>
       <td><p>A <code>numeric</code> vector of observation-level weights that
-have been computed externally. Such weights are used in the construction of
-re-weighted efficient estimators. Unlike <code>obs_weights</code>, these weights
-are not incorporated in the estimation of nuisance parameters. These input
-weights should be normalized. Use with caution.</p></td>
+have been computed externally, such as survey sampling weights. Such
+weights are used in the construction of re-weighted efficient estimators.</p></td>
     </tr>
     <tr>
       <th>effect</th>
@@ -213,14 +211,14 @@ double vector, giving the values of a' and a* (e.g., <code><a href='https://rdrr
 learners from <span class="pkg">sl3</span>; used to fit a model for the propensity score.</p></td>
     </tr>
     <tr>
-      <th>e_learners</th>
+      <th>h_learners</th>
       <td><p>A <code><a href='https://tlverse.org/sl3/reference/Stack.html'>Stack</a></code> object, or other learner class
 (inheriting from <code><a href='https://tlverse.org/sl3/reference/Lrnr_base.html'>Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a model for a parameterization of the
 propensity score that conditions on the mediators.</p></td>
     </tr>
     <tr>
-      <th>m_learners</th>
+      <th>b_learners</th>
       <td><p>A <code><a href='https://tlverse.org/sl3/reference/Stack.html'>Stack</a></code> object, or other learner class
 (inheriting from <code><a href='https://tlverse.org/sl3/reference/Lrnr_base.html'>Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a model for the outcome regression.</p></td>

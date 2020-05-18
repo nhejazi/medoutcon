@@ -111,7 +111,7 @@
   W &amp;= f_W(U_W); A = f_A(W, U_A); Z=f_Z(W, A, U_Z);\\ \nonumber
   M &amp;= f_M(W, A, Z, U_M); Y = f_Y(W, A, Z, M, U_Y).
 \end{align*}\]</span> In the NPSEM, <span class="math inline">\(W\)</span> denotes a vector of observed pre-treatment covariates, <span class="math inline">\(A\)</span> denotes a categorical treatment variable, <span class="math inline">\(Z\)</span> denotes an intermediate confounder affected by treatment, <span class="math inline">\(M\)</span> denotes a (possibly multivariate) mediator, and <span class="math inline">\(Y\)</span> denotes a continuous or binary outcome. The vector of exogenous factors <span class="math inline">\(U=(U_W,U_A,U_Z,U_M,U_Y)\)</span>, and the functions <span class="math inline">\(f\)</span>, are assumed deterministic but unknown. Importantly, the NPSEM encodes a time-ordering between these variables and allows the evaluation of counterfactual quantities defined by intervening on a set of nodes of the NPSEM. The observed data unit can be represented by the random variable <span class="math inline">\(O = (W, A, Z, M, Y)\)</span>; we consider access to <span class="math inline">\(O_1, \ldots, O_n\)</span>, a sample of <span class="math inline">\(n\)</span> i.i.d. observations of <span class="math inline">\(O\)</span>.</p>
-<p><span class="citation">Díaz et al. (2020)</span> additionally define the following parameterizations, familiarity with which will be useful for using the <a href="https://github.com/nhejazi/medoutcon"><code>medoutcon</code> <code>R</code> package</a>. In particular, these authors define <span class="math inline">\(g(a \mid w)\)</span> as the probability mass function of <span class="math inline">\(A = a\)</span> conditional on <span class="math inline">\(W = w\)</span> and use <span class="math inline">\(e(a \mid m, w)\)</span> to denote the probability mass function of <span class="math inline">\(A = a\)</span> conditional on <span class="math inline">\((M, W) = (m, w)\)</span>. Further, <span class="citation">Díaz et al. (2020)</span> use <span class="math inline">\(m(a, z, m, w)\)</span> to denote the outcome regression function <span class="math inline">\(\mathbb{E}(Y \mid A = a, Z = z, M = m, W = w)\)</span>, as well as <span class="math inline">\(q(z \mid a,w)\)</span> and <span class="math inline">\(r(z \mid a, m, w)\)</span> to denote the corresponding conditional densities of <span class="math inline">\(Z\)</span>.</p>
+<p><span class="citation">Díaz et al. (2020)</span> additionally define the following parameterizations, familiarity with which will be useful for using the <a href="https://github.com/nhejazi/medoutcon"><code>medoutcon</code> <code>R</code> package</a>. In particular, these authors define <span class="math inline">\(g(a \mid w)\)</span> as the probability mass function of <span class="math inline">\(A = a\)</span> conditional on <span class="math inline">\(W = w\)</span> and use <span class="math inline">\(h(a \mid m, w)\)</span> to denote the probability mass function of <span class="math inline">\(A = a\)</span> conditional on <span class="math inline">\((M, W) = (m, w)\)</span>. Further, <span class="citation">Díaz et al. (2020)</span> use <span class="math inline">\(b(a, z, m, w)\)</span> to denote the outcome regression function <span class="math inline">\(\mathbb{E}(Y \mid A = a, Z = z, M = m, W = w)\)</span>, as well as <span class="math inline">\(q(z \mid a,w)\)</span> and <span class="math inline">\(r(z \mid a, m, w)\)</span> to denote the corresponding conditional densities of <span class="math inline">\(Z\)</span>.</p>
 </div>
 <div id="interventional-indirect-effects" class="section level1">
 <h1 class="hasAnchor">
@@ -124,7 +124,7 @@
   \underbrace{\mathbb{E}_c(Y_{a', G_{a^{\star}}} - Y_{a^{\star},
       G_{a^{\star}}})}_{\text{Direct effect (not through $M$)}}.
 \end{equation*}\]</span> Like the natural direct effect, this interventional direct effect measures the effects through paths not involving the mediator. Likewise, the interventional indirect effect measures the effect through paths involving the mediator. Note, however, that natural and interventional mediation effects have different interpretations. That is, the interventional indirect effect measures the effect of fixing the exposure at <span class="math inline">\(a'\)</span> while setting the mediator to a random draw <span class="math inline">\(G_{a^{\star}}\)</span> from those with exposure <span class="math inline">\(a'\)</span> versus a random draw <span class="math inline">\(G_{a'}\)</span> from those with exposure <span class="math inline">\(a^{\star}\)</span>, given covariates <span class="math inline">\(W\)</span>. As is clear from the effect decomposition, the term <span class="math inline">\(\theta_c = \mathbb{E}_c(Y_{a', G_{a^{\star}}})\)</span> is required for estimation of both the interventional direct and indirect effects; thus, <span class="citation">Díaz et al. (2020)</span> focus on estimation of this quantity. Importantly, it has been shown that <span class="math inline">\(\theta_c\)</span> is identified by the statistical functional <span class="math display">\[\begin{equation*}
-  \theta = \int m(a', z, m, w) q(z \mid a', w) p(m \mid a^{\star}, w)
+  \theta = \int b(a', z, m, w) q(z \mid a', w) p(m \mid a^{\star}, w)
     p(w) d\nu(w,z,m)
 \end{equation*}\]</span> under a set of standard identifiability conditions <span class="citation">(VanderWeele, Vansteelandt, and Robins 2014)</span>, which are further reviewed in <span class="citation">Díaz et al. (2020)</span>.</p>
 </div>
@@ -191,7 +191,7 @@
 ## 5:   0   0   0 1 1 1 1
 ## 6:   1   0   1 1 0 1 1</code></pre>
 <p>As noted above, all covariates in our dataset are binary; however, note that this need not be the case for using our methodology — in particular, the only current limitation is that the intermediate confounder <span class="math inline">\(Z\)</span> must be binary when using our implemented TML estimator of the (in)direct effects.</p>
-<p>Using this dataset, we’ll proceed to estimate the interventional (in)direct effects. In order to do so, we’ll need to estimate several nuisance parameters, including the exposure mechanism <span class="math inline">\(g(A \mid W)\)</span>, a re-parameterized exposure mechanism that conditions on the mediators <span class="math inline">\(e(A \mid M, W)\)</span>, the outcome mechanism <span class="math inline">\(m(Y \mid M, Z, A, W)\)</span>, and two variants of the intermediate confounding mechanism <span class="math inline">\(q(Z \mid A, W)\)</span> and <span class="math inline">\(r(Z \mid M, A, W)\)</span>. In order to estimate each of these nuisance parameters flexibly, we’ll rely on data adaptive regression strategies in order to avoid the potential for (parametric) model misspecification.</p>
+<p>Using this dataset, we’ll proceed to estimate the interventional (in)direct effects. In order to do so, we’ll need to estimate several nuisance parameters, including the exposure mechanism <span class="math inline">\(g(A \mid W)\)</span>, a re-parameterized exposure mechanism that conditions on the mediators <span class="math inline">\(h(A \mid M, W)\)</span>, the outcome mechanism <span class="math inline">\(b(Y \mid M, Z, A, W)\)</span>, and two variants of the intermediate confounding mechanism <span class="math inline">\(q(Z \mid A, W)\)</span> and <span class="math inline">\(r(Z \mid M, A, W)\)</span>. In order to estimate each of these nuisance parameters flexibly, we’ll rely on data adaptive regression strategies in order to avoid the potential for (parametric) model misspecification.</p>
 <!--
 Note that there are two additional nuisance parameters that must also be
 estimated ($u$ and $v$), which are themselves functions of the other nuisance
@@ -202,7 +202,7 @@ is the...
 <div id="ensemble-learning-of-nuisance-functions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#ensemble-learning-of-nuisance-functions" class="anchor"></a>Ensemble learning of nuisance functions</h2>
-<p>As we’d like to rely on flexible, data adaptive regression strategies for estimating each of the nuisance parameters <span class="math inline">\((g, e, m, q, r)\)</span>, we require a method for choosing among or combining the wide variety of available regression strategies. For this, we recommend the use of the Super Learner algorithm for ensemble machine learning <span class="citation">(van der Laan, Polley, and Hubbard 2007)</span>. The recently developed <a href="https://tlverse.org/sl3"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2020)</span> provides a unified interface for deploying a wide variety of machine learning algorithms (simply called <em>learners</em> in the <code>sl3</code> nomenclature) as well as for constructing Super Learner ensemble models of such learners. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3" class="uri">https://tlverse.org/sl3</a>, or <a href="https://tlverse.org" class="uri">https://tlverse.org</a> (and <a href="https://github.com/tlverse" class="uri">https://github.com/tlverse</a>) for the <code>tlverse</code> ecosystem, of which <code>sl3</code> is an integral part.</p>
+<p>As we’d like to rely on flexible, data adaptive regression strategies for estimating each of the nuisance parameters <span class="math inline">\((g, h, b, q, r)\)</span>, we require a method for choosing among or combining the wide variety of available regression strategies. For this, we recommend the use of the Super Learner algorithm for ensemble machine learning <span class="citation">(van der Laan, Polley, and Hubbard 2007)</span>. The recently developed <a href="https://tlverse.org/sl3"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2020)</span> provides a unified interface for deploying a wide variety of machine learning algorithms (simply called <em>learners</em> in the <code>sl3</code> nomenclature) as well as for constructing Super Learner ensemble models of such learners. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3" class="uri">https://tlverse.org/sl3</a>, or <a href="https://tlverse.org" class="uri">https://tlverse.org</a> (and <a href="https://github.com/tlverse" class="uri">https://github.com/tlverse</a>) for the <code>tlverse</code> ecosystem, of which <code>sl3</code> is an integral part.</p>
 <p>To construct an ensemble learner using a handful of popular machine learning algorithms, we’ll first instantiate variants of learners from the appropriate classes for each algorithm, and then create a Super Learner ensemble via the <code>Lrnr_sl</code> class. Below, we demonstrate the construction of an ensemble learner based on a modeling library including an intercept model, a main-terms GLM, <span class="math inline">\(\ell_1\)</span>-penalized Lasso regression, <span class="math inline">\(\ell_2\)</span>-penalized ridge regression, an elastic net regression that equally weights the <span class="math inline">\(\ell_1\)</span> and <span class="math inline">\(\ell_2\)</span> penalties, extreme gradient boosted trees (<code>xgboost</code>), and the highly adaptive lasso (HAL):</p>
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co"># instantiate learners</span>
 <span class="no">mean_lrnr</span> <span class="kw">&lt;-</span> <span class="no">Lrnr_mean</span>$<span class="fu">new</span>()
@@ -243,8 +243,8 @@ is the...
                    <span class="kw">M</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..m_names</span>],
                    <span class="kw">Y</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Y</span>,
                    <span class="kw">g_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                   <span class="kw">e_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                   <span class="kw">m_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                   <span class="kw">h_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                   <span class="kw">b_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                    <span class="kw">q_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                    <span class="kw">r_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                    <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"direct"</span>,
@@ -252,10 +252,10 @@ is the...
                    <span class="kw">estimator_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">cv_folds</span> <span class="kw">=</span> <span class="fl">2</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">os_de</span>)</pre></body></html></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##       -0.1441        0.0106        0.1653        0.0062    6.6495e-17 
+##         -0.08        0.0349        0.1498        0.0034   -4.1984e-17 
 ##     estimator         param 
 ##       onestep direct_effect</code></pre>
-<p>From the output of the summary method, we note that the one-step estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{DE}}\)</span> is 0.011, with 95% confidence interval [-0.144, 0.165].</p>
+<p>From the output of the summary method, we note that the one-step estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{DE}}\)</span> is 0.035, with 95% confidence interval [-0.08, 0.15].</p>
 <p>Next, let’s compare the one-step estimate to the TML estimate. Analogous to the case of the one-step estimator, the TML estimator can be evaluated via a single call to the <code>medoutcon</code> function:</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span>
 <span class="no">tmle_de</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
@@ -264,8 +264,8 @@ is the...
                      <span class="kw">M</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..m_names</span>],
                      <span class="kw">Y</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Y</span>,
                      <span class="kw">g_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                     <span class="kw">e_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                     <span class="kw">m_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                     <span class="kw">h_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                     <span class="kw">b_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                      <span class="kw">q_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                      <span class="kw">r_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                      <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"direct"</span>,
@@ -273,10 +273,10 @@ is the...
                      <span class="kw">estimator_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">cv_folds</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">max_iter</span> <span class="kw">=</span> <span class="fl">5</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_de</span>)</pre></body></html></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##       -0.0706        0.0313        0.1331        0.0027   -1.0171e-02 
+##       -0.0776        0.0247        0.1269        0.0027    1.8656e-03 
 ##     estimator         param 
 ##          tmle direct_effect</code></pre>
-<p>From the output of the summary method, we note that the TML estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{DE}}\)</span> is 0.031, with 95% confidence interval [-0.071, 0.133]. Here, we recall that the TML estimator generally exhibits better finite-sample performance than the one-step estimator <span class="citation">(van der Laan and Rose 2011, 2018)</span>, so the TML estimate is likely to be more reliable in our modest sample size of <span class="math inline">\(n =\)</span> 500.</p>
+<p>From the output of the summary method, we note that the TML estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{DE}}\)</span> is 0.025, with 95% confidence interval [-0.078, 0.127]. Here, we recall that the TML estimator generally exhibits better finite-sample performance than the one-step estimator <span class="citation">(van der Laan and Rose 2011, 2018)</span>, so the TML estimate is likely to be more reliable in our modest sample size of <span class="math inline">\(n =\)</span> 500.</p>
 </div>
 <div id="estimating-the-indirect-effect" class="section level2">
 <h2 class="hasAnchor">
@@ -290,18 +290,18 @@ is the...
                    <span class="kw">M</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..m_names</span>],
                    <span class="kw">Y</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Y</span>,
                    <span class="kw">g_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                   <span class="kw">e_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                   <span class="kw">m_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                   <span class="kw">h_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                   <span class="kw">b_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                    <span class="kw">q_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                    <span class="kw">r_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                    <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"indirect"</span>,
                    <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"onestep"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">os_ie</span>)</pre></body></html></div>
 <pre><code>##          lwr_ci       param_est          upr_ci       param_var        eif_mean 
-##         -0.2185         -0.1479         -0.0773          0.0013     -4.4680e-18 
+##         -0.1943          -0.107         -0.0198           0.002     -6.3764e-18 
 ##       estimator           param 
 ##         onestep indirect_effect</code></pre>
-<p>From the output of the summary method, we note that the one-step estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{IE}}\)</span> is -0.148, with 95% confidence interval [-0.219, -0.077].</p>
+<p>From the output of the summary method, we note that the one-step estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{IE}}\)</span> is -0.107, with 95% confidence interval [-0.194, -0.02].</p>
 <p>As before, let’s compare the one-step estimate to the TML estimate. Analogous to the case of the one-step estimator, the TML estimator can be evaluated via a single call to the <code>medoutcon</code> function, as demonstrated below</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="co"># compute targeted minimum loss estimate of the interventional indirect effect</span>
 <span class="no">tmle_ie</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
@@ -310,18 +310,18 @@ is the...
                      <span class="kw">M</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..m_names</span>],
                      <span class="kw">Y</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Y</span>,
                      <span class="kw">g_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                     <span class="kw">e_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
-                     <span class="kw">m_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                     <span class="kw">h_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
+                     <span class="kw">b_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                      <span class="kw">q_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                      <span class="kw">r_learners</span> <span class="kw">=</span> <span class="no">sl_lrnr</span>,
                      <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"indirect"</span>,
                      <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"tmle"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_ie</span>)</pre></body></html></div>
 <pre><code>##          lwr_ci       param_est          upr_ci       param_var        eif_mean 
-##            -0.2         -0.1273         -0.0546          0.0014      1.8165e-02 
+##         -0.1832         -0.1173         -0.0513          0.0011     -3.5004e-03 
 ##       estimator           param 
 ##            tmle indirect_effect</code></pre>
-<p>From the output of the summary method, we note that the TML estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{IE}}\)</span> is -0.127, with 95% confidence interval [-0.2, -0.055]. As before, the TML estimator provides better finite-sample performance than the one-step estimator, so it may be preferred in this example.</p>
+<p>From the output of the summary method, we note that the TML estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{IE}}\)</span> is -0.117, with 95% confidence interval [-0.183, -0.051]. As before, the TML estimator provides better finite-sample performance than the one-step estimator, so it may be preferred in this example.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">

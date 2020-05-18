@@ -2,14 +2,14 @@
 % Please edit documentation in R/estimators.R
 \name{est_onestep}
 \alias{est_onestep}
-\title{One-step for interventional (in)direct effects with intermediate confounding}
+\title{One-step estimator for stochastic interventional (in)direct effects}
 \usage{
 est_onestep(
   data,
   contrast,
   g_learners,
-  e_learners,
-  m_learners,
+  h_learners,
+  b_learners,
   q_learners,
   r_learners,
   u_learners,
@@ -34,40 +34,40 @@ no effect, as the value of the argument \code{effect} is instead used to
 define the contrasts. To override \code{effect}, provide a \code{numeric}
 double vector, giving the values of a' and a* (e.g., \code{c(0, 1)}.}
 
-\item{g_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from \pkg{sl3}, for use in fitting a model for the propensity score, i.e.,
-\eqn{g = P(A | W)}.}
+\item{g_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for the propensity score.}
 
-\item{e_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from \pkg{sl3}, to be used in fitting a cleverly parameterized propensity
-score that includes the mediators, i.e., \eqn{e = P(A | Z, W)}.}
+\item{h_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for a parameterization of the
+propensity score that conditions on the mediators.}
 
-\item{m_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from \pkg{sl3}, to be used in fitting the outcome regression.}
+\item{b_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for the outcome regression.}
 
-\item{q_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from \pkg{sl3}, for use in fitting a regression involving the
-mediator-outcome confounder, i.e., \eqn{q(Z | A', W)}.}
+\item{q_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+the intermediate confounder, conditioning on the treatment and potential
+baseline covariates.}
 
-\item{r_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from \pkg{sl3}, to be used in fitting a regression involving the
-mediator-outcome confounder, i.e., \eqn{r(Z | A', M, W)}.}
+\item{r_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+the intermediate confounder, conditioning on the mediators, the treatment,
+and potential baseline confounders.}
 
-\item{u_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from \pkg{sl3}, to be used in fitting a reduced regression, i.e.,
-\eqn{u(Z, A, W) = E[m(A, Z, M, W) * (q(Z|A,W) / r(Z|A,M,W)) *
-(e(a'|M,W) / e(A|M,W)) | Z = z, A = a, W = w]}.}
+\item{u_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+for in the efficient influence function.}
 
-\item{v_learners}{A \code{Stack} object, or other learner class (inheriting
-from \code{Lrnr_base}), containing a single or set of instantiated learners
-from \pkg{sl3}, to be used in fitting a reduced regression, i.e.,
-\eqn{v(A,W) = E[\int_m m(a', Z, M, W) * q(z|A',W) d\nu(m) | A=a, W=w)]}.}
+\item{v_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+for in the efficient influence function.}
 
 \item{w_names}{A \code{character} vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is
@@ -89,8 +89,8 @@ a re-weighted estimator.}
 be created for cross-validation. Use of cross-validation allows for entropy
 conditions on the one-step estimator to be relaxed. For compatibility with
 \code{\link[origami]{make_folds}}, this value specified must be greater
-than or equal to 2; the default is to create 10 folds.}
+than or equal to 2; the default is to create 5 folds.}
 }
 \description{
-One-step for interventional (in)direct effects with intermediate confounding
+One-step estimator for stochastic interventional (in)direct effects
 }

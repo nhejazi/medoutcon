@@ -22,9 +22,6 @@
     <loc>https://code.nimahejazi.org/medoutcon/reference/est_tml.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_m_mech.html</loc>
-  </url>
-  <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/fit_moc_mech.html</loc>
   </url>
   <url>
@@ -32,6 +29,9 @@
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/fit_nuisance_v.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/fit_out_mech.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/fit_treat_mech.html</loc>

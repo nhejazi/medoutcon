@@ -1,4 +1,4 @@
-#' Efficient estimation of interventional (in)direct effects
+#' Efficient estimation of stochastic interventional (in)direct effects
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar object corresponding
 #'  to a set of baseline covariates.
@@ -14,10 +14,8 @@
 #' @param obs_weights A \code{numeric} vector of observation-level weights.
 #'  The default is to give all observations equal weighting.
 #' @param ext_weights A \code{numeric} vector of observation-level weights that
-#'  have been computed externally. Such weights are used in the construction of
-#'  re-weighted efficient estimators. Unlike \code{obs_weights}, these weights
-#'  are not incorporated in the estimation of nuisance parameters. These input
-#'  weights should be normalized. Use with caution.
+#'  have been computed externally, such as survey sampling weights. Such
+#'  weights are used in the construction of re-weighted efficient estimators.
 #' @param effect A \code{character} indicating whether to compute the direct
 #'  or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
 #'  This is ignored when the argument \code{contrast} is provided.
@@ -29,11 +27,11 @@
 #' @param g_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a model for the propensity score.
-#' @param e_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#' @param h_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a model for a parameterization of the
 #'  propensity score that conditions on the mediators.
-#' @param m_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#' @param b_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a model for the outcome regression.
 #' @param q_learners A \code{\link[sl3]{Stack}} object, or other learner class
@@ -80,13 +78,13 @@ medoutcon <- function(W,
                       effect = c("direct", "indirect"),
                       contrast = NULL,
                       g_learners = sl3::Lrnr_glm_fast$new(),
-                      e_learners = sl3::Lrnr_glm_fast$new(),
-                      m_learners = sl3::Lrnr_glm_fast$new(),
+                      h_learners = sl3::Lrnr_glm_fast$new(),
+                      b_learners = sl3::Lrnr_glm_fast$new(),
                       q_learners = sl3::Lrnr_glm_fast$new(),
                       r_learners = sl3::Lrnr_glm_fast$new(),
                       u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
                       v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
-                      estimator = c("onestep", "tmle"),
+                      estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5, max_iter = 5,
                         tiltmod_tol = 10
@@ -135,8 +133,8 @@ medoutcon <- function(W,
         data = data,
         contrast = contrast,
         g_learners = g_learners,
-        e_learners = e_learners,
-        m_learners = m_learners,
+        h_learners = h_learners,
+        b_learners = b_learners,
         q_learners = q_learners,
         r_learners = r_learners,
         u_learners = u_learners,
@@ -156,8 +154,8 @@ medoutcon <- function(W,
         data = data,
         contrast = contrast,
         g_learners = g_learners,
-        e_learners = e_learners,
-        m_learners = m_learners,
+        h_learners = h_learners,
+        b_learners = b_learners,
         q_learners = q_learners,
         r_learners = r_learners,
         u_learners = u_learners,

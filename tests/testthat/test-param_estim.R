@@ -23,7 +23,7 @@ m_names <- str_subset(colnames(data), "M")
 
 # 2) use custom HAL and SL for testing functionality
 bounding_lrnr <- Lrnr_bound$new(bound = 1e-6)
-fglm_lrnr <- Lrnr_glm_fast$new()
+fglm_lrnr <- Lrnr_glm_fast$new(family = binomial())
 mean_lrnr <- Lrnr_mean$new()
 hal_gaussian_lrnr <- Lrnr_hal9001$new(
   family = "gaussian",
@@ -42,7 +42,7 @@ sl <- Lrnr_sl$new(
 )
 
 ## nuisance functions with data components as outcomes
-g_learners <- e_learners <- m_learners <- q_learners <- r_learners <- sl
+g_learners <- h_learners <- b_learners <- q_learners <- r_learners <- sl
 
 ## nuisance functions with pseudo-outcomes need Gaussian HAL
 u_learners <- v_learners <- hal_gaussian_lrnr
@@ -53,8 +53,8 @@ theta_os <- medoutcon(
   M = data[, ..m_names], Y = data$Y,
   contrast = c(0, 1),
   g_learners = g_learners,
-  e_learners = e_learners,
-  m_learners = m_learners,
+  h_learners = h_learners,
+  b_learners = b_learners,
   q_learners = q_learners,
   r_learners = r_learners,
   u_learners = u_learners,
@@ -69,8 +69,8 @@ theta_tmle <- medoutcon(
   M = data[, ..m_names], Y = data$Y,
   contrast = c(0, 1),
   g_learners = g_learners,
-  e_learners = e_learners,
-  m_learners = m_learners,
+  h_learners = h_learners,
+  b_learners = b_learners,
   q_learners = q_learners,
   r_learners = r_learners,
   u_learners = u_learners,
@@ -105,7 +105,7 @@ test_that("EIF variance of one-step is close to independent EIF variance", {
 })
 
 test_that("Mean of estimated EIF is nearly zero for the one-step", {
-  expect_lt(abs(mean(theta_os$eif)), 1e-10)
+  expect_lt(abs(mean(theta_os$eif)), 1e-15)
 })
 
 # 6) testing TML estimator
@@ -118,5 +118,5 @@ test_that("EIF variance of TMLE is close to independent EIF variance", {
 })
 
 test_that("Mean of estimated EIF is very small for the TMLE", {
-  expect_lt(abs(mean(theta_tmle$eif)), 1e-4)
+  expect_lt(abs(mean(theta_tmle$eif)), 1e-5)
 })

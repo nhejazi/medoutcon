@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{bound_precision}
 \alias{bound_precision}
-\title{Bounding Numerical Precision}
+\title{Bounding to numerical precision}
 \usage{
 bound_precision(vals, tol = 1e-06)
 }

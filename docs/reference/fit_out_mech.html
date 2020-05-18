@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit outcome regression — fit_m_mech • medoutcon</title>
+<title>Fit outcome regression — fit_out_mech • medoutcon</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Fit outcome regression — fit_m_mech" />
+<meta property="og:title" content="Fit outcome regression — fit_out_mech" />
 <meta property="og:description" content="Fit outcome regression" />
 
 
@@ -122,14 +122,21 @@
     <div class="page-header">
     <h1>Fit outcome regression</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/fit_mechanisms.R'><code>R/fit_mechanisms.R</code></a></small>
-    <div class="hidden name"><code>fit_m_mech.Rd</code></div>
+    <div class="hidden name"><code>fit_out_mech.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Fit outcome regression</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fit_m_mech</span>(<span class='no'>train_data</span>, <span class='kw'>valid_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>contrast</span>, <span class='no'>learners</span>, <span class='no'>m_names</span>, <span class='no'>w_names</span>)</pre>
+    <pre class="usage"><span class='fu'>fit_out_mech</span>(
+  <span class='no'>train_data</span>,
+  <span class='kw'>valid_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>contrast</span>,
+  <span class='no'>learners</span>,
+  <span class='no'>m_names</span>,
+  <span class='no'>w_names</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,7 +165,7 @@ a binary intervention node <code>A</code>.</p></td>
       <th>learners</th>
       <td><p><code><a href='https://tlverse.org/sl3/reference/Stack.html'>Stack</a></code>, or other learner class (inheriting
 from <code><a href='https://tlverse.org/sl3/reference/Lrnr_base.html'>Lrnr_base</a></code>), containing a set of learners from
-<span class="pkg">sl3</span>, to be used in fitting the outcome regression, i.e., m(A,Z,M,W).</p></td>
+<span class="pkg">sl3</span>, to be used in fitting the outcome regression, i.e., b(A,Z,M,W).</p></td>
     </tr>
     <tr>
       <th>m_names</th>

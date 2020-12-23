@@ -46,7 +46,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -69,7 +69,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/nhejazi/medoutcon/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -98,60 +98,62 @@
 <div id="whats-medoutcon" class="section level2">
 <h2 class="hasAnchor">
 <a href="#whats-medoutcon" class="anchor"></a>What’s <code>medoutcon</code>?</h2>
-<p>The <code>medoutcon</code> R package provides facilities for efficient estimation of stochastic (in)direct effects that measure the impact of a treatment variable <span class="math inline"><em>A</em></span> on an outcome variable <span class="math inline"><em>Y</em></span>, through a direct path (through <span class="math inline"><em>A</em></span> only) and an indirect path (through a set of mediators <span class="math inline"><em>M</em></span> only), in the presence of an intermediate <b>med</b>iator-<b>out</b>come <b>con</b>founder <span class="math inline"><em>Z</em></span>, itself affected by the treatment <span class="math inline"><em>A</em></span>. While the proposed approach is similar to those appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al. (2017), and Zheng and van der Laan (2017), <code>medoutcon</code> is designed as a software implementation to accompany the methodology proposed in Díaz et al. (2020). Both an efficient one-step bias-corrected estimator with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der Laan 2011) are made available. <code>medoutcon</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> R package</a> (Coyle et al. 2020) to leverage statistical machine learning in the estimation procedure.</p>
+<p>The <code>medoutcon</code> R package provides facilities for efficient estimation of stochastic (in)direct effects that measure the impact of a treatment variable <span class="math inline"><em>A</em></span> on an outcome variable <span class="math inline"><em>Y</em></span>, through a direct path (through <span class="math inline"><em>A</em></span> only) and an indirect path (through a set of mediators <span class="math inline"><em>M</em></span> only), in the presence of an intermediate <b>med</b>iator-<b>out</b>come <b>con</b>founder <span class="math inline"><em>Z</em></span>, itself affected by the treatment <span class="math inline"><em>A</em></span>. While the proposed approach is similar to those appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al. (2017), and Zheng and van der Laan (2017), <code>medoutcon</code> is designed as a software implementation to accompany the methodology proposed in Dı́az et al. (2020). Both an efficient one-step bias-corrected estimator with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der Laan 2011) are made available. <code>medoutcon</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> R package</a> (Coyle et al. 2020) to leverage statistical machine learning in the estimation procedure.</p>
 <hr>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>Install the most recent <em>stable release</em> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"nhejazi/medoutcon"</span>)</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nhejazi/medoutcon"</span><span class="op">)</span></code></pre></div>
 <hr>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>To illustrate how <code>medoutcon</code> may be used to estimate stochastic interventional (in)direct effects of the exposure (<code>A</code>) on the outcome (<code>Y</code>) in the presence of mediator(s) (<code>M</code>) and a mediator-outcome confounder (<code>Z</code>), consider the following example:</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyverse</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">medoutcon</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">1584</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://Rdatatable.gitlab.io/data.table">data.table</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/medoutcon">medoutcon</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1584</span><span class="op">)</span>
 
 <span class="co"># produces a simple data set based on ca causal model with mediation</span>
-<span class="no">make_example_data</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">n_obs</span> <span class="kw">=</span> <span class="fl">1000</span>) {
+<span class="va">make_example_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_obs</span> <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">{</span>
   <span class="co">## baseline covariates</span>
-  <span class="no">w_1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span>(<span class="no">n_obs</span>, <span class="fl">1</span>, <span class="kw">prob</span> <span class="kw">=</span> <span class="fl">0.6</span>)
-  <span class="no">w_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span>(<span class="no">n_obs</span>, <span class="fl">1</span>, <span class="kw">prob</span> <span class="kw">=</span> <span class="fl">0.3</span>)
-  <span class="no">w_3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span>(<span class="no">n_obs</span>, <span class="fl">1</span>, <span class="kw">prob</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span>(<span class="fl">0.2</span> + (<span class="no">w_1</span> + <span class="no">w_2</span>) / <span class="fl">3</span>, <span class="fl">1</span>))
-  <span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="no">w_1</span>, <span class="no">w_2</span>, <span class="no">w_3</span>)
-  <span class="no">w_names</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"W"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">w</span>)), <span class="kw">sep</span> <span class="kw">=</span> <span class="st">"_"</span>)
+  <span class="va">w_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
+  <span class="va">w_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>
+  <span class="va">w_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span><span class="op">(</span><span class="fl">0.2</span> <span class="op">+</span> <span class="op">(</span><span class="va">w_1</span> <span class="op">+</span> <span class="va">w_2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">w_1</span>, <span class="va">w_2</span>, <span class="va">w_3</span><span class="op">)</span>
+  <span class="va">w_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
 
   <span class="co">## exposure</span>
-  <span class="no">a</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span>(<span class="no">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">w</span>) - <span class="fl">2</span>)))
+  <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
   <span class="co">## mediator-outcome confounder affected by treatment</span>
-  <span class="no">z</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span>(<span class="no">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span>(-<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fl">2</span>) + <span class="no">w</span> - <span class="no">a</span>) + <span class="fl">0.2</span>))
+  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">w</span> <span class="op">-</span> <span class="va">a</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span>
 
   <span class="co">## mediator -- could be multivariate</span>
-  <span class="no">m</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span>(<span class="no">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fl">3</span>) * <span class="no">w</span>[, -<span class="fl">3</span>] + <span class="no">a</span> - <span class="no">z</span>)))
-  <span class="no">m_names</span> <span class="kw">&lt;-</span> <span class="st">"M"</span>
+  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="va">w</span><span class="op">[</span>, <span class="op">-</span><span class="fl">3</span><span class="op">]</span> <span class="op">+</span> <span class="va">a</span> <span class="op">-</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">m_names</span> <span class="op">&lt;-</span> <span class="st">"M"</span>
 
   <span class="co">## outcome</span>
-  <span class="no">y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span>(<span class="no">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span>(<span class="fl">1</span> / (<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">w</span>) - <span class="no">z</span> + <span class="no">a</span> + <span class="no">m</span>)))
+  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="va">z</span> <span class="op">+</span> <span class="va">a</span> <span class="op">+</span> <span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
   <span class="co">## construct output</span>
-  <span class="no">dat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="kw">w</span> <span class="kw">=</span> <span class="no">w</span>, <span class="kw">a</span> <span class="kw">=</span> <span class="no">a</span>, <span class="kw">z</span> <span class="kw">=</span> <span class="no">z</span>, <span class="kw">m</span> <span class="kw">=</span> <span class="no">m</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>))
-  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span>(<span class="no">dat</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">w_names</span>, <span class="st">"A"</span>, <span class="st">"Z"</span>, <span class="no">m_names</span>, <span class="st">"Y"</span>))
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">dat</span>)
-}
+  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>w <span class="op">=</span> <span class="va">w</span>, a <span class="op">=</span> <span class="va">a</span>, z <span class="op">=</span> <span class="va">z</span>, m <span class="op">=</span> <span class="va">m</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">w_names</span>, <span class="st">"A"</span>, <span class="st">"Z"</span>, <span class="va">m_names</span>, <span class="st">"Y"</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
+<span class="op">}</span>
 
 <span class="co"># set seed and simulate example data</span>
-<span class="no">example_data</span> <span class="kw">&lt;-</span> <span class="fu">make_example_data</span>()
-<span class="no">w_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"W"</span>)
-<span class="no">m_names</span> <span class="kw">&lt;-</span> <span class="fu">str_subset</span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">"M"</span>)
+<span class="va">example_data</span> <span class="op">&lt;-</span> <span class="fu">make_example_data</span><span class="op">(</span><span class="op">)</span>
+<span class="va">w_names</span> <span class="op">&lt;-</span> <span class="fu">str_subset</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>, <span class="st">"W"</span><span class="op">)</span>
+<span class="va">m_names</span> <span class="op">&lt;-</span> <span class="fu">str_subset</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>, <span class="st">"M"</span><span class="op">)</span>
 
 <span class="co"># quick look at the data</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">example_data</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>
 <span class="co">#&gt;    W_1 W_2 W_3 A Z M Y</span>
 <span class="co">#&gt; 1:   1   0   1 0 0 0 1</span>
 <span class="co">#&gt; 2:   0   1   0 0 0 1 0</span>
@@ -161,32 +163,32 @@
 <span class="co">#&gt; 6:   1   0   1 1 0 1 0</span>
 
 <span class="co"># compute one-step estimate of the interventional direct effect</span>
-<span class="no">os_de</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
-                   <span class="kw">A</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">A</span>,
-                   <span class="kw">Z</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Z</span>,
-                   <span class="kw">M</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..m_names</span>],
-                   <span class="kw">Y</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Y</span>,
-                   <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"direct"</span>,
-                   <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"onestep"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">os_de</span>)
+<span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,
+                   A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,
+                   Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,
+                   M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,
+                   Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,
+                   effect <span class="op">=</span> <span class="st">"direct"</span>,
+                   estimator <span class="op">=</span> <span class="st">"onestep"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">os_de</span><span class="op">)</span>
 <span class="co">#&gt;        lwr_ci     param_est        upr_ci     param_var      eif_mean </span>
-<span class="co">#&gt;       -0.1884       -0.0726        0.0433        0.0035   -4.4100e-17 </span>
+<span class="co">#&gt;       -0.1726       -0.0675        0.0377        0.0029    7.6843e-17 </span>
 <span class="co">#&gt;     estimator         param </span>
 <span class="co">#&gt;       onestep direct_effect</span>
 
 <span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span>
-<span class="no">tmle_de</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..w_names</span>],
-                     <span class="kw">A</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">A</span>,
-                     <span class="kw">Z</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Z</span>,
-                     <span class="kw">M</span> <span class="kw">=</span> <span class="no">example_data</span>[, <span class="no">..m_names</span>],
-                     <span class="kw">Y</span> <span class="kw">=</span> <span class="no">example_data</span>$<span class="no">Y</span>,
-                     <span class="kw">effect</span> <span class="kw">=</span> <span class="st">"direct"</span>,
-                     <span class="kw">estimator</span> <span class="kw">=</span> <span class="st">"tmle"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_de</span>)
+<span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,
+                     A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,
+                     Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,
+                     M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,
+                     Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,
+                     effect <span class="op">=</span> <span class="st">"direct"</span>,
+                     estimator <span class="op">=</span> <span class="st">"tmle"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmle_de</span><span class="op">)</span>
 <span class="co">#&gt;        lwr_ci     param_est        upr_ci     param_var      eif_mean </span>
-<span class="co">#&gt;        -0.203       -0.0859        0.0311        0.0036    4.4084e-03 </span>
+<span class="co">#&gt;       -0.1738       -0.0602        0.0535        0.0034    4.0123e-03 </span>
 <span class="co">#&gt;     estimator         param </span>
-<span class="co">#&gt;          tmle direct_effect</span></pre></div>
+<span class="co">#&gt;          tmle direct_effect</span></code></pre></div>
 <p>For details on how to use data adaptive regression (machine learning) techniques in the estimation of nuisance parameters, consider consulting the vignette that accompanies the package.</p>
 <hr>
 </div>
@@ -213,15 +215,15 @@
         and {van der Laan}, Mark J},
       year={2020},
       url = {https://arxiv.org/abs/1912.09936},
-      doi = {},
-      journal={},
+      doi = {10.1093/biomet/asaa085},
+      journal={Biometrika},
       volume={},
       number={},
       pages={},
-      publisher={}
+      publisher={Oxford University Press}
     }
 
-    @manual{hejazi2020medoutcon,
+    @software{hejazi2020medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
       title = {{medoutcon}: Efficient causal mediation analysis under
         intermediate confounding},
@@ -234,29 +236,29 @@
 <div id="license" class="section level2">
 <h2 class="hasAnchor">
 <a href="#license" class="anchor"></a>License</h2>
-<p>© 2020 <a href="https://nimahejazi.org">Nima S. Hejazi</a></p>
+<p>© 2020-2021 <a href="https://nimahejazi.org">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">MIT License</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">Copyright</span> (c) <span class="dv">2020</span> Nima S. Hejazi</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">of this software and associated documentation <span class="kw">files</span> (the <span class="st">"Software"</span>), to deal</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">copies of the Software, and to permit persons to whom the Software is</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">copies or substantial portions of the Software.</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
-<a class="sourceLine" id="cb4-18" data-line-number="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
-<a class="sourceLine" id="cb4-19" data-line-number="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
-<a class="sourceLine" id="cb4-21" data-line-number="21">SOFTWARE.</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">MIT License</a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">Copyright</span> (c) <span class="dv">2020-2021</span> Nima S. Hejazi</a>
+<a class="sourceLine" id="cb4-4" title="4"></a>
+<a class="sourceLine" id="cb4-5" title="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
+<a class="sourceLine" id="cb4-6" title="6">of this software and associated documentation <span class="kw">files</span> (the <span class="st">"Software"</span>), to deal</a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
+<a class="sourceLine" id="cb4-8" title="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
+<a class="sourceLine" id="cb4-9" title="9">copies of the Software, and to permit persons to whom the Software is</a>
+<a class="sourceLine" id="cb4-10" title="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
+<a class="sourceLine" id="cb4-11" title="11"></a>
+<a class="sourceLine" id="cb4-12" title="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
+<a class="sourceLine" id="cb4-13" title="13">copies or substantial portions of the Software.</a>
+<a class="sourceLine" id="cb4-14" title="14"></a>
+<a class="sourceLine" id="cb4-15" title="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
+<a class="sourceLine" id="cb4-16" title="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
+<a class="sourceLine" id="cb4-17" title="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
+<a class="sourceLine" id="cb4-18" title="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
+<a class="sourceLine" id="cb4-19" title="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
+<a class="sourceLine" id="cb4-20" title="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
+<a class="sourceLine" id="cb4-21" title="21">SOFTWARE.</a></code></pre></div>
 <hr>
 </div>
 <div id="references" class="section level2">
@@ -270,9 +272,9 @@
 <p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020. “<code>sl3</code>: Modern Pipelines for Machine Learning and Super Learning.” <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.1342293" class="uri">https://doi.org/10.5281/zenodo.1342293</a>.</p>
 </div>
 <div id="ref-diaz2020nonparametric">
-<p>Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.</p>
+<p>Dı́az, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.</p>
 <ol>
-<li>“Non-Parametric Efficient Causal Mediation with Intermediate Confounders.” <a href="https://arxiv.org/abs/1912.09936" class="uri">https://arxiv.org/abs/1912.09936</a>.</li>
+<li>“Non-Parametric Efficient Causal Mediation with Intermediate Confounders.” <em>Biometrika</em>. <a href="https://doi.org/10.1093/biomet/asaa085" class="uri">https://doi.org/10.1093/biomet/asaa085</a>.</li>
 </ol>
 </div>
 <div id="ref-pfanzagl1985contributions">
@@ -281,20 +283,22 @@
 <div id="ref-rudolph2017robust">
 <p>Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan.</p>
 <ol>
-<li>“Robust and Flexible Estimation of Stochastic Mediation Effects: A Proposed Method and Example in a Randomized Trial Setting.” <em>Epidemiologic Methods</em> 7 (1). De Gruyter.</li>
+<li>“Robust and Flexible Estimation of Stochastic Mediation Effects: A Proposed Method and Example in a Randomized Trial Setting.” <em>Epidemiologic Methods</em> 7 (1).</li>
 </ol>
 </div>
 <div id="ref-vdl2011targeted">
 <p>van der Laan, Mark J, and Sherri Rose. 2011. <em>Targeted Learning: Causal Inference for Observational and Experimental Data</em>. Springer Science &amp; Business Media.</p>
 </div>
 <div id="ref-vanderweele2014effect">
-<p>VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014. “Effect Decomposition in the Presence of an Exposure-Induced Mediator-Outcome Confounder.” <em>Epidemiology (Cambridge, Mass.)</em> 25 (2). NIH Public Access: 300.</p>
+<p>VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014. “Effect Decomposition in the Presence of an Exposure-Induced Mediator-Outcome Confounder.” <em>Epidemiology (Cambridge, Mass.)</em> 25 (2):</p>
+<ol><li>
+</li></ol>
 </div>
 <div id="ref-zheng2011cross">
 <p>Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted Minimum-Loss-Based Estimation.” In <em>Targeted Learning</em>, 459–74. Springer.</p>
 </div>
 <div id="ref-zheng2017longitudinal">
-<p>———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators and Exposures, with Application to Survival Outcomes.” <em>Journal of Causal Inference</em> 5 (2). De Gruyter.</p>
+<p>———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators and Exposures, with Application to Survival Outcomes.” <em>Journal of Causal Inference</em> 5 (2).</p>
 </div>
 </div>
 </div>
@@ -360,7 +364,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -103,7 +103,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nhejazi/medoutcon/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -129,26 +129,26 @@
     <p>Efficient estimation of stochastic interventional (in)direct effects</p>
     </div>
 
-    <pre class="usage"><span class='fu'>medoutcon</span>(
-  <span class='no'>W</span>,
-  <span class='no'>A</span>,
-  <span class='no'>Z</span>,
-  <span class='no'>M</span>,
-  <span class='no'>Y</span>,
-  <span class='kw'>obs_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
-  <span class='kw'>ext_weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>effect</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"direct"</span>, <span class='st'>"indirect"</span>),
-  <span class='kw'>contrast</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>g_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>h_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>b_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>q_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>r_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span>$<span class='fu'>new</span>(),
-  <span class='kw'>u_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span>$<span class='fu'>new</span>(<span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>5</span>),
-  <span class='kw'>v_learners</span> <span class='kw'>=</span> <span class='kw pkg'>sl3</span><span class='kw ns'>::</span><span class='no'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span>$<span class='fu'>new</span>(<span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>5</span>),
-  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
-  <span class='kw'>estimator_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>tiltmod_tol</span> <span class='kw'>=</span> <span class='fl'>10</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>medoutcon</span><span class='op'>(</span>
+  <span class='va'>W</span>,
+  <span class='va'>A</span>,
+  <span class='va'>Z</span>,
+  <span class='va'>M</span>,
+  <span class='va'>Y</span>,
+  obs_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
+  ext_weights <span class='op'>=</span> <span class='cn'>NULL</span>,
+  effect <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"direct"</span>, <span class='st'>"indirect"</span><span class='op'>)</span>,
+  contrast <span class='op'>=</span> <span class='cn'>NULL</span>,
+  g_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
+  h_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
+  b_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
+  q_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
+  r_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
+  u_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>max_degree <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>,
+  v_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>max_degree <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>,
+  estimator <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tmle"</span>, <span class='st'>"onestep"</span><span class='op'>)</span>,
+  estimator_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>cv_folds <span class='op'>=</span> <span class='fl'>5</span>, max_iter <span class='op'>=</span> <span class='fl'>5</span>, tiltmod_tol <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -288,7 +288,7 @@ is included for the updates introduced by the tilting (fluctuation) models.</p><
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

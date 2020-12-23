@@ -16,12 +16,12 @@ bibentry(bibtype = "Manual",
          url = "https://github.com/nhejazi/medoutcon")
 
 bibentry(bibtype = "Article",
-         journal = "arxiv",
+         journal = "Biometrika",
          title = "Non-parametric efficient causal mediation with intermediate confounders",
          author = c(person("Iván", "Díaz"),
                     person("Nima", "Hejazi", "S"),
                     person("Kara", "Rudolph", "E"),
                     person("Mark", "van der Laan", "J")),
-         year = "2019",
-         doi = "",
+         year = "2020",
+         doi = "10.1093/biomet/asaa085",
          url = "https://arxiv.org/abs/1912.09936")

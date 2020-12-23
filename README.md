@@ -35,13 +35,14 @@ by the treatment \(A\). While the proposed approach is similar to those
 appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et
 al. (2017), and Zheng and van der Laan (2017), `medoutcon` is designed
 as a software implementation to accompany the methodology proposed in
-Díaz et al. (2020). Both an efficient one-step bias-corrected estimator
-with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
-2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
-loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
-Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to leverage
-statistical machine learning in the estimation procedure.
+Dı́az et al. (2020). Both an efficient one-step bias-corrected
+estimator with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and
+van der Laan 2011; Chernozhukov et al. 2018) and a cross-validated
+targeted minimum loss estimator (TMLE) (van der Laan and Rose 2011;
+Zheng and van der Laan 2011) are made available. `medoutcon` integrates
+with the [`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al.
+2020) to leverage statistical machine learning in the estimation
+procedure.
 
 -----
 
@@ -122,7 +123,7 @@ os_de <- medoutcon(W = example_data[, ..w_names],
                    estimator = "onestep")
 summary(os_de)
 #>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>       -0.1884       -0.0726        0.0433        0.0035   -4.4100e-17 
+#>       -0.1726       -0.0675        0.0377        0.0029    7.6843e-17 
 #>     estimator         param 
 #>       onestep direct_effect
 
@@ -136,7 +137,7 @@ tmle_de <- medoutcon(W = example_data[, ..w_names],
                      estimator = "tmle")
 summary(tmle_de)
 #>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>        -0.203       -0.0859        0.0311        0.0036    4.4084e-03 
+#>       -0.1738       -0.0602        0.0535        0.0034    4.0123e-03 
 #>     estimator         param 
 #>          tmle direct_effect
 ```
@@ -175,15 +176,15 @@ After using the `medoutcon` R package, please cite the following:
         and {van der Laan}, Mark J},
       year={2020},
       url = {https://arxiv.org/abs/1912.09936},
-      doi = {},
-      journal={},
+      doi = {10.1093/biomet/asaa085},
+      journal={Biometrika},
       volume={},
       number={},
       pages={},
-      publisher={}
+      publisher={Oxford University Press}
     }
 
-    @manual{hejazi2020medoutcon,
+    @software{hejazi2020medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
       title = {{medoutcon}: Efficient causal mediation analysis under
         intermediate confounding},
@@ -197,14 +198,14 @@ After using the `medoutcon` R package, please cite the following:
 
 ## License
 
-© 2020 [Nima S. Hejazi](https://nimahejazi.org)
+© 2020-2021 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2020 Nima S. Hejazi
+    Copyright (c) 2020-2021 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -251,9 +252,9 @@ Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
 
 <div id="ref-diaz2020nonparametric">
 
-Díaz, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.
+Dı́az, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.
 2020. “Non-Parametric Efficient Causal Mediation with Intermediate
-Confounders.” <https://arxiv.org/abs/1912.09936>.
+Confounders.” *Biometrika*. <https://doi.org/10.1093/biomet/asaa085>.
 
 </div>
 
@@ -270,7 +271,7 @@ Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
 Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan.
 2017. “Robust and Flexible Estimation of Stochastic Mediation Effects: A
 Proposed Method and Example in a Randomized Trial Setting.”
-*Epidemiologic Methods* 7 (1). De Gruyter.
+*Epidemiologic Methods* 7 (1).
 
 </div>
 
@@ -286,8 +287,8 @@ Business Media.
 
 VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014.
 “Effect Decomposition in the Presence of an Exposure-Induced
-Mediator-Outcome Confounder.” *Epidemiology (Cambridge, Mass.)* 25 (2).
-NIH Public Access: 300.
+Mediator-Outcome Confounder.” *Epidemiology (Cambridge, Mass.)* 25 (2):
+300.
 
 </div>
 
@@ -303,7 +304,7 @@ Springer.
 
 ———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators
 and Exposures, with Application to Survival Outcomes.” *Journal of
-Causal Inference* 5 (2). De Gruyter.
+Causal Inference* 5 (2).
 
 </div>
 

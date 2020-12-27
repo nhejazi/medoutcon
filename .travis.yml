@@ -13,6 +13,11 @@ warnings_are_errors: true
 r_build_args: '--no-manual'
 r_check_args: '--no-vignettes --no-manual'
 
+addons:
+  apt:
+    packages:
+      - libgit2-dev
+
 r:
   - oldrel
   - release

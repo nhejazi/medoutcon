@@ -4,7 +4,7 @@
 # R/`medoutcon`
 
 [![Travis-CI Build
-Status](https://travis-ci.org/nhejazi/medoutcon.svg?branch=master)](https://travis-ci.org/nhejazi/medoutcon)
+Status](https://travis-ci.com/nhejazi/medoutcon.svg?branch=master)](https://travis-ci.com/nhejazi/medoutcon)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/medoutcon?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/medoutcon)
 [![Coverage

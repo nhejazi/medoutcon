@@ -83,8 +83,8 @@ medoutcon <- function(W,
                       b_learners = sl3::Lrnr_glm_fast$new(),
                       q_learners = sl3::Lrnr_glm_fast$new(),
                       r_learners = sl3::Lrnr_glm_fast$new(),
-                      u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
-                      v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
+                      u_learners = sl3::Lrnr_hal9001$new(),
+                      v_learners = sl3::Lrnr_hal9001$new(),
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5L, max_iter = 5L,
@@ -200,7 +200,7 @@ medoutcon <- function(W,
       var = de_var_est,
       eif = de_eif_est,
       type = estimator,
-      param = "direct_effect",
+      param = paste("direct", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
     class(de_est_out) <- "medoutcon"
@@ -217,14 +217,15 @@ medoutcon <- function(W,
       var = ie_var_est,
       eif = ie_eif_est,
       type = estimator,
-      param = "indirect_effect",
+      param = paste("indirect", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
     class(ie_est_out) <- "medoutcon"
     return(ie_est_out)
   } else {
     est_out <- unlist(est_params, recursive = FALSE)
-    est_out$param <- "contrast_spec"
+    est_out$param <- paste0("tsm(", "a'=", contrast[1], ",",
+                            "a*=", contrast[2], ")")
     class(est_out) <- "medoutcon"
     return(est_out)
   }

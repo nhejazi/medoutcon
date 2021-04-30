@@ -23,7 +23,9 @@ Description: Efficient estimators of interventional (in)direct effects in the
     presence of intermediate confounders that complicate such a relationship.
     Currently supported are non-parametric efficient one-step and targeted
     minimum loss estimators based on the formulation of Díaz, Hejazi, Rudolph,
-    and van der Laan (2020) <arxiv:1912.09936>.
+    and van der Laan (2020) <doi:10.1093/biomet/asaa085>. Support for efficient
+    estimation of the natural (in)direct effects is also provided, appropriate
+    for settings in which intermediate confounders are absent.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -31,7 +33,7 @@ Imports:
     assertthat,
     dplyr,
     origami (>= 1.0.3),
-    sl3 (>= 1.3.7)
+    sl3 (>= 1.4.3)
 Suggests:
     testthat,
     knitr,
@@ -41,11 +43,13 @@ Suggests:
     nnls,
     stringr,
     tibble,
-    hal9001 (>= 0.2.5),
+    hal9001 (>= 0.4.0),
     SuperLearner,
     speedglm,
     xgboost
-Remotes: github::tlverse/sl3@master
+Remotes:
+    github::tlverse/hal9001@devel,
+    github::tlverse/sl3@devel
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon
 BugReports: https://github.com/nhejazi/medoutcon/issues

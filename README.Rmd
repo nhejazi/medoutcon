@@ -113,8 +113,8 @@ head(example_data)
 # compute one-step estimate of the interventional direct effect
 os_de <- medoutcon(W = example_data[, ..w_names],
                    A = example_data$A,
-                   Z = NULL,
-                   #Z = example_data$Z,
+                   #Z = NULL,
+                   Z = example_data$Z,
                    M = example_data[, ..m_names],
                    Y = example_data$Y,
                    effect = "direct",
@@ -124,7 +124,8 @@ summary(os_de)
 # compute targeted minimum loss estimate of the interventional direct effect
 tmle_de <- medoutcon(W = example_data[, ..w_names],
                      A = example_data$A,
-                     Z = example_data$Z,
+                     Z = NULL,
+                     #Z = example_data$Z,
                      M = example_data[, ..m_names],
                      Y = example_data$Y,
                      effect = "direct",

@@ -2,9 +2,11 @@
 
 * For user clarity, the name of the argument for providing externally computed
   observation-level weights has changed (from `ext_weights`) to `svy_weights`.
-* Support for the natural direct and indirect effects has been added, alongside
-  a new argument `effect_type` in the `medoutcon()` function. The default is
-  still the interventional direct and indirect effects.
+* Support for the natural direct and indirect effects has been added, requiring
+  the addition of the new internal argument `effect_type` across functions for
+  estimation, including `cv_eif()`, `est_onestep()`, and `est_tml()`. When
+  `Z = NULL` is set in `medoutcon()`, a natural effect estimate corresponding to
+  the argument `effect` is returned instead of an interventional effect.
 
 # medoutcon 0.1.0
 

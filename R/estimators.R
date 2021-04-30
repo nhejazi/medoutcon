@@ -507,6 +507,7 @@ est_tml <- function(data,
     r_learners = r_learners,
     u_learners = u_learners,
     v_learners = v_learners,
+    effect_type = effect_type,
     w_names = w_names,
     m_names = m_names,
     use_future = FALSE,
@@ -518,7 +519,6 @@ est_tml <- function(data,
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
   cv_eif_est <- cv_eif_est[order(obs_valid_idx), ]
 
-  browser()
   # extract nuisance function estimates and auxiliary quantities
   g_prime <- cv_eif_est$g_prime
   h_prime <- cv_eif_est$h_prime
@@ -547,9 +547,16 @@ est_tml <- function(data,
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
     # compute auxiliary covariates from updated estimates
-    c_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
-    c_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) * c_star_mult
     c_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * c_star_mult
+    c_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
+    if (effect_type == "natural") {
+      # NOTE: this exception handles 0/0 division, since q(1|a',...)  = 1 and
+      #       r(1|a',...) = 1, improperly yielding 0/0 => NaN
+      c_star_Z_zero <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
+    } else if (effect_type == "interventional") {
+      c_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) *
+        c_star_mult
+    }
 
     # bound and transform nuisance estimates for tilting models
     b_prime_Z_natural_logit <- b_prime_Z_natural %>%
@@ -616,6 +623,11 @@ est_tml <- function(data,
         start = 0
       )
     )
+    # NOTE: for the natural (in)direct effects, the regressor on the RHS is
+    #       uniquely ~ZERO~ so the estimated parameter should always be NaN
+    if (effect_type == "natural") {
+      assertthat::assert_that(is.na(stats::coef(q_tilt_fit)))
+    }
     if (is.na(stats::coef(q_tilt_fit))) {
       q_tilt_fit$coefficients <- 0
     } else if (!q_tilt_fit$converged || abs(max(stats::coef(q_tilt_fit))) >
@@ -639,9 +651,15 @@ est_tml <- function(data,
   }
 
   # update auxiliary covariates after completion of iterative targeting
-  c_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
-  c_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) * c_star_mult
   c_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * c_star_mult
+  c_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
+  if (effect_type == "natural") {
+    # NOTE: this exception handles 0/0 division, since q(1|a',...)  = 1 and
+    #       r(1|a',...) = 1, improperly yielding 0/0 => NaN
+    c_star_Z_zero <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
+  } else if (effect_type == "interventional") {
+    c_star_Z_zero <- ((1 - q_prime_Z_one) / (1 - r_prime_Z_one)) * c_star_mult
+  }
 
   # compute updated substitution estimator and prepare for tilting regression
   v_pseudo <- ((b_prime_Z_one * q_prime_Z_one) +
@@ -672,6 +690,13 @@ est_tml <- function(data,
   eif_u <- (data$Z - q_prime_Z_one) * (ipw_prime / mean(ipw_prime)) *
     cv_eif_est$u_int_diff
   eif_v <- (v_pseudo - v_star_tmle) * (ipw_star / mean(ipw_star))
+
+  # SANITY CHECK: EIF_U should be ~ZERO~ for natural (in)direct effects
+  if (effect_type == "natural") {
+    assertthat::assert_that(sum(eif_u) == 0)
+  }
+
+  # compute influence function with centering at the TML estimate
   eif_est <- eif_y + eif_u + eif_v + v_star_tmle
 
   # re-scale efficient influence function

@@ -29,7 +29,7 @@ confint.medoutcon <- function(object,
 
   # assume continuous outcome if more than two levels in outcome node
   if (length(unique(object$outcome)) > 2 ||
-      stringr::str_detect(object$param, "direct")) {
+    stringr::str_detect(object$param, "direct")) {
     # NOTE: variance already scaled (i.e., Var(D)/n)
     se_eif <- sqrt(object$var)
 
@@ -114,8 +114,10 @@ print.medoutcon <- function(x, ...) {
   if (stringr::str_detect(x$param, "tsm")) {
     # TODO: printing specific to counterfactual mean
     message("Counterfactual TSM")
-    message(paste("Contrast: A =", x$.contrast[1], ",",
-                  paste0("M(A = ", x$.contrast[2], ")")))
+    message(paste(
+      "Contrast: A =", x$.contrast[1], ",",
+      paste0("M(A = ", x$.contrast[2], ")")
+    ))
   } else {
     # mangle the abbreviated parameter name
     c(param, effect) %<-% unlist(stringr::str_split(x_summary$param, "_"))
@@ -124,8 +126,10 @@ print.medoutcon <- function(x, ...) {
   message(cat("  "), "Estimator: ", x_summary$estimator)
   message(cat("  "), "Estimate: ", round(x_summary$param_est, 3))
   message(cat("  "), "Std. Error: ", round(sqrt(x_summary$var_est), 3))
-  message(cat("  "), scales::percent(ci_level), " CI: [",
-          round(x_summary$lwr_ci, 3), ", ", round(x_summary$upr_ci, 3), "]")
+  message(
+    cat("  "), scales::percent(ci_level), " CI: [",
+    round(x_summary$lwr_ci, 3), ", ", round(x_summary$upr_ci, 3), "]"
+  )
 }
 
 ###############################################################################

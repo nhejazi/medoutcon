@@ -125,7 +125,10 @@ medoutcon <- function(W,
   if (is.null(contrast)) {
     # select appropriate component for direct vs indirect effects
     is_effect_direct <- (effect == "direct")
-    contrast_grid <- list(switch(2 - is_effect_direct, c(0, 0), c(1, 1)))
+    contrast_grid <- list(switch(2 - is_effect_direct,
+      c(0, 0),
+      c(1, 1)
+    ))
     # term needed in the decomposition for both effects
     contrast_grid[[2]] <- c(1, 0)
   } else {
@@ -224,8 +227,10 @@ medoutcon <- function(W,
     return(ie_est_out)
   } else {
     est_out <- unlist(est_params, recursive = FALSE)
-    est_out$param <- paste0("tsm(", "a'=", contrast[1], ",",
-                            "a*=", contrast[2], ")")
+    est_out$param <- paste0(
+      "tsm(", "a'=", contrast[1], ",",
+      "a*=", contrast[2], ")"
+    )
     est_out$.contrast <- contrast
     class(est_out) <- "medoutcon"
     return(est_out)

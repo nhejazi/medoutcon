@@ -15,6 +15,7 @@ cv_eif(
   r_learners,
   u_learners,
   v_learners,
+  effect_type = c("interventional", "natural"),
   w_names,
   m_names
 )
@@ -69,6 +70,11 @@ for in the efficient influence function.}
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
 for in the efficient influence function.}
+
+\item{effect_type}{A \code{character} indicating whether components of the
+interventional or natural (in)direct effects are to be estimated. In the
+case of the natural (in)direct effects, estimation of several nuisance
+parameters is unnecessary.}
 
 \item{w_names}{A \code{character} vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is

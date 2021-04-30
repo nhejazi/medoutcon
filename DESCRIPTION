@@ -31,7 +31,10 @@ Imports:
     stats,
     data.table,
     assertthat,
+    tibble,
     dplyr,
+    zeallot,
+    scales,
     origami (>= 1.0.3),
     sl3 (>= 1.4.3)
 Suggests:
@@ -42,7 +45,6 @@ Suggests:
     Rsolnp,
     nnls,
     stringr,
-    tibble,
     hal9001 (>= 0.4.0),
     SuperLearner,
     speedglm,

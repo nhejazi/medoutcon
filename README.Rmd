@@ -113,24 +113,22 @@ head(example_data)
 # compute one-step estimate of the interventional direct effect
 os_de <- medoutcon(W = example_data[, ..w_names],
                    A = example_data$A,
-                   #Z = NULL,
                    Z = example_data$Z,
                    M = example_data[, ..m_names],
                    Y = example_data$Y,
                    effect = "direct",
                    estimator = "onestep")
-summary(os_de)
+os_de
 
 # compute targeted minimum loss estimate of the interventional direct effect
 tmle_de <- medoutcon(W = example_data[, ..w_names],
                      A = example_data$A,
-                     Z = NULL,
-                     #Z = example_data$Z,
+                     Z = example_data$Z,
                      M = example_data[, ..m_names],
                      Y = example_data$Y,
                      effect = "direct",
                      estimator = "tmle")
-summary(tmle_de)
+tmle_de
 ```
 
 For details on how to use data adaptive regression (machine learning) techniques
@@ -174,13 +172,13 @@ After using the `medoutcon` R package, please cite the following:
           publisher={Oxford University Press}
         }
 
-        @software{hejazi2020medoutcon,
+        @software{hejazi2021medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
           title = {{medoutcon}: Efficient causal mediation analysis under
             intermediate confounding},
-          year  = {2020},
+          year  = {2021},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.1.0}
+          note = {R package version 0.1.5}
         }
 
 ---

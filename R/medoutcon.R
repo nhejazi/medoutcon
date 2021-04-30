@@ -226,6 +226,7 @@ medoutcon <- function(W,
     est_out <- unlist(est_params, recursive = FALSE)
     est_out$param <- paste0("tsm(", "a'=", contrast[1], ",",
                             "a*=", contrast[2], ")")
+    est_out$.contrast <- contrast
     class(est_out) <- "medoutcon"
     return(est_out)
   }

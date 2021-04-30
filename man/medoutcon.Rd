@@ -19,8 +19,8 @@ medoutcon(
   b_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(),
   r_learners = sl3::Lrnr_glm_fast$new(),
-  u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
-  v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
+  u_learners = sl3::Lrnr_hal9001$new(),
+  v_learners = sl3::Lrnr_hal9001$new(),
   estimator = c("tmle", "onestep"),
   estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 10)
 )

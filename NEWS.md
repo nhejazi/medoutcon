@@ -7,6 +7,8 @@
   estimation, including `cv_eif()`, `est_onestep()`, and `est_tml()`. When
   `Z = NULL` is set in `medoutcon()`, a natural effect estimate corresponding to
   the argument `effect` is returned instead of an interventional effect.
+* The `summary()` and `print()` methods have been updated to allow handling of
+  natural effects and counterfactual means under arbitrary contrasts.
 
 # medoutcon 0.1.0
 

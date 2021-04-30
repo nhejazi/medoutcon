@@ -33,7 +33,8 @@ r_packages:
 r_github_packages:
   - r-lib/sessioninfo
   - r-lib/covr
-  - tlverse/sl3
+  - tlverse/hal9001@devel
+  - tlverse/sl3@devel
 
 after_success:
   ## coverage

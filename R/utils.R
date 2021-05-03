@@ -114,8 +114,8 @@ print.medoutcon <- function(x, ...) {
   if (stringr::str_detect(x$param, "tsm")) {
     # TODO: printing specific to counterfactual mean
     message("Counterfactual TSM")
-    message(paste(
-      "Contrast: A =", x$.contrast[1], ",",
+    message(paste0(
+      "Contrast: A = ", x$.contrast[1], ", ",
       paste0("M(A = ", x$.contrast[2], ")")
     ))
   } else {
@@ -123,11 +123,11 @@ print.medoutcon <- function(x, ...) {
     c(param, effect) %<-% unlist(stringr::str_split(x_summary$param, "_"))
     message(stringr::str_to_title(paste(effect, param, "effect")))
   }
-  message(cat("  "), "Estimator: ", x_summary$estimator)
-  message(cat("  "), "Estimate: ", round(x_summary$param_est, 3))
-  message(cat("  "), "Std. Error: ", round(sqrt(x_summary$var_est), 3))
+  message("Estimator: ", x_summary$estimator)
+  message("Estimate: ", round(x_summary$param_est, 3))
+  message("Std. Error: ", round(sqrt(x_summary$var_est), 3))
   message(
-    cat("  "), scales::percent(ci_level), " CI: [",
+    scales::percent(ci_level), " CI: [",
     round(x_summary$lwr_ci, 3), ", ", round(x_summary$upr_ci, 3), "]"
   )
 }

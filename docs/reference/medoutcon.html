@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -98,6 +98,9 @@
       <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -136,7 +139,7 @@
   <span class='va'>M</span>,
   <span class='va'>Y</span>,
   obs_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
-  ext_weights <span class='op'>=</span> <span class='cn'>NULL</span>,
+  svy_weights <span class='op'>=</span> <span class='cn'>NULL</span>,
   effect <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"direct"</span>, <span class='st'>"indirect"</span><span class='op'>)</span>,
   contrast <span class='op'>=</span> <span class='cn'>NULL</span>,
   g_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
@@ -144,10 +147,10 @@
   b_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
   q_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
   r_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_glm_fast.html'>Lrnr_glm_fast</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
-  u_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>max_degree <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>,
-  v_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span>max_degree <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>,
+  u_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
+  v_learners <span class='op'>=</span> <span class='fu'>sl3</span><span class='fu'>::</span><span class='va'><a href='https://tlverse.org/sl3/reference/Lrnr_hal9001.html'>Lrnr_hal9001</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span>,
   estimator <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tmle"</span>, <span class='st'>"onestep"</span><span class='op'>)</span>,
-  estimator_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>cv_folds <span class='op'>=</span> <span class='fl'>5</span>, max_iter <span class='op'>=</span> <span class='fl'>5</span>, tiltmod_tol <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
+  estimator_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>cv_folds <span class='op'>=</span> <span class='fl'>5L</span>, max_iter <span class='op'>=</span> <span class='fl'>5L</span>, tiltmod_tol <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -185,7 +188,7 @@ the intervention A and the outcome Y).</p></td>
 The default is to give all observations equal weighting.</p></td>
     </tr>
     <tr>
-      <th>ext_weights</th>
+      <th>svy_weights</th>
       <td><p>A <code>numeric</code> vector of observation-level weights that
 have been computed externally, such as survey sampling weights. Such
 weights are used in the construction of re-weighted efficient estimators.</p></td>

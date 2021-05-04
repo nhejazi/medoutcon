@@ -36,7 +36,7 @@ make_nide_dgp <- function() {
     w <- data.frame(w)
     z_probs <- data.frame(z_probs)
     y_probs <- plogis(z_probs[, 1]^2 + z_probs[, 2]^2 - z_probs[, 3] +
-                      exp(a + z_probs[, 3] / (1 + rowSums(w)^2)) +
+      exp(a + z_probs[, 3] / (1 + rowSums(w)^2)) +
       rnorm(length(a), mean = 0, sd = eps_sd))
     return(y_probs)
   }
@@ -87,7 +87,8 @@ make_nide_data <- function(n_obs = 10000, binary_outcome = FALSE) {
   # if y needs to be binary
   if (binary_outcome) {
     y_probs <- dgp$m_mech_binary(
-      W, A, z_probs = cbind(z_mech[[1]], z_mech[[2]], z_mech[[3]]),
+      W, A,
+      z_probs = cbind(z_mech[[1]], z_mech[[2]], z_mech[[3]]),
       eps_sd = 0.5
     )
     Y <- rbinom(n_obs, 1, prob = y_probs)

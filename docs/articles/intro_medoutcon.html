@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -57,6 +57,9 @@
       <a href="../articles/intro_medoutcon.html">Efficient causal mediation analysis with intermediate confounders</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -84,7 +87,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a>, <a href="https://www.idiaz.xyz/">Iván Díaz</a>, and <a href="https://kararudolph.github.io/">Kara Rudolph</a>
 </h4>
             
-            <h4 class="date">2020-12-23</h4>
+            <h4 class="date">2021-05-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/medoutcon/blob/master/vignettes/intro_medoutcon.Rmd"><code>vignettes/intro_medoutcon.Rmd</code></a></small>
       <div class="hidden name"><code>intro_medoutcon.Rmd</code></div>
@@ -143,7 +146,7 @@
 <p>Now, we’ll take a look at how to estimate the interventional direct and indirect effects using a simulated data example. <span class="citation">Dı́az et al. (2020)</span> illustrate the use of their estimators of these effects in an application in which they seek to elucidate the mechanisms behind the unintended harmful effects that a housing intervention had on adolescent girls’ risk behavior.</p>
 <p>First, let’s load a few required packages and set a seed for our simulation.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://Rdatatable.gitlab.io/data.table">data.table</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/medoutcon">medoutcon</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3">sl3</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">75681</span><span class="op">)</span>
@@ -212,26 +215,30 @@ is the...
 <span class="va">mean_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_mean.html">Lrnr_mean</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
 <span class="va">fglm_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 <span class="va">lasso_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glmnet.html">Lrnr_glmnet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">1</span>, family <span class="op">=</span> <span class="st">"binomial"</span>, nfolds <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="va">ridge_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glmnet.html">Lrnr_glmnet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0</span>, family <span class="op">=</span> <span class="st">"binomial"</span>, nfolds <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
 <span class="va">enet_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glmnet.html">Lrnr_glmnet</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span>, family <span class="op">=</span> <span class="st">"binomial"</span>, nfolds <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="va">xgb_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_xgboost.html">Lrnr_xgboost</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>nrounds <span class="op">=</span> <span class="fl">50</span>, objective <span class="op">=</span> <span class="st">"reg:logistic"</span><span class="op">)</span>
+<span class="va">rf_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_ranger.html">Lrnr_ranger</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>num.trees <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
 
 <span class="co"># for HAL, use linear probability formulation, with bounding in unit interval</span>
-<span class="va">hal_gaussian_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_hal9001.html">Lrnr_hal9001</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>max_degree <span class="op">=</span> <span class="fl">3</span>, n_folds <span class="op">=</span> <span class="fl">3</span>,
-                                      use_min <span class="op">=</span> <span class="cn">FALSE</span>, type.measure <span class="op">=</span> <span class="st">"mse"</span>,
-                                      nlambda <span class="op">=</span> <span class="fl">200</span>, family <span class="op">=</span> <span class="st">"gaussian"</span>,
-                                      lambda.min.ratio <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="va">n_obs</span><span class="op">)</span>
+<span class="va">hal_gaussian_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_hal9001.html">Lrnr_hal9001</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
+  family <span class="op">=</span> <span class="st">"gaussian"</span>,
+  fit_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    n_folds <span class="op">=</span> <span class="fl">3</span>,
+    use_min <span class="op">=</span> <span class="cn">TRUE</span>,
+    type.measure <span class="op">=</span> <span class="st">"mse"</span>,
+    lambda.min.ratio <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="va">n_obs</span>
+  <span class="op">)</span>
+<span class="op">)</span>
 <span class="va">bound_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_bound.html">Lrnr_bound</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>bound <span class="op">=</span> <span class="fl">1e-6</span><span class="op">)</span>
 <span class="va">hal_bounded_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Pipeline.html">Pipeline</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">hal_gaussian_lrnr</span>, <span class="va">bound_lrnr</span><span class="op">)</span>
 
 <span class="co"># create learner library and instantiate super learner ensemble</span>
-<span class="va">lrnr_lib</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Stack.html">Stack</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">mean_lrnr</span>, <span class="va">fglm_lrnr</span>, <span class="va">enet_lrnr</span>, <span class="va">lasso_lrnr</span>, <span class="va">ridge_lrnr</span>,
-                      <span class="va">xgb_lrnr</span>, <span class="va">hal_bounded_lrnr</span><span class="op">)</span>
+<span class="va">lrnr_lib</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Stack.html">Stack</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">mean_lrnr</span>, <span class="va">fglm_lrnr</span>, <span class="va">enet_lrnr</span>, <span class="va">lasso_lrnr</span>,
+                      <span class="va">rf_lrnr</span>, <span class="va">hal_bounded_lrnr</span><span class="op">)</span>
 <span class="va">sl_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_sl.html">Lrnr_sl</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>learners <span class="op">=</span> <span class="va">lrnr_lib</span>, metalearner <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_nnls.html">Lrnr_nnls</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>While we recommend the use of a Super Learner ensemble model like the one constructed above in practice, such a library will be too computationally intensive for our examples. To reduce computation time, we construct a simpler library, using only a subset of the above learning algorithms:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># create simpler learner library and instantiate super learner ensemble</span>
-<span class="va">lrnr_lib</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Stack.html">Stack</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">mean_lrnr</span>, <span class="va">fglm_lrnr</span>, <span class="va">lasso_lrnr</span>, <span class="va">xgb_lrnr</span><span class="op">)</span>
+<span class="va">lrnr_lib</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Stack.html">Stack</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">mean_lrnr</span>, <span class="va">fglm_lrnr</span>, <span class="va">lasso_lrnr</span>, <span class="va">rf_lrnr</span><span class="op">)</span>
 <span class="va">sl_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_sl.html">Lrnr_sl</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>learners <span class="op">=</span> <span class="va">lrnr_lib</span>, metalearner <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_nnls.html">Lrnr_nnls</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Having set up our ensemble learner, we’re now ready to estimate each of the interventional effects using the efficient estimators exposed in the <code>medoutcon</code> package.</p>
 </div>
@@ -257,11 +264,11 @@ is the...
                    estimator <span class="op">=</span> <span class="st">"onestep"</span>,
                    estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">os_de</span><span class="op">)</span></code></pre></div>
-<pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##       -0.1317        0.0046        0.1408        0.0048    5.7326e-17 
-##     estimator         param 
-##       onestep direct_effect</code></pre>
-<p>From the output of the summary method, we note that the one-step estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{DE}}\)</span> is 0.005, with 95% confidence interval [-0.132, 0.141].</p>
+<pre><code>## # A tibble: 1 x 7
+##   lwr_ci param_est upr_ci var_est  eif_mean estimator param                
+##    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                
+## 1 -0.122  -0.00644  0.109 0.00348 -2.66e-17 onestep   direct_interventional</code></pre>
+<p>From the output of the summary method, we note that the one-step estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{DE}}\)</span> is -0.006, with 95% confidence interval [-0.122, 0.109].</p>
 <p>Next, let’s compare the one-step estimate to the TML estimate. Analogous to the case of the one-step estimator, the TML estimator can be evaluated via a single call to the <code>medoutcon</code> function:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span>
@@ -279,11 +286,11 @@ is the...
                      estimator <span class="op">=</span> <span class="st">"tmle"</span>,
                      estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span>, max_iter <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmle_de</span><span class="op">)</span></code></pre></div>
-<pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##       -0.0518        0.0545        0.1607        0.0029    1.1488e-02 
-##     estimator         param 
-##          tmle direct_effect</code></pre>
-<p>From the output of the summary method, we note that the TML estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{DE}}\)</span> is 0.054, with 95% confidence interval [-0.052, 0.161]. Here, we recall that the TML estimator generally exhibits better finite-sample performance than the one-step estimator <span class="citation">(van der Laan and Rose 2011, 2018)</span>, so the TML estimate is likely to be more reliable in our modest sample size of <span class="math inline">\(n =\)</span> 500.</p>
+<pre><code>## # A tibble: 1 x 7
+##    lwr_ci param_est upr_ci var_est eif_mean estimator param                
+##     &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                
+## 1 -0.0949    0.0113  0.118 0.00294  0.00870 tmle      direct_interventional</code></pre>
+<p>From the output of the summary method, we note that the TML estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{DE}}\)</span> is 0.011, with 95% confidence interval [-0.095, 0.118]. Here, we recall that the TML estimator generally exhibits better finite-sample performance than the one-step estimator <span class="citation">(van der Laan and Rose 2011, 2018)</span>, so the TML estimate is likely to be more reliable in our modest sample size of <span class="math inline">\(n =\)</span> 500.</p>
 </div>
 <div id="estimating-the-indirect-effect" class="section level2">
 <h2 class="hasAnchor">
@@ -305,11 +312,11 @@ is the...
                    effect <span class="op">=</span> <span class="st">"indirect"</span>,
                    estimator <span class="op">=</span> <span class="st">"onestep"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">os_ie</span><span class="op">)</span></code></pre></div>
-<pre><code>##          lwr_ci       param_est          upr_ci       param_var        eif_mean 
-##         -0.2024         -0.1117          -0.021          0.0021      6.0280e-17 
-##       estimator           param 
-##         onestep indirect_effect</code></pre>
-<p>From the output of the summary method, we note that the one-step estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{IE}}\)</span> is -0.112, with 95% confidence interval [-0.202, -0.021].</p>
+<pre><code>## # A tibble: 1 x 7
+##   lwr_ci param_est  upr_ci var_est eif_mean estimator param                  
+##    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                  
+## 1 -0.189    -0.119 -0.0489 0.00128 9.55e-17 onestep   indirect_interventional</code></pre>
+<p>From the output of the summary method, we note that the one-step estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{IE}}\)</span> is -0.119, with 95% confidence interval [-0.189, -0.049].</p>
 <p>As before, let’s compare the one-step estimate to the TML estimate. Analogous to the case of the one-step estimator, the TML estimator can be evaluated via a single call to the <code>medoutcon</code> function, as demonstrated below</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compute targeted minimum loss estimate of the interventional indirect effect</span>
@@ -326,11 +333,11 @@ is the...
                      effect <span class="op">=</span> <span class="st">"indirect"</span>,
                      estimator <span class="op">=</span> <span class="st">"tmle"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmle_ie</span><span class="op">)</span></code></pre></div>
-<pre><code>##          lwr_ci       param_est          upr_ci       param_var        eif_mean 
-##         -0.1885         -0.1252         -0.0619           0.001      6.0689e-03 
-##       estimator           param 
-##            tmle indirect_effect</code></pre>
-<p>From the output of the summary method, we note that the TML estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{IE}}\)</span> is -0.125, with 95% confidence interval [-0.189, -0.062]. As before, the TML estimator provides better finite-sample performance than the one-step estimator, so it may be preferred in this example.</p>
+<pre><code>## # A tibble: 1 x 7
+##   lwr_ci param_est  upr_ci var_est  eif_mean estimator param                  
+##    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                  
+## 1 -0.200    -0.120 -0.0394 0.00167 -0.000267 tmle      indirect_interventional</code></pre>
+<p>From the output of the summary method, we note that the TML estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{IE}}\)</span> is -0.12, with 95% confidence interval [-0.2, -0.039]. As before, the TML estimator provides better finite-sample performance than the one-step estimator, so it may be preferred in this example.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">

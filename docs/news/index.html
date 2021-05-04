@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bounding to numerical precision — bound_precision • medoutcon</title>
+<title>Changelog • medoutcon</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,7 @@
 
 
 
-<meta property="og:title" content="Bounding to numerical precision — bound_precision" />
-<meta property="og:description" content="Bounds extreme values to a specified tolerance level, for use with sensitive
-quantities that must be transformed, e.g., via qlogis." />
+<meta property="og:title" content="Changelog" />
 
 
 
@@ -60,7 +58,7 @@ quantities that must be transformed, e.g., via qlogis." />
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -124,41 +122,34 @@ quantities that must be transformed, e.g., via qlogis." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Bounding to numerical precision</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>bound_precision.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/nhejazi/medoutcon/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Bounds extreme values to a specified tolerance level, for use with sensitive
-quantities that must be transformed, e.g., via <code><a href='https://rdrr.io/r/stats/Logistic.html'>qlogis</a></code>.</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>bound_precision</span><span class='op'>(</span><span class='va'>vals</span>, tol <span class='op'>=</span> <span class='fl'>1e-06</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>vals</th>
-      <td><p>A <code>numeric</code> vector of values in the interval [0, 1].</p></td>
-    </tr>
-    <tr>
-      <th>tol</th>
-      <td><p>A <code>numeric</code> indicating the tolerance limit to which extreme
-values should be truncated. Realizations of <code>val</code> less than <code>tol</code>
-are truncated to <code>tol</code> while those greater than (1 - <code>tol</code>) are
-truncated to (1 - <code>tol</code>).</p></td>
-    </tr>
-    </table>
-
-
+    <div id="medoutcon-015" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.5">
+<a href="#medoutcon-015" class="anchor"></a>medoutcon 0.1.5</h1>
+<ul>
+<li>For user clarity, the name of the argument for providing externally computed observation-level weights has changed (from <code>ext_weights</code>) to <code>svy_weights</code>.</li>
+<li>Support for the natural direct and indirect effects has been added, requiring the addition of the new internal argument <code>effect_type</code> across functions for estimation, including <code><a href="../reference/cv_eif.html">cv_eif()</a></code>, <code><a href="../reference/est_onestep.html">est_onestep()</a></code>, and <code><a href="../reference/est_tml.html">est_tml()</a></code>. When <code>Z = NULL</code> is set in <code><a href="../reference/medoutcon.html">medoutcon()</a></code>, a natural effect estimate corresponding to the argument <code>effect</code> is returned instead of an interventional effect.</li>
+<li>The <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> and <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> methods have been updated to allow handling of natural effects and counterfactual means under arbitrary contrasts.</li>
+</ul>
+</div>
+    <div id="medoutcon-010" class="section level1">
+<h1 class="page-header" data-toc-text="0.1.0">
+<a href="#medoutcon-010" class="anchor"></a>medoutcon 0.1.0</h1>
+<ul>
+<li>An initial public release of this package, version 0.1.0, which includes support for external observation-level weights.</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 

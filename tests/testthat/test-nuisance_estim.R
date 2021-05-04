@@ -34,8 +34,7 @@ hal_gaussian_lrnr <- Lrnr_hal9001$new(
     lambda.min.ratio = 1 / n_samp
   )
 )
-g_learners <- h_learners <- b_learners <- q_learners <- r_learners <-
-  hal_binomial_lrnr
+g_learners <- h_learners <- b_learners <- q_learners <- r_learners <- hal_binomial_lrnr
 u_learners <- v_learners <- hal_gaussian_lrnr
 
 # simulate smaller data set for computing estimates

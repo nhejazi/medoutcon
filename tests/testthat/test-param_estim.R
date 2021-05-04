@@ -29,7 +29,7 @@ hal_gaussian_lrnr <- Lrnr_hal9001$new(
   family = "gaussian",
   fit_control = list(
     n_folds = 5,
-    use_min = FALSE,
+    use_min = TRUE,
     type.measure = "mse",
     lambda.min.ratio = 1 / n_obs
   )

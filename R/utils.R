@@ -1,3 +1,5 @@
+utils::globalVariables(c("effect", "param"))
+
 #' Confidence intervals for interventional mediation effect estimates
 #'
 #' Compute confidence intervals for objects of class \code{medoutcon}, which

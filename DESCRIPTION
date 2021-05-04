@@ -35,6 +35,7 @@ Imports:
     dplyr,
     zeallot,
     scales,
+    stringr,
     origami (>= 1.0.3),
     sl3 (>= 1.4.3)
 Suggests:
@@ -44,11 +45,10 @@ Suggests:
     covr,
     Rsolnp,
     nnls,
-    stringr,
     hal9001 (>= 0.4.0),
     SuperLearner,
     speedglm,
-    xgboost
+    ranger
 Remotes:
     github::tlverse/hal9001@devel,
     github::tlverse/sl3@devel

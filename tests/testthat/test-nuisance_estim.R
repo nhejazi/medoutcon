@@ -108,7 +108,7 @@ q_out <- fit_moc_mech(
 )
 test_that("Estimates of confounder regression q are close to the truth", {
   expect_equal(q_out$moc_est_train_Z_one$moc_pred_A_prime, pz(1, aprime, w),
-    tol = 0.025
+    tol = 0.05
   )
 })
 test_that("MSE of confounder regression q estimates is sufficiently low", {
@@ -130,13 +130,13 @@ r_out <- fit_moc_mech(
 test_that("Estimates of confounder regression r are close to the truth", {
   expect_equal(r_out$moc_est_train_Z_one$moc_pred_A_prime,
     r(1, aprime, m, w),
-    tol = 0.05
+    tol = 0.075
   )
 })
 test_that("MSE of confounder regression r estimates is sufficiently low", {
   r_mse <- mean((r_out$moc_est_train_Z_one$moc_pred_A_prime -
     r(1, aprime, m, w))^2)
-  expect_lt(r_mse, 1e-3)
+  expect_lt(r_mse, 2e-3)
 })
 
 # data for fitting nuisance parameters with pseudo-outcomes

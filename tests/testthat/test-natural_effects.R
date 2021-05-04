@@ -5,13 +5,14 @@ source("utils_natural.R")
 library(data.table)
 library(stringr)
 library(tibble)
+library(dplyr)
 library(hal9001)
 library(sl3)
 library(SuperLearner)
 
 # options
 set.seed(27158)
-n_obs <- 500
+n_obs <- 5000
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)

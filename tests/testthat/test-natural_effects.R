@@ -12,7 +12,7 @@ library(SuperLearner)
 
 # options
 set.seed(27158)
-n_obs <- 2000
+n_obs <- 5000
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)

@@ -12,7 +12,7 @@ library(SuperLearner)
 
 # options
 set.seed(27158)
-n_obs <- 5000
+n_obs <- 2000
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
@@ -140,7 +140,7 @@ var_nie_eff <- var(sim_truth$EIC_NIE) / n_obs
 
 # 5) testing estimators for the NDE
 test_that("NDE: One-step estimate is near approximate truth", {
-  expect_equal(nde_os$theta, nde_true, tol = 0.02)
+  expect_equal(nde_os$theta, nde_true, tol = 0.05)
 })
 
 test_that("NDE: TML estimate is near approximate truth", {
@@ -166,7 +166,7 @@ test_that("NDE: Mean of estimated EIF is nearly zero for the TMLE", {
 
 # 6) testing estimators for the NIE
 test_that("NIE: One-step estimate is near approximate truth", {
-  expect_equal(nie_os$theta, nie_true, tol = 0.02)
+  expect_equal(nie_os$theta, nie_true, tol = 0.05)
 })
 
 test_that("NIE: TML estimate is near approximate truth", {

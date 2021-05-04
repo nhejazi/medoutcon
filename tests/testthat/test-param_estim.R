@@ -14,7 +14,7 @@ set.seed(27158)
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
-n_obs <- 5000
+n_obs <- 3000
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data(n_obs = n_obs)

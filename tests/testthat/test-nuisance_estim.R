@@ -13,7 +13,7 @@ contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
 set.seed(27158)
-n_samp <- 10000
+n_samp <- 5000
 
 # set up learners for each nuisance parameter
 hal_binomial_lrnr <- Lrnr_hal9001$new(

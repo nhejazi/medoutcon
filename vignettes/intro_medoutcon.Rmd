@@ -170,7 +170,7 @@ library(data.table)
 library(medoutcon)
 library(sl3)
 set.seed(75681)
-n_obs <- 500      # number of observations in our simulated dataset
+n_obs <- 500
 ```
 
 Next, we'll generate a very simple simulated dataset. The function
@@ -264,9 +264,9 @@ algorithms, we'll first instantiate variants of learners from the appropriate
 classes for each algorithm, and then create a Super Learner ensemble via the
 `Lrnr_sl` class. Below, we demonstrate the construction of an ensemble learner
 based on a modeling library including an intercept model, a main-terms GLM,
-$\ell_1$-penalized Lasso regression, $\ell_2$-penalized ridge regression, an
-elastic net regression that equally weights the $\ell_1$ and $\ell_2$ penalties,
-extreme gradient boosted trees (`xgboost`), and the highly adaptive lasso (HAL):
+$\ell_1$-penalized Lasso regression, an elastic net regression that equally
+weights the $\ell_1$ and $\ell_2$ penalties, random forests (`ranger`), and the
+highly adaptive lasso (HAL):
 
 ```{r make_sl, message=FALSE, warning=FALSE}
 # instantiate learners
@@ -280,10 +280,10 @@ rf_lrnr <- Lrnr_ranger$new(num.trees = 200)
 hal_gaussian_lrnr <- Lrnr_hal9001$new(
   family = "gaussian",
   fit_control = list(
+    max_degree = 3,
     n_folds = 3,
     use_min = TRUE,
-    type.measure = "mse",
-    lambda.min.ratio = 1 / n_obs
+    type.measure = "mse"
   )
 )
 bound_lrnr <- Lrnr_bound$new(bound = 1e-6)

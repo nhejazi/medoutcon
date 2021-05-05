@@ -100,11 +100,11 @@ var_indep <- var(eif) / n_obs
 
 # 5) testing one-step estimator
 test_that("One-step estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_indep, tol = 0.005)
+  expect_equal(theta_os$theta, psi_indep, tol = 0.01)
 })
 
 test_that("EIF variance of one-step is close to independent EIF variance", {
-  expect_equal(theta_os$var, var_indep, tol = 1e-5)
+  expect_equal(theta_os$var, var_indep, tol = 1e-4)
 })
 
 test_that("Mean of estimated EIF is nearly zero for the one-step", {
@@ -113,11 +113,11 @@ test_that("Mean of estimated EIF is nearly zero for the one-step", {
 
 # 6) testing TML estimator
 test_that("TML estimate close to independent EIF estimates", {
-  expect_equal(theta_tmle$theta, psi_indep, tol = 0.01)
+  expect_equal(theta_tmle$theta, psi_indep, tol = 0.02)
 })
 
 test_that("EIF variance of TMLE is close to independent EIF variance", {
-  expect_equal(theta_tmle$var, var_indep, tol = 1e-5)
+  expect_equal(theta_tmle$var, var_indep, tol = 1e-4)
 })
 
 test_that("Mean of estimated EIF is close to TMLE stopping criterion", {

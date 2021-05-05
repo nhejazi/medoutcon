@@ -100,7 +100,7 @@ var_indep <- var(eif) / n_obs
 
 # 5) testing one-step estimator
 test_that("One-step estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_indep, tol = 0.01)
+  expect_equal(theta_os$theta, psi_indep, tol = 0.02)
 })
 
 test_that("EIF variance of one-step is close to independent EIF variance", {

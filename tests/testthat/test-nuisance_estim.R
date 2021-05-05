@@ -159,7 +159,7 @@ test_that("Estimates of pseudo-outcome regression are close to the truth", {
 })
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   u_mse <- mean((u_out$u_pred - u(z, w, aprime, astar))^2)
-  expect_lt(u_mse, 0.006)
+  expect_lt(u_mse, 0.01)
 })
 
 ## fit v
@@ -188,5 +188,5 @@ test_that("Estimates of pseudo-outcome used in v are close to the truth", {
 })
 test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
   v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w, aprime))^2)
-  expect_lt(v_pseudo_mse, 0.004)
+  expect_lt(v_pseudo_mse, 0.005)
 })

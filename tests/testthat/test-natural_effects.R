@@ -12,7 +12,7 @@ library(SuperLearner)
 
 # options
 set.seed(27158)
-n_obs <- 3000
+n_obs <- 1000
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
@@ -20,34 +20,18 @@ w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "Z")
 
 # 2) use custom HAL and SL for testing functionality
-bounding_lrnr <- Lrnr_bound$new(bound = 1e-6)
-fglm_lrnr <- Lrnr_glm_fast$new(family = binomial())
-mean_lrnr <- Lrnr_mean$new()
-hal_gaussian_lrnr <- Lrnr_hal9001$new(
-  family = "gaussian",
-  fit_control = list(
-    n_folds = 5,
-    use_min = TRUE,
-    type.measure = "mse",
-    lambda.min.ratio = 1 / n_obs
-  )
-)
-hal_binomial_lrnr <- Lrnr_hal9001$new(
-  family = "binomial",
-  fit_control = list(
-    n_folds = 5,
-    use_min = TRUE,
-    type.measure = "mse",
-    lambda.min.ratio = 1 / n_obs
-  )
-)
-hal_bounded_lrnr <- Pipeline$new(hal_gaussian_lrnr, bounding_lrnr)
+bayesglm_lrnr <- Lrnr_bayesglm$new(family = binomial())
+fglm_binom_lrnr <- Lrnr_glm_fast$new(family = binomial())
+rf_lrnr <- Lrnr_ranger$new(num.trees = 300, family = "binomial")
+xgb_lrnr <- Lrnr_xgboost$new(nrounds = 200, objective = "binary:logistic",
+                             eval_metric = "logloss")
+fglm_gauss_lrnr <- Lrnr_glm_fast$new(family = gaussian())
 sl <- Lrnr_sl$new(
   learners = list(
-    hal_bounded_lrnr,
-    hal_binomial_lrnr,
-    fglm_lrnr,
-    mean_lrnr
+    rf_lrnr,
+    xgb_lrnr,
+    bayesglm_lrnr,
+    fglm_binom_lrnr
   ),
   metalearner = Lrnr_nnls$new()
 )
@@ -56,7 +40,7 @@ sl <- Lrnr_sl$new(
 g_learners <- h_learners <- q_learners <- r_learners <- sl
 
 ## nuisance functions with pseudo-outcomes need Gaussian HAL
-u_learners <- v_learners <- b_learners <- hal_gaussian_lrnr
+u_learners <- v_learners <- b_learners <- fglm_gauss_lrnr
 
 # 3) test different estimators
 nde_os <- medoutcon(
@@ -140,19 +124,19 @@ var_nie_eff <- var(sim_truth$EIC_NIE) / n_obs
 
 # 5) testing estimators for the NDE
 test_that("NDE: One-step estimate is near approximate truth", {
-  expect_equal(nde_os$theta, nde_true, tol = 0.05)
+  expect_equal(nde_os$theta, nde_true, tol = 0.02)
 })
 
 test_that("NDE: TML estimate is near approximate truth", {
-  expect_equal(nde_tmle$theta, nde_true, tol = 0.05)
+  expect_equal(nde_tmle$theta, nde_true, tol = 0.02)
 })
 
 test_that("NDE: EIF variance of one-step is near the true EIF variance", {
-  expect_equal(nde_os$var, var_nde_eff, tol = 0.02)
+  expect_equal(nde_os$var, var_nde_eff, tol = 0.01)
 })
 
 test_that("NDE: EIF variance of TMLE is near the true EIF variance", {
-  expect_equal(nde_tmle$var, var_nde_eff, tol = 0.02)
+  expect_equal(nde_tmle$var, var_nde_eff, tol = 0.01)
 })
 
 test_that("NDE: Mean of estimated EIF is nearly zero for the one-step", {
@@ -166,7 +150,7 @@ test_that("NDE: Mean of estimated EIF is nearly zero for the TMLE", {
 
 # 6) testing estimators for the NIE
 test_that("NIE: One-step estimate is near approximate truth", {
-  expect_equal(nie_os$theta, nie_true, tol = 0.05)
+  expect_equal(nie_os$theta, nie_true, tol = 0.04)
 })
 
 test_that("NIE: TML estimate is near approximate truth", {
@@ -174,11 +158,11 @@ test_that("NIE: TML estimate is near approximate truth", {
 })
 
 test_that("NIE: EIF variance of one-step is near the true EIF variance", {
-  expect_equal(nie_os$var, var_nie_eff, tol = 0.03)
+  expect_equal(nie_os$var, var_nie_eff, tol = 0.02)
 })
 
 test_that("NIE: EIF variance of TMLE is near the true EIF variance", {
-  expect_equal(nie_tmle$var, var_nie_eff, tol = 0.03)
+  expect_equal(nie_tmle$var, var_nie_eff, tol = 0.02)
 })
 
 test_that("NIE: Mean of estimated EIF is nearly zero for the one-step", {

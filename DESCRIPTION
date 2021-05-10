@@ -48,7 +48,9 @@ Suggests:
     hal9001 (>= 0.4.0),
     SuperLearner,
     speedglm,
-    ranger
+    xgboost,
+    ranger,
+    arm
 Remotes:
     github::tlverse/hal9001@devel,
     github::tlverse/sl3@devel

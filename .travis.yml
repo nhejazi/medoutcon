@@ -31,6 +31,8 @@ r_packages:
   - hal9001
   - speedglm
   - ranger
+  - xgboost
+  - arm
 
 r_github_packages:
   - r-lib/sessioninfo

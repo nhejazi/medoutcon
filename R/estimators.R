@@ -626,7 +626,7 @@ est_tml <- function(data,
     # NOTE: for the natural (in)direct effects, the regressor on the RHS is
     #       uniquely ~ZERO~ so the estimated parameter should always be NaN
     if (effect_type == "natural") {
-      assertthat::assert_that(is.na(stats::coef(q_tilt_fit)))
+      q_tilt_fit$coefficients <- NA
     }
     if (is.na(stats::coef(q_tilt_fit))) {
       q_tilt_fit$coefficients <- 0
@@ -693,7 +693,7 @@ est_tml <- function(data,
 
   # SANITY CHECK: EIF_U should be ~ZERO~ for natural (in)direct effects
   if (effect_type == "natural") {
-    assertthat::assert_that(sum(eif_u) == 0)
+    assertthat::assert_that(sum(eif_u) < .Machine$double.eps)
   }
 
   # compute influence function with centering at the TML estimate

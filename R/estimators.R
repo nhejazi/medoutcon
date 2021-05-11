@@ -693,7 +693,7 @@ est_tml <- function(data,
 
   # SANITY CHECK: EIF_U should be ~ZERO~ for natural (in)direct effects
   if (effect_type == "natural") {
-    assertthat::assert_that(sum(eif_u) < .Machine$double.eps)
+    assertthat::assert_that(abs(mean(eif_u)) < .Machine$double.eps)
   }
 
   # compute influence function with centering at the TML estimate

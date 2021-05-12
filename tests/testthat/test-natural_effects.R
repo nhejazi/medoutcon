@@ -12,7 +12,7 @@ library(SuperLearner)
 
 # options
 set.seed(2158)
-n_obs <- 500
+n_obs <- 1000
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
@@ -25,7 +25,8 @@ fglm_lrnr <- Lrnr_glm_fast$new()
 bayesglm_lrnr <- Lrnr_bayesglm$new()
 lasso_lrnr <- Lrnr_glmnet$new(alpha = 1, nfolds = 3L)
 enet_lrnr <- Lrnr_glmnet$new(alpha = 0.5, nfolds = 3L)
-rf_lrnr <- Lrnr_ranger$new(num.trees = 1000)
+rf_lrnr <- Lrnr_ranger$new(num.trees = 1000, sample.fraction = 0.7,
+                           oob.error = FALSE)
 logistic_meta <- Lrnr_solnp$new(
   metalearner_logistic_binomial,
   loss_loglik_binomial

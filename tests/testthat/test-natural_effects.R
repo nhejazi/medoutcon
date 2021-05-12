@@ -140,11 +140,11 @@ nie_true <- mean(EY_A1_Z1 - EY_A1_Z0)
 
 # 5) testing estimators for the NDE
 test_that("NDE: One-step estimate is near DGP truth", {
-  expect_equal(nde_os$theta, nde_true, tol = 0.04)
+  expect_equal(nde_os$theta, nde_true, tol = 0.05)
 })
 
 test_that("NDE: TML estimate is near DGP truth", {
-  expect_equal(nde_tmle$theta, nde_true, tol = 0.04)
+  expect_equal(nde_tmle$theta, nde_true, tol = 0.05)
 })
 
 test_that("NDE: Mean of estimated EIF is nearly zero for the one-step", {
@@ -158,11 +158,11 @@ test_that("NDE: Mean of estimated EIF is approximately solved for the TMLE", {
 
 # 6) testing estimators for the NIE
 test_that("NIE: One-step estimate is near DGP truth", {
-  expect_equal(nie_os$theta, nie_true, tol = 0.04)
+  expect_equal(nie_os$theta, nie_true, tol = 0.05)
 })
 
 test_that("NIE: TML estimate is near DGP truth", {
-  expect_equal(nie_tmle$theta, nie_true, tol = 0.04)
+  expect_equal(nie_tmle$theta, nie_true, tol = 0.05)
 })
 
 test_that("NIE: Mean of estimated EIF is nearly zero for the one-step", {

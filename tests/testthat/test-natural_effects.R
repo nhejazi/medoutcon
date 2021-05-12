@@ -20,15 +20,13 @@ w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "Z")
 
 # 2) use simpler SLs for testing functionality
-fglm_binary_lrnr <- Lrnr_glm_fast$new(family = binomial())
-fglm_contin_lrnr <- Lrnr_glm_fast$new(family = gaussian())
-bayesglm_binary_lrnr <- Lrnr_bayesglm$new(family = binomial())
-bayesglm_contin_lrnr <- Lrnr_bayesglm$new(family = gaussian())
-rf_lrnr <- Lrnr_ranger$new(num.trees = 100)
-xgb_contin_lrnr <- Lrnr_xgboost$new(nrounds = 50)
-xgb_binary_lrnr <- Lrnr_xgboost$new(
-  nrounds = 50, objective = "binary:logistic", eval_metric = "logloss"
-)
+mean_lrnr <- Lrnr_mean$new()
+fglm_lrnr <- Lrnr_glm_fast$new()
+bayesglm_lrnr <- Lrnr_bayesglm$new()
+lasso_lrnr <- Lrnr_glmnet$new(alpha = 1, nfolds = 3L)
+enet_lrnr <- Lrnr_glmnet$new(alpha = 0.5, nfolds = 3L)
+rf_lrnr <- Lrnr_ranger$new(num.trees = 300)
+xgb_lrnr <- Lrnr_xgboost$new(nrounds = 50)
 logistic_meta <- Lrnr_solnp$new(
   metalearner_logistic_binomial,
   loss_loglik_binomial
@@ -36,20 +34,26 @@ logistic_meta <- Lrnr_solnp$new(
 sl_binary <- Lrnr_sl$new(
   learners = list(
     rf_lrnr,
-    xgb_binary_lrnr,
-    fglm_binary_lrnr,
-    bayesglm_binary_lrnr
+    xgb_lrnr,
+    fglm_lrnr,
+    bayesglm_lrnr,
+    lasso_lrnr,
+    enet_lrnr,
+    mean_lrnr
   ),
   metalearner = logistic_meta
 )
 sl_contin <- Lrnr_sl$new(
   learners = list(
     rf_lrnr,
-    xgb_contin_lrnr,
-    fglm_contin_lrnr,
-    bayesglm_contin_lrnr
+    xgb_lrnr,
+    fglm_lrnr,
+    bayesglm_lrnr,
+    lasso_lrnr,
+    enet_lrnr,
+    mean_lrnr
   ),
-  metalearner = Lrnr_nnls$new()
+  metalearner = Lrnr_cv_selector$new()
 )
 
 ## nuisance functions with data components have binary outcomes
@@ -103,7 +107,7 @@ nde_tmle <- medoutcon(
   v_learners = v_learners,
   effect = "direct",
   estimator = "tmle",
-  estimator_args = list(cv_folds = 5, max_iter = 5, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 10)
 )
 summary(nde_tmle)
 
@@ -119,7 +123,7 @@ nie_tmle <- medoutcon(
   v_learners = v_learners,
   effect = "indirect",
   estimator = "tmle",
-  estimator_args = list(cv_folds = 5, max_iter = 5, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 10)
 )
 summary(nie_tmle)
 
@@ -134,57 +138,39 @@ EY_A0_Z1 <- sim_truth$EY_A0_Z1
 EY_A0_Z0 <- sim_truth$EY_A0_Z0
 nde_true <- mean(EY_A1_Z0 - EY_A0_Z0)
 nie_true <- mean(EY_A1_Z1 - EY_A1_Z0)
-var_nde_eff <- var(sim_truth$EIC_NDE) / n_obs
-var_nie_eff <- var(sim_truth$EIC_NIE) / n_obs
 
 
 # 5) testing estimators for the NDE
 test_that("NDE: One-step estimate is near DGP truth", {
-  expect_equal(nde_os$theta, nde_true, tol = 0.05)
+  expect_equal(nde_os$theta, nde_true, tol = 0.03)
 })
 
 test_that("NDE: TML estimate is near DGP truth", {
   expect_equal(nde_tmle$theta, nde_true, tol = 0.03)
 })
 
-test_that("NDE: EIF variance of one-step is near true EIF variance", {
-  expect_equal(nde_os$var, var_nde_eff, tol = 0.01)
-})
-
-test_that("NDE: EIF variance of TMLE is near true EIF variance", {
-  expect_equal(nde_tmle$var, var_nde_eff, tol = 0.01)
-})
-
 test_that("NDE: Mean of estimated EIF is nearly zero for the one-step", {
   expect_lt(abs(mean(nde_os$eif)), 1e-15)
 })
 
-test_that("NDE: Mean of estimated EIF is nearly zero for the TMLE", {
-  expect_lt(abs(mean(nde_tmle$eif)), 1e-10)
+test_that("NDE: Mean of estimated EIF is approximately solved for the TMLE", {
+  expect_lt(abs(mean(nde_tmle$eif)), var(nde_tmle$eif) / (n_obs * log(n_obs)))
 })
 
 
 # 6) testing estimators for the NIE
 test_that("NIE: One-step estimate is near DGP truth", {
-  expect_equal(nie_os$theta, nie_true, tol = 0.03)
+  expect_equal(nie_os$theta, nie_true, tol = 0.05)
 })
 
 test_that("NIE: TML estimate is near DGP truth", {
-  expect_equal(nie_tmle$theta, nie_true, tol = 0.03)
-})
-
-test_that("NIE: EIF variance of one-step is near true EIF variance", {
-  expect_equal(nie_os$var, var_nie_eff, tol = 0.01)
-})
-
-test_that("NIE: EIF variance of TMLE is near true EIF variance", {
-  expect_equal(nie_tmle$var, var_nie_eff, tol = 0.01)
+  expect_equal(nie_tmle$theta, nie_true, tol = 0.05)
 })
 
 test_that("NIE: Mean of estimated EIF is nearly zero for the one-step", {
   expect_lt(abs(mean(nie_os$eif)), 1e-15)
 })
 
-test_that("NIE: Mean of estimated EIF is nearly zero for the TMLE", {
-  expect_lt(abs(mean(nie_tmle$eif)), 1e-10)
+test_that("NIE: Mean of estimated EIF is approximately solved for the TMLE", {
+  expect_lt(abs(mean(nie_tmle$eif)), var(nie_tmle$eif) / (n_obs * log(n_obs)))
 })

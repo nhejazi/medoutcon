@@ -11,7 +11,7 @@ library(sl3)
 library(SuperLearner)
 
 # options
-set.seed(27158)
+set.seed(2158)
 n_obs <- 1000
 
 # 1) get data and column names for sl3 tasks (for convenience)
@@ -25,8 +25,7 @@ fglm_lrnr <- Lrnr_glm_fast$new()
 bayesglm_lrnr <- Lrnr_bayesglm$new()
 lasso_lrnr <- Lrnr_glmnet$new(alpha = 1, nfolds = 3L)
 enet_lrnr <- Lrnr_glmnet$new(alpha = 0.5, nfolds = 3L)
-rf_lrnr <- Lrnr_ranger$new(num.trees = 300)
-xgb_lrnr <- Lrnr_xgboost$new(nrounds = 50)
+rf_lrnr <- Lrnr_ranger$new(num.trees = 1000)
 logistic_meta <- Lrnr_solnp$new(
   metalearner_logistic_binomial,
   loss_loglik_binomial
@@ -34,7 +33,6 @@ logistic_meta <- Lrnr_solnp$new(
 sl_binary <- Lrnr_sl$new(
   learners = list(
     rf_lrnr,
-    xgb_lrnr,
     fglm_lrnr,
     bayesglm_lrnr,
     lasso_lrnr,
@@ -46,21 +44,21 @@ sl_binary <- Lrnr_sl$new(
 sl_contin <- Lrnr_sl$new(
   learners = list(
     rf_lrnr,
-    xgb_lrnr,
     fglm_lrnr,
     bayesglm_lrnr,
     lasso_lrnr,
     enet_lrnr,
     mean_lrnr
   ),
-  metalearner = Lrnr_cv_selector$new()
+  metalearner = Lrnr_nnls$new()
 )
 
 ## nuisance functions with data components have binary outcomes
-g_learners <- h_learners <- q_learners <- r_learners <- sl_binary
+g_learners <- h_learners <- q_learners <- r_learners <- rf_lrnr
 
 ## nuisance functions with pseudo-outcomes have continuous outcomes
-u_learners <- v_learners <- b_learners <- sl_contin
+u_learners <- v_learners <- b_learners <- rf_lrnr
+
 
 # 3) test different estimators
 nde_os <- medoutcon(
@@ -142,11 +140,11 @@ nie_true <- mean(EY_A1_Z1 - EY_A1_Z0)
 
 # 5) testing estimators for the NDE
 test_that("NDE: One-step estimate is near DGP truth", {
-  expect_equal(nde_os$theta, nde_true, tol = 0.03)
+  expect_equal(nde_os$theta, nde_true, tol = 0.04)
 })
 
 test_that("NDE: TML estimate is near DGP truth", {
-  expect_equal(nde_tmle$theta, nde_true, tol = 0.03)
+  expect_equal(nde_tmle$theta, nde_true, tol = 0.04)
 })
 
 test_that("NDE: Mean of estimated EIF is nearly zero for the one-step", {
@@ -160,11 +158,11 @@ test_that("NDE: Mean of estimated EIF is approximately solved for the TMLE", {
 
 # 6) testing estimators for the NIE
 test_that("NIE: One-step estimate is near DGP truth", {
-  expect_equal(nie_os$theta, nie_true, tol = 0.05)
+  expect_equal(nie_os$theta, nie_true, tol = 0.04)
 })
 
 test_that("NIE: TML estimate is near DGP truth", {
-  expect_equal(nie_tmle$theta, nie_true, tol = 0.05)
+  expect_equal(nie_tmle$theta, nie_true, tol = 0.04)
 })
 
 test_that("NIE: Mean of estimated EIF is nearly zero for the one-step", {

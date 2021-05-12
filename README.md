@@ -26,23 +26,26 @@ Rudolph](https://kararudolph.github.io/)
 ## What’s `medoutcon`?
 
 The `medoutcon` R package provides facilities for efficient estimation
-of stochastic (in)direct effects that measure the impact of a treatment
-variable \(A\) on an outcome variable \(Y\), through a direct path
-(through \(A\) only) and an indirect path (through a set of mediators
-\(M\) only), in the presence of an intermediate
+of path-specific (in)direct effects that measure the impact of a
+treatment variable \(A\) on an outcome variable \(Y\), through a direct
+path (through \(A\) only) and an indirect path (through a set of
+mediators \(M\) only). In the presence of an intermediate
 <b>med</b>iator-<b>out</b>come <b>con</b>founder \(Z\), itself affected
-by the treatment \(A\). While the proposed approach is similar to those
-appearing in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et
-al. (2017), and Zheng and van der Laan (2017), `medoutcon` is designed
-as a software implementation to accompany the methodology proposed in
-Dı́az et al. (2020). Both an efficient one-step bias-corrected
-estimator with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and
-van der Laan 2011; Chernozhukov et al. 2018) and a cross-validated
-targeted minimum loss estimator (TMLE) (van der Laan and Rose 2011;
-Zheng and van der Laan 2011) are made available. `medoutcon` integrates
-with the [`sl3` R package](https://github.com/tlverse/sl3) (Coyle et al.
-2020) to leverage statistical machine learning in the estimation
-procedure.
+by the treatment \(A\), these correspond to the *interventional*
+(in)direct effects described by Dı́az et al. (2020), though similar (yet
+less general) effect definitions and/or estimation strategies have
+appeared in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al.
+(2017), Zheng and van der Laan (2017), and Benkeser (2020). When no
+intermediate confounders are present, these effect definitions simplify
+to the well-studied *natural* (in)direct effects, and our estimators are
+analogs of those formulated by Zheng and van der Laan (2012). Both an
+efficient one-step bias-corrected estimator with cross-fitting (Pfanzagl
+and Wefelmeyer 1985; Zheng and van der Laan 2011; Chernozhukov et al.
+2018) and a cross-validated targeted minimum loss estimator (TMLE) (van
+der Laan and Rose 2011; Zheng and van der Laan 2011) are made available.
+`medoutcon` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to leverage
+statistical machine learning in the estimation procedure.
 
 -----
 
@@ -121,11 +124,18 @@ os_de <- medoutcon(W = example_data[, ..w_names],
                    Y = example_data$Y,
                    effect = "direct",
                    estimator = "onestep")
-summary(os_de)
-#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>       -0.1726       -0.0675        0.0377        0.0029    7.6843e-17 
-#>     estimator         param 
-#>       onestep direct_effect
+os_de
+#> $theta
+#> [1] -0.07567883
+#> 
+#> $var
+#> [1] 0.003171717
+#> 
+#> $type
+#> [1] "onestep"
+#> 
+#> $param
+#> [1] "direct_effect"
 
 # compute targeted minimum loss estimate of the interventional direct effect
 tmle_de <- medoutcon(W = example_data[, ..w_names],
@@ -135,11 +145,18 @@ tmle_de <- medoutcon(W = example_data[, ..w_names],
                      Y = example_data$Y,
                      effect = "direct",
                      estimator = "tmle")
-summary(tmle_de)
-#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>       -0.1738       -0.0602        0.0535        0.0034    4.0123e-03 
-#>     estimator         param 
-#>          tmle direct_effect
+tmle_de
+#> $theta
+#> [1] -0.0775445
+#> 
+#> $var
+#> [1] 0.003476221
+#> 
+#> $type
+#> [1] "tmle"
+#> 
+#> $param
+#> [1] "direct_effect"
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -184,13 +201,13 @@ After using the `medoutcon` R package, please cite the following:
       publisher={Oxford University Press}
     }
 
-    @software{hejazi2020medoutcon,
+    @software{hejazi2021medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
       title = {{medoutcon}: Efficient causal mediation analysis under
         intermediate confounding},
-      year  = {2020},
+      year  = {2021},
       url = {https://github.com/nhejazi/medoutcon},
-      note = {R package version 0.1.0}
+      note = {R package version 0.1.5}
     }
 ```
 
@@ -230,6 +247,13 @@ See below for details:
 ## References
 
 <div id="refs" class="references">
+
+<div id="ref-benkeser2020nonparametric">
+
+Benkeser, David. 2020. “Nonparametric Inference for Interventional
+Effects with Multiple Mediators.” *arXiv Preprint arXiv:2001.06027*.
+
+</div>
 
 <div id="ref-chernozhukov2018double">
 
@@ -297,6 +321,14 @@ Mediator-Outcome Confounder.” *Epidemiology (Cambridge, Mass.)* 25 (2):
 Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted
 Minimum-Loss-Based Estimation.” In *Targeted Learning*, 459–74.
 Springer.
+
+</div>
+
+<div id="ref-zheng2012targeted">
+
+———. 2012. “Targeted Maximum Likelihood Estimation of Natural Direct
+Effects.” *International Journal of Biostatistics* 8 (1).
+<https://doi.org/10.2202/1557-4679.1361>.
 
 </div>
 

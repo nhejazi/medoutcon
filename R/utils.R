@@ -1,3 +1,5 @@
+utils::globalVariables(c("effect", "param"))
+
 #' Confidence intervals for interventional mediation effect estimates
 #'
 #' Compute confidence intervals for objects of class \code{medoutcon}, which
@@ -29,14 +31,13 @@ confint.medoutcon <- function(object,
 
   # assume continuous outcome if more than two levels in outcome node
   if (length(unique(object$outcome)) > 2 ||
-    object$param %in% c("direct_effect", "indirect_effect")) {
+    stringr::str_detect(object$param, "direct")) {
     # NOTE: variance already scaled (i.e., Var(D)/n)
     se_eif <- sqrt(object$var)
 
     # compute the interval around the point estimate
     ci_theta <- ci_norm_bounds * se_eif + object$theta
-  } else if (length(unique(object$outcome)) == 2 &&
-    !(object$param %in% c("direct_effect", "indirect_effect"))) {
+  } else if (length(unique(object$outcome)) == 2) {
     # for binary outcomes, create CI on the logit scale and back-transform
     theta_ratio <- stats::qlogis(object$theta)
     grad_ratio_delta <- (1 / object$theta) + (1 / (1 - object$theta))
@@ -62,38 +63,32 @@ confint.medoutcon <- function(object,
 #' @param ci_level A \code{numeric} indicating the level of the confidence
 #'  interval to be computed.
 #'
-#' @importFrom stats confint
-#'
 #' @method summary medoutcon
+#'
+#' @importFrom stats confint
+#' @importFrom tibble as_tibble
 #'
 #' @export
 summary.medoutcon <- function(object,
                               ...,
                               ci_level = 0.95) {
-  # inference is currently limited to the efficient estimators
-  if (object$type %in% c("onestep", "tmle")) {
-    # compute confidence interval using the pre-defined method
-    ci <- stats::confint(object, level = ci_level)
+  # compute confidence interval
+  est_with_ci <- stats::confint(object, level = ci_level)
 
-    # only print useful info about the mean of the efficient influence function
-    eif_mean <- formatC(mean(object$eif), digits = 4, format = "e")
+  # create output table from input object and confidence interval results
+  est_summary <- tibble::as_tibble(list(
+    lwr_ci = est_with_ci[1],
+    param_est = est_with_ci[2],
+    upr_ci = est_with_ci[3],
+    var_est = object$var,
+    eif_mean = mean(object$eif),
+    estimator = object$type,
+    param = object$param
+  ))
 
-    # create output table from input object and confidence interval results
-    out <- c(
-      round(c(ci, object$var), digits = 4), eif_mean, object$type,
-      object$param
-    )
-    names(out) <- c(
-      "lwr_ci", "param_est", "upr_ci", "param_var", "eif_mean", "estimator",
-      "param"
-    )
-  } else {
-    out <- c(round(object$theta, digits = 6), object$type)
-    names(out) <- c(
-      "param_est", "estimator"
-    )
-  }
-  print(noquote(out))
+  # store CI level as hidden attribute
+  attr(est_summary, ".ci_level") <- ci_level
+  return(est_summary)
 }
 
 ###############################################################################
@@ -107,15 +102,36 @@ summary.medoutcon <- function(object,
 #'
 #' @method print medoutcon
 #'
+#' @importFrom zeallot "%<-%"
+#' @importFrom scales percent
+#' @importFrom stringr str_detect str_split str_to_title
+#'
 #' @export
 print.medoutcon <- function(x, ...) {
-  # inference is currently limited to the one-step efficient estimator
-  # TODO: allow use for TML estimators once impelemented
-  if (x$type %in% c("onestep", "tmle")) {
-    print(x[c("theta", "var", "type", "param")])
+  # get summary, including confidence interval
+  x_summary <- summary(x)
+  ci_level <- attr(x_summary, ".ci_level")
+
+  # construct and print output
+  if (stringr::str_detect(x$param, "tsm")) {
+    # TODO: printing specific to counterfactual mean
+    message("Counterfactual TSM")
+    message(paste0(
+      "Contrast: A = ", x$.contrast[1], ", ",
+      paste0("M(A = ", x$.contrast[2], ")")
+    ))
   } else {
-    print(x[c("theta", "type")])
+    # mangle the abbreviated parameter name
+    c(param, effect) %<-% unlist(stringr::str_split(x_summary$param, "_"))
+    message(stringr::str_to_title(paste(effect, param, "effect")))
   }
+  message("Estimator: ", x_summary$estimator)
+  message("Estimate: ", round(x_summary$param_est, 3))
+  message("Std. Error: ", round(sqrt(x_summary$var_est), 3))
+  message(
+    scales::percent(ci_level), " CI: [",
+    round(x_summary$lwr_ci, 3), ", ", round(x_summary$upr_ci, 3), "]"
+  )
 }
 
 ###############################################################################

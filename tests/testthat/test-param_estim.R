@@ -1,5 +1,5 @@
-context("Estimators of parameter and EIF match manual analogs closely")
-source("utils_example.R")
+context("Estimators of interventional effects match manual analogs closely")
+source("utils_interventional.R")
 
 # packages
 library(data.table)
@@ -14,7 +14,7 @@ set.seed(27158)
 contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
-n_obs <- 5000
+n_obs <- 3000
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- sim_medoutcon_data(n_obs = n_obs)
@@ -27,9 +27,12 @@ fglm_lrnr <- Lrnr_glm_fast$new(family = binomial())
 mean_lrnr <- Lrnr_mean$new()
 hal_gaussian_lrnr <- Lrnr_hal9001$new(
   family = "gaussian",
-  type.measure = "mse", n_folds = 5,
-  use_min = FALSE, max_degree = NULL,
-  lambda.min.ratio = 1 / n_obs
+  fit_control = list(
+    n_folds = 5,
+    use_min = TRUE,
+    type.measure = "mse",
+    lambda.min.ratio = 1 / n_obs
+  )
 )
 hal_bounded_lrnr <- Pipeline$new(hal_gaussian_lrnr, bounding_lrnr)
 sl <- Lrnr_sl$new(
@@ -97,11 +100,11 @@ var_indep <- var(eif) / n_obs
 
 # 5) testing one-step estimator
 test_that("One-step estimate close to independent EIF estimates", {
-  expect_equal(theta_os$theta, psi_indep, tol = 0.005)
+  expect_equal(theta_os$theta, psi_indep, tol = 0.02)
 })
 
 test_that("EIF variance of one-step is close to independent EIF variance", {
-  expect_equal(theta_os$var, var_indep, tol = 0.0001)
+  expect_equal(theta_os$var, var_indep, tol = 1e-4)
 })
 
 test_that("Mean of estimated EIF is nearly zero for the one-step", {
@@ -110,11 +113,11 @@ test_that("Mean of estimated EIF is nearly zero for the one-step", {
 
 # 6) testing TML estimator
 test_that("TML estimate close to independent EIF estimates", {
-  expect_equal(theta_tmle$theta, psi_indep, tol = 0.005)
+  expect_equal(theta_tmle$theta, psi_indep, tol = 0.02)
 })
 
 test_that("EIF variance of TMLE is close to independent EIF variance", {
-  expect_equal(theta_tmle$var, var_indep, tol = 0.0001)
+  expect_equal(theta_tmle$var, var_indep, tol = 1e-4)
 })
 
 test_that("Mean of estimated EIF is close to TMLE stopping criterion", {

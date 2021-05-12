@@ -11,7 +11,7 @@ medoutcon(
   M,
   Y,
   obs_weights = rep(1, length(Y)),
-  ext_weights = NULL,
+  svy_weights = NULL,
   effect = c("direct", "indirect"),
   contrast = NULL,
   g_learners = sl3::Lrnr_glm_fast$new(),
@@ -19,10 +19,10 @@ medoutcon(
   b_learners = sl3::Lrnr_glm_fast$new(),
   q_learners = sl3::Lrnr_glm_fast$new(),
   r_learners = sl3::Lrnr_glm_fast$new(),
-  u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
-  v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
+  u_learners = sl3::Lrnr_hal9001$new(),
+  v_learners = sl3::Lrnr_hal9001$new(),
   estimator = c("tmle", "onestep"),
-  estimator_args = list(cv_folds = 5, max_iter = 5, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 10)
 )
 }
 \arguments{
@@ -45,7 +45,7 @@ the intervention A and the outcome Y).}
 \item{obs_weights}{A \code{numeric} vector of observation-level weights.
 The default is to give all observations equal weighting.}
 
-\item{ext_weights}{A \code{numeric} vector of observation-level weights that
+\item{svy_weights}{A \code{numeric} vector of observation-level weights that
 have been computed externally, such as survey sampling weights. Such
 weights are used in the construction of re-weighted efficient estimators.}
 

@@ -555,7 +555,7 @@ fit_nuisance_u <- function(train_data,
 
   ## override choice of learner with intercept model if constant
   if (stats::sd(u_pseudo_train) < .Machine$double.eps) {
-    warning("U: constant pseudo-outcome, choice of learner replaced by mean.")
+    warning("U: constant pseudo-outcome, using intercept model.")
     learners <- sl3::Lrnr_mean$new()
   }
 
@@ -657,8 +657,10 @@ fit_nuisance_v <- function(train_data,
   q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime
 
   ## first, compute components of integral over mediator-outcome confounder
-  ## assuming Z in {0,1}, other cases not supported yet
-  v_pseudo <- lapply(c(0, 1), function(z_val) {
+  ## assuming Z in {0,1} for interventional effects. NOTE: other cases (e.g.,
+  ## continuous intermediate confounder) not yet supported. For the natural
+  ## (in)direct effects, this will loop only over Z = 1.
+  v_pseudo <- lapply(unique(train_data$Z), function(z_val) {
     ## training data
     train_data_z_interv <- data.table::copy(train_data)
     train_data_z_interv[, `:=`(
@@ -711,16 +713,32 @@ fit_nuisance_v <- function(train_data,
   })
 
   ## compute pseudo-outcome by computing integral via discrete summation
-  v_pseudo_train <- v_pseudo[[1]]$training + v_pseudo[[2]]$training
-  v_pseudo_valid <- v_pseudo[[1]]$validation + v_pseudo[[2]]$validation
+  if (length(unique(train_data$Z)) > 1) {
+    ## for the interventional (in)direct effects with binary Z
+    v_pseudo_train <- v_pseudo[[1]]$training + v_pseudo[[2]]$training
+    v_pseudo_valid <- v_pseudo[[1]]$validation + v_pseudo[[2]]$validation
+  } else {
+    ## for the natural (in)direct effects with "constant" Z
+    v_pseudo_train <- v_pseudo[[1]]$training
+    v_pseudo_valid <- v_pseudo[[1]]$validation
+  }
 
   ## extract outcome model predictions with intervened Z for TMLE fluctuation
-  b_pred_A_prime_Z_zero <- v_pseudo[[1]]$b_valid
-  b_pred_A_prime_Z_one <- v_pseudo[[2]]$b_valid
+  if (length(unique(train_data$Z)) > 1) {
+    ## for the interventional (in)direct effects with binary Z
+    b_pred_A_prime_Z_zero <- v_pseudo[[1]]$b_valid
+    b_pred_A_prime_Z_one <- v_pseudo[[2]]$b_valid
+  } else {
+    ## for the natural (in)direct effects with "constant" Z
+    ## NOTE: used in a TMLE fluctuation step later, so by setting the estimate
+    ##       to zero under the Z = 0 contrast, we can avoid redundant summation
+    b_pred_A_prime_Z_zero <- rep(0, nrow(valid_data))
+    b_pred_A_prime_Z_one <- v_pseudo[[1]]$b_valid
+  }
 
   ## override choice of learner with intercept model if constant
   if (stats::sd(v_pseudo_train) < .Machine$double.eps) {
-    warning("V: constant pseudo-outcome, choice of learner replaced by mean.")
+    warning("V: constant pseudo-outcome, using intercept model.")
     learners <- sl3::Lrnr_mean$new()
   }
 

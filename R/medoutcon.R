@@ -13,7 +13,7 @@
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
 #' @param obs_weights A \code{numeric} vector of observation-level weights.
 #'  The default is to give all observations equal weighting.
-#' @param ext_weights A \code{numeric} vector of observation-level weights that
+#' @param svy_weights A \code{numeric} vector of observation-level weights that
 #'  have been computed externally, such as survey sampling weights. Such
 #'  weights are used in the construction of re-weighted efficient estimators.
 #' @param effect A \code{character} indicating whether to compute the direct
@@ -75,7 +75,7 @@ medoutcon <- function(W,
                       M,
                       Y,
                       obs_weights = rep(1, length(Y)),
-                      ext_weights = NULL,
+                      svy_weights = NULL,
                       effect = c("direct", "indirect"),
                       contrast = NULL,
                       g_learners = sl3::Lrnr_glm_fast$new(),
@@ -83,21 +83,28 @@ medoutcon <- function(W,
                       b_learners = sl3::Lrnr_glm_fast$new(),
                       q_learners = sl3::Lrnr_glm_fast$new(),
                       r_learners = sl3::Lrnr_glm_fast$new(),
-                      u_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
-                      v_learners = sl3::Lrnr_hal9001$new(max_degree = 5),
+                      u_learners = sl3::Lrnr_hal9001$new(),
+                      v_learners = sl3::Lrnr_hal9001$new(),
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
-                        cv_folds = 5, max_iter = 5,
+                        cv_folds = 5L, max_iter = 5L,
                         tiltmod_tol = 10
                       )) {
   # set defaults
-  effect <- match.arg(effect)
   estimator <- match.arg(estimator)
   estimator_args <- unlist(estimator_args, recursive = FALSE)
   est_args_os <- estimator_args[names(estimator_args) %in%
     names(formals(est_onestep))]
   est_args_tmle <- estimator_args[names(estimator_args) %in%
     names(formals(est_tml))]
+
+  # set constant Z for estimation of the natural (in)direct effects
+  if (is.null(Z)) {
+    Z <- rep(1, length(Y))
+    effect_type <- "natural"
+  } else {
+    effect_type <- "interventional"
+  }
 
   # construct input data structure
   data <- data.table::as.data.table(cbind(Y, M, Z, A, W, obs_weights))
@@ -118,7 +125,10 @@ medoutcon <- function(W,
   if (is.null(contrast)) {
     # select appropriate component for direct vs indirect effects
     is_effect_direct <- (effect == "direct")
-    contrast_grid <- list(switch(2 - is_effect_direct, c(0, 0), c(1, 1)))
+    contrast_grid <- list(switch(2 - is_effect_direct,
+      c(0, 0),
+      c(1, 1)
+    ))
     # term needed in the decomposition for both effects
     contrast_grid[[2]] <- c(1, 0)
   } else {
@@ -143,7 +153,8 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
-        ext_weights = ext_weights
+        effect_type = effect_type,
+        svy_weights = svy_weights
       )
       onestep_est_args <- unlist(list(onestep_est_args, est_args_os),
         recursive = FALSE
@@ -164,7 +175,8 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
-        ext_weights = ext_weights
+        effect_type = effect_type,
+        svy_weights = svy_weights
       )
       tmle_est_args <- unlist(list(tmle_est_args, est_args_tmle),
         recursive = FALSE
@@ -191,7 +203,7 @@ medoutcon <- function(W,
       var = de_var_est,
       eif = de_eif_est,
       type = estimator,
-      param = "direct_effect",
+      param = paste("direct", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
     class(de_est_out) <- "medoutcon"
@@ -208,14 +220,18 @@ medoutcon <- function(W,
       var = ie_var_est,
       eif = ie_eif_est,
       type = estimator,
-      param = "indirect_effect",
+      param = paste("indirect", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
     class(ie_est_out) <- "medoutcon"
     return(ie_est_out)
   } else {
     est_out <- unlist(est_params, recursive = FALSE)
-    est_out$param <- "contrast_spec"
+    est_out$param <- paste0(
+      "tsm(", "a'=", contrast[1], ",",
+      "a*=", contrast[2], ")"
+    )
+    est_out$.contrast <- contrast
     class(est_out) <- "medoutcon"
     return(est_out)
   }

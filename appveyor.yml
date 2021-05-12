@@ -30,9 +30,8 @@ environment:
     - R_VERSION: release
 
 build_script:
-  - travis-tool.sh install_github r-lib/covr
-  - travis-tool.sh install_github r-lib/sessioninfo
-  - travis-tool.sh install_github tlverse/sl3
+  - travis-tool.sh install_github r-lib/sessioninfo r-lib/covr
+  - travis-tool.sh install_github tlverse/hal9001@devel tlverse/sl3@devel
   - travis-tool.sh install_deps
 
 test_script:

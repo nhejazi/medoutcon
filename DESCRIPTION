@@ -45,14 +45,13 @@ Suggests:
     covr,
     Rsolnp,
     nnls,
-    hal9001 (>= 0.4.0),
+    hal9001 (>= 0.4.1),
     SuperLearner,
     speedglm,
     xgboost,
     ranger,
     arm
 Remotes:
-    github::tlverse/hal9001@devel,
     github::tlverse/sl3@devel
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon

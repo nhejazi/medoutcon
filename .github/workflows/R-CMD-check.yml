@@ -63,5 +63,5 @@ jobs:
       - name: Upload code coverage
         if: runner.os == 'Linux'
         run: |
-          covr::codecov(line_exclusions = list("R/utils.R", "R/plots.R"))
+          covr::codecov(line_exclusions = list("R/utils.R"))
         shell: Rscript {0}

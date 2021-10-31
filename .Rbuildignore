@@ -13,4 +13,5 @@
 ^cran-comments\.md$
 ^CONTRIBUTING\.md$
 ^sandbox$
+^paper$
 ^docs$

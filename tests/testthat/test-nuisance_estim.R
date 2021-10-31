@@ -20,21 +20,18 @@ hal_binomial_lrnr <- Lrnr_hal9001$new(
   family = "binomial",
   fit_control = list(
     n_folds = 5,
-    use_min = TRUE,
-    type.measure = "mse",
-    lambda.min.ratio = 1 / n_samp
+    use_min = TRUE
   )
 )
 hal_gaussian_lrnr <- Lrnr_hal9001$new(
   family = "gaussian",
   fit_control = list(
     n_folds = 5,
-    use_min = TRUE,
-    type.measure = "mse",
-    lambda.min.ratio = 1 / n_samp
+    use_min = TRUE
   )
 )
-g_learners <- h_learners <- b_learners <- q_learners <- r_learners <- hal_binomial_lrnr
+g_learners <- h_learners <- b_learners <- q_learners <- r_learners <-
+  hal_binomial_lrnr
 u_learners <- v_learners <- hal_gaussian_lrnr
 
 # simulate smaller data set for computing estimates
@@ -87,7 +84,7 @@ b_out <- fit_out_mech(
 )
 test_that("Estimates of outcome regression are close to the truth", {
   expect_equal(b_out$b_est_train$b_pred_A_prime, my(m, z, aprime, w),
-    tol = 0.15
+    tol = 0.1
   )
 })
 test_that("MSE of outcome regression estimates is sufficiently low", {
@@ -129,7 +126,7 @@ r_out <- fit_moc_mech(
 test_that("Estimates of confounder regression r are close to the truth", {
   expect_equal(r_out$moc_est_train_Z_one$moc_pred_A_prime,
     r(1, aprime, m, w),
-    tol = 0.075
+    tol = 0.07
   )
 })
 test_that("MSE of confounder regression r estimates is sufficiently low", {
@@ -155,7 +152,7 @@ u_out <- fit_nuisance_u(
   w_names = w_names
 )
 test_that("Estimates of pseudo-outcome regression are close to the truth", {
-  expect_equal(u_out$u_pred, u(z, w, aprime, astar), tol = 0.12)
+  expect_equal(u_out$u_pred, u(z, w, aprime, astar), tol = 0.1)
 })
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   u_mse <- mean((u_out$u_pred - u(z, w, aprime, astar))^2)

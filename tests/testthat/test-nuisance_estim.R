@@ -72,7 +72,7 @@ h_out <- fit_treat_mech(
 )
 test_that("Estimates of mediator propensity score are close to the truth", {
   expect_equal(h_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
-    tol = 0.025
+    tol = 0.05
   )
 })
 test_that("MSE of mediator propensity score estimates is sufficiently low", {

@@ -3,7 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   intro_medoutcon: intro_medoutcon.html
-last_built: 2021-11-01T04:33Z
+last_built: 2021-11-01T05:12Z
 urls:
   reference: https://code.nimahejazi.org/medoutcon/reference
   article: https://code.nimahejazi.org/medoutcon/articles

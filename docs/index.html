@@ -121,7 +121,21 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="co">#&gt; ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.1 ──</span>
+<span class="co">#&gt; ✔ ggplot2 3.3.5     ✔ purrr   0.3.4</span>
+<span class="co">#&gt; ✔ tibble  3.1.5     ✔ dplyr   1.0.7</span>
+<span class="co">#&gt; ✔ tidyr   1.1.4     ✔ stringr 1.4.0</span>
+<span class="co">#&gt; ✔ readr   2.0.2     ✔ forcats 0.5.1</span>
+<span class="co">#&gt; ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span>
+<span class="co">#&gt; ✖ dplyr::between()   masks data.table::between()</span>
+<span class="co">#&gt; ✖ dplyr::filter()    masks stats::filter()</span>
+<span class="co">#&gt; ✖ dplyr::first()     masks data.table::first()</span>
+<span class="co">#&gt; ✖ dplyr::lag()       masks stats::lag()</span>
+<span class="co">#&gt; ✖ dplyr::last()      masks data.table::last()</span>
+<span class="co">#&gt; ✖ purrr::transpose() masks data.table::transpose()</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/medoutcon">medoutcon</a></span><span class="op">)</span>
+<span class="co">#&gt; medoutcon v0.1.5: Efficient Causal Mediation Analysis With Intermediate</span>
+<span class="co">#&gt; Confounders</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1584</span><span class="op">)</span>
 
 <span class="co"># produces a simple data set based on ca causal model with mediation</span>
@@ -176,6 +190,11 @@
                    effect <span class="op">=</span> <span class="st">"direct"</span>,
                    estimator <span class="op">=</span> <span class="st">"onestep"</span><span class="op">)</span>
 <span class="va">os_de</span>
+<span class="co">#&gt; Interventional Direct Effect</span>
+<span class="co">#&gt; Estimator: onestep</span>
+<span class="co">#&gt; Estimate: -0.075</span>
+<span class="co">#&gt; Std. Error: 0.056</span>
+<span class="co">#&gt; 95% CI: [-0.186, 0.035]</span>
 
 <span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span>
 <span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,
@@ -185,7 +204,12 @@
                      Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,
                      effect <span class="op">=</span> <span class="st">"direct"</span>,
                      estimator <span class="op">=</span> <span class="st">"tmle"</span><span class="op">)</span>
-<span class="va">tmle_de</span></code></pre></div>
+<span class="va">tmle_de</span>
+<span class="co">#&gt; Interventional Direct Effect</span>
+<span class="co">#&gt; Estimator: tmle</span>
+<span class="co">#&gt; Estimate: -0.078</span>
+<span class="co">#&gt; Std. Error: 0.059</span>
+<span class="co">#&gt; 95% CI: [-0.193, 0.037]</span></code></pre></div>
 <p>For details on how to use data adaptive regression (machine learning) techniques in the estimation of nuisance parameters, consider consulting the vignette that accompanies the package.</p>
 <hr>
 </div>

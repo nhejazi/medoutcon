@@ -68,7 +68,21 @@ confounder (`Z`), consider the following example:
 ``` r
 library(data.table)
 library(tidyverse)
+#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.1 ──
+#> ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
+#> ✔ tibble  3.1.5     ✔ dplyr   1.0.7
+#> ✔ tidyr   1.1.4     ✔ stringr 1.4.0
+#> ✔ readr   2.0.2     ✔ forcats 0.5.1
+#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ✖ dplyr::between()   masks data.table::between()
+#> ✖ dplyr::filter()    masks stats::filter()
+#> ✖ dplyr::first()     masks data.table::first()
+#> ✖ dplyr::lag()       masks stats::lag()
+#> ✖ dplyr::last()      masks data.table::last()
+#> ✖ purrr::transpose() masks data.table::transpose()
 library(medoutcon)
+#> medoutcon v0.1.5: Efficient Causal Mediation Analysis With Intermediate
+#> Confounders
 set.seed(1584)
 
 # produces a simple data set based on ca causal model with mediation
@@ -123,6 +137,11 @@ os_de <- medoutcon(W = example_data[, ..w_names],
                    effect = "direct",
                    estimator = "onestep")
 os_de
+#> Interventional Direct Effect
+#> Estimator: onestep
+#> Estimate: -0.075
+#> Std. Error: 0.056
+#> 95% CI: [-0.186, 0.035]
 
 # compute targeted minimum loss estimate of the interventional direct effect
 tmle_de <- medoutcon(W = example_data[, ..w_names],
@@ -133,6 +152,11 @@ tmle_de <- medoutcon(W = example_data[, ..w_names],
                      effect = "direct",
                      estimator = "tmle")
 tmle_de
+#> Interventional Direct Effect
+#> Estimator: tmle
+#> Estimate: -0.078
+#> Std. Error: 0.059
+#> 95% CI: [-0.193, 0.037]
 ```
 
 For details on how to use data adaptive regression (machine learning)

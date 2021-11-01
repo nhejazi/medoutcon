@@ -87,7 +87,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a>, <a href="https://www.idiaz.xyz/">Iván Díaz</a>, and <a href="https://kararudolph.github.io/">Kara Rudolph</a>
 </h4>
             
-            <h4 class="date">2021-05-03</h4>
+            <h4 class="date">2021-11-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/medoutcon/blob/master/vignettes/intro_medoutcon.Rmd"><code>vignettes/intro_medoutcon.Rmd</code></a></small>
       <div class="hidden name"><code>intro_medoutcon.Rmd</code></div>
@@ -150,7 +150,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/medoutcon">medoutcon</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3">sl3</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">75681</span><span class="op">)</span>
-<span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">500</span>      <span class="co"># number of observations in our simulated dataset</span></code></pre></div>
+<span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">500</span></code></pre></div>
 <p>Next, we’ll generate a very simple simulated dataset. The function <code>make_example_data</code>, defined below, generates three binary baseline covariates <span class="math inline">\(W = (W_1, W_2, W_3)\)</span>, a binary exposure variable <span class="math inline">\(A\)</span>, a single binary mediateor <span class="math inline">\(M\)</span> an intermediate confounder <span class="math inline">\(Z\)</span> that affects the mediator <span class="math inline">\(M\)</span> and is itself affected by the exposure <span class="math inline">\(A\)</span>, and, finally, a binary outcome <span class="math inline">\(Y\)</span> that is a function of <span class="math inline">\((W, A, Z, M)\)</span>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># produces a simple data set based on ca causal model with mediation</span>
@@ -209,7 +209,7 @@ is the...
 <h2 class="hasAnchor">
 <a href="#ensemble-learning-of-nuisance-functions" class="anchor"></a>Ensemble learning of nuisance functions</h2>
 <p>As we’d like to rely on flexible, data adaptive regression strategies for estimating each of the nuisance parameters <span class="math inline">\((g, h, b, q, r)\)</span>, we require a method for choosing among or combining the wide variety of available regression strategies. For this, we recommend the use of the Super Learner algorithm for ensemble machine learning <span class="citation">(van der Laan, Polley, and Hubbard 2007)</span>. The recently developed <a href="https://tlverse.org/sl3"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2020)</span> provides a unified interface for deploying a wide variety of machine learning algorithms (simply called <em>learners</em> in the <code>sl3</code> nomenclature) as well as for constructing Super Learner ensemble models of such learners. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3" class="uri">https://tlverse.org/sl3</a>, or <a href="https://tlverse.org" class="uri">https://tlverse.org</a> (and <a href="https://github.com/tlverse" class="uri">https://github.com/tlverse</a>) for the <code>tlverse</code> ecosystem, of which <code>sl3</code> is an integral part.</p>
-<p>To construct an ensemble learner using a handful of popular machine learning algorithms, we’ll first instantiate variants of learners from the appropriate classes for each algorithm, and then create a Super Learner ensemble via the <code>Lrnr_sl</code> class. Below, we demonstrate the construction of an ensemble learner based on a modeling library including an intercept model, a main-terms GLM, <span class="math inline">\(\ell_1\)</span>-penalized Lasso regression, <span class="math inline">\(\ell_2\)</span>-penalized ridge regression, an elastic net regression that equally weights the <span class="math inline">\(\ell_1\)</span> and <span class="math inline">\(\ell_2\)</span> penalties, extreme gradient boosted trees (<code>xgboost</code>), and the highly adaptive lasso (HAL):</p>
+<p>To construct an ensemble learner using a handful of popular machine learning algorithms, we’ll first instantiate variants of learners from the appropriate classes for each algorithm, and then create a Super Learner ensemble via the <code>Lrnr_sl</code> class. Below, we demonstrate the construction of an ensemble learner based on a modeling library including an intercept model, a main-terms GLM, <span class="math inline">\(\ell_1\)</span>-penalized Lasso regression, an elastic net regression that equally weights the <span class="math inline">\(\ell_1\)</span> and <span class="math inline">\(\ell_2\)</span> penalties, random forests (<code>ranger</code>), and the highly adaptive lasso (HAL):</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># instantiate learners</span>
 <span class="va">mean_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_mean.html">Lrnr_mean</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
@@ -222,10 +222,10 @@ is the...
 <span class="va">hal_gaussian_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_hal9001.html">Lrnr_hal9001</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
   family <span class="op">=</span> <span class="st">"gaussian"</span>,
   fit_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    max_degree <span class="op">=</span> <span class="fl">3</span>,
     n_folds <span class="op">=</span> <span class="fl">3</span>,
     use_min <span class="op">=</span> <span class="cn">TRUE</span>,
-    type.measure <span class="op">=</span> <span class="st">"mse"</span>,
-    lambda.min.ratio <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="va">n_obs</span>
+    type.measure <span class="op">=</span> <span class="st">"mse"</span>
   <span class="op">)</span>
 <span class="op">)</span>
 <span class="va">bound_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_bound.html">Lrnr_bound</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>bound <span class="op">=</span> <span class="fl">1e-6</span><span class="op">)</span>
@@ -264,7 +264,7 @@ is the...
                    estimator <span class="op">=</span> <span class="st">"onestep"</span>,
                    estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">os_de</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 1 x 7
+<pre><code>## # A tibble: 1 × 7
 ##   lwr_ci param_est upr_ci var_est  eif_mean estimator param                
 ##    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                
 ## 1 -0.122  -0.00644  0.109 0.00348 -2.66e-17 onestep   direct_interventional</code></pre>
@@ -286,7 +286,7 @@ is the...
                      estimator <span class="op">=</span> <span class="st">"tmle"</span>,
                      estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span>, max_iter <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmle_de</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 1 x 7
+<pre><code>## # A tibble: 1 × 7
 ##    lwr_ci param_est upr_ci var_est eif_mean estimator param                
 ##     &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                
 ## 1 -0.0949    0.0113  0.118 0.00294  0.00870 tmle      direct_interventional</code></pre>
@@ -312,7 +312,7 @@ is the...
                    effect <span class="op">=</span> <span class="st">"indirect"</span>,
                    estimator <span class="op">=</span> <span class="st">"onestep"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">os_ie</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 1 x 7
+<pre><code>## # A tibble: 1 × 7
 ##   lwr_ci param_est  upr_ci var_est eif_mean estimator param                  
 ##    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                  
 ## 1 -0.189    -0.119 -0.0489 0.00128 9.55e-17 onestep   indirect_interventional</code></pre>
@@ -333,7 +333,7 @@ is the...
                      effect <span class="op">=</span> <span class="st">"indirect"</span>,
                      estimator <span class="op">=</span> <span class="st">"tmle"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmle_ie</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 1 x 7
+<pre><code>## # A tibble: 1 × 7
 ##   lwr_ci param_est  upr_ci var_est  eif_mean estimator param                  
 ##    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                  
 ## 1 -0.200    -0.120 -0.0394 0.00167 -0.000267 tmle      indirect_interventional</code></pre>

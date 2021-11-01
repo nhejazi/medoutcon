@@ -16,13 +16,12 @@ knitr::opts_chunk$set(
 
 # R/`medoutcon`
 
-[![Travis-CI Build Status](https://travis-ci.com/nhejazi/medoutcon.svg?branch=master)](https://travis-ci.com/nhejazi/medoutcon)
-[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/medoutcon?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/medoutcon)
+[![R-CMD-check](https://github.com/nhejazi/medoutcon/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/medoutcon/actions)
 [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis with Intermediate Confounders
+> Efficient Causal Mediation Analysis for the Natural and Interventional Effects
 
 __Authors:__ [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -71,7 +70,7 @@ To illustrate how `medoutcon` may be used to estimate stochastic interventional
 mediator(s) (`M`) and a mediator-outcome confounder (`Z`), consider the
 following example:
 
-```{r example, message=FALSE, warning=FALSE}
+```{r example, warning=FALSE}
 library(data.table)
 library(tidyverse)
 library(medoutcon)
@@ -177,8 +176,8 @@ After using the `medoutcon` R package, please cite the following:
 
         @software{hejazi2021medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-          title = {{medoutcon}: Efficient causal mediation analysis under
-            intermediate confounding},
+          title = {{medoutcon}: Efficient causal mediation analysis for the
+            natural and interventional effects},
           year  = {2021},
           url = {https://github.com/nhejazi/medoutcon},
           note = {R package version 0.1.5}

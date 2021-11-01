@@ -9,7 +9,7 @@ check:
 	Rscript -e "devtools::check()"
 
 checkfast:
-	Rscript -e "devtools::check(build_args = '--no-build-vignettes')"
+	Rscript -e "devtools::check(vignettes = FALSE)"
 
 test:
 	Rscript -e "devtools::test()"
@@ -26,4 +26,4 @@ buildfast:
 style:
 	Rscript -e "styler::style_pkg()"
 
-pr: style check site
+pr: style checkfast site

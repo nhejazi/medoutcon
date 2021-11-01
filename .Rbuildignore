@@ -12,5 +12,6 @@
 # Extra miscellaneous support files/directories.
 ^cran-comments\.md$
 ^CONTRIBUTING\.md$
+^\.github$
 ^sandbox$
 ^docs$

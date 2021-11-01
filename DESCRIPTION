@@ -1,5 +1,5 @@
 Package: medoutcon
-Title: Efficient Causal Mediation Analysis With Intermediate Confounders
+Title: Efficient Causal Mediation Analysis for the Natural and Interventional Effects
 Version: 0.1.5
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
@@ -59,4 +59,4 @@ BugReports: https://github.com/nhejazi/medoutcon/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1.9001
+RoxygenNote: 7.1.2

@@ -25,8 +25,10 @@ fglm_lrnr <- Lrnr_glm_fast$new()
 bayesglm_lrnr <- Lrnr_bayesglm$new()
 lasso_lrnr <- Lrnr_glmnet$new(alpha = 1, nfolds = 3L)
 enet_lrnr <- Lrnr_glmnet$new(alpha = 0.5, nfolds = 3L)
-rf_lrnr <- Lrnr_ranger$new(num.trees = 1000, sample.fraction = 0.7,
-                           oob.error = FALSE)
+rf_lrnr <- Lrnr_ranger$new(
+  num.trees = 1000, sample.fraction = 0.7,
+  oob.error = FALSE
+)
 logistic_meta <- Lrnr_solnp$new(
   metalearner_logistic_binomial,
   loss_loglik_binomial

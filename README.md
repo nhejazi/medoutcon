@@ -3,10 +3,7 @@
 
 # R/`medoutcon`
 
-[![Travis-CI Build
-Status](https://travis-ci.com/nhejazi/medoutcon.svg?branch=master)](https://travis-ci.com/nhejazi/medoutcon)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/medoutcon?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/medoutcon)
+[![R-CMD-check](https://github.com/nhejazi/medoutcon/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/medoutcon/actions)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
 [![Project Status: Active – The project has reached a stable, usable
@@ -15,7 +12,8 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Efficient Causal Mediation Analysis with Intermediate Confounders
+> Efficient Causal Mediation Analysis for the Natural and Interventional
+> Effects
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org), [Iván
 Díaz](https://idiaz.xyz), and [Kara
@@ -125,17 +123,6 @@ os_de <- medoutcon(W = example_data[, ..w_names],
                    effect = "direct",
                    estimator = "onestep")
 os_de
-#> $theta
-#> [1] -0.07567883
-#> 
-#> $var
-#> [1] 0.003171717
-#> 
-#> $type
-#> [1] "onestep"
-#> 
-#> $param
-#> [1] "direct_effect"
 
 # compute targeted minimum loss estimate of the interventional direct effect
 tmle_de <- medoutcon(W = example_data[, ..w_names],
@@ -146,17 +133,6 @@ tmle_de <- medoutcon(W = example_data[, ..w_names],
                      effect = "direct",
                      estimator = "tmle")
 tmle_de
-#> $theta
-#> [1] -0.0775445
-#> 
-#> $var
-#> [1] 0.003476221
-#> 
-#> $type
-#> [1] "tmle"
-#> 
-#> $param
-#> [1] "direct_effect"
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -203,8 +179,8 @@ After using the `medoutcon` R package, please cite the following:
 
     @software{hejazi2021medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Efficient causal mediation analysis under
-        intermediate confounding},
+      title = {{medoutcon}: Efficient causal mediation analysis for the
+        natural and interventional effects},
       year  = {2021},
       url = {https://github.com/nhejazi/medoutcon},
       note = {R package version 0.1.5}

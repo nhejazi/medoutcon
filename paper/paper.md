@@ -23,89 +23,76 @@ affiliations:
     index: 1
   - name: Department of Epidemiology, Mailman School of Public Health, Columbia University
     index: 2
-date: 04 November 2021
+date: 07 November 2021
 bibliography: ../inst/REFERENCES.bib
 ---
 
 # Summary
 
-Efficient estimators of interventional (in)direct effects in the presence of
-mediator-outcome confounding affected by exposure. The effects estimated allow
-for the impact of the exposure on the outcome through a direct path to be
-disentangled from that through mediators, even in the presence of intermediate
-confounders that complicate such a relationship. Currently supported are
-non-parametric efficient one-step and targeted minimum loss estimators based on
-the formulation of Díaz, Hejazi, Rudolph, and van der Laan (2020)
-<doi:10.1093/biomet/asaa085>. Support for efficient estimation of the natural
-(in)direct effects is also provided, appropriate for settings in which
-intermediate confounders are absent.
-
-Statistical causal inference has traditionally focused on effects defined by
-inflexible static interventions, applicable only to binary or categorical
-exposures. The evaluation of such interventions is often plagued by many
-problems, both theoretical (e.g., non-identification) and practical (e.g.,
-positivity violations); however, stochastic interventions provide a promising
-solution to these fundamental issues [@diaz2018stochastic]. The `txshift` `R`
-package provides researchers in (bio)statistics, epidemiology, health policy,
-economics, and related disciplines with access to state-of-the-art statistical
-methodology for evaluating the causal effects of stochastic shift interventions
-on _continuous-valued_ exposures. `txshift` estimates the causal effects of
-modified treatment policies (or "feasible interventions"), which take into
-account the natural value of an exposure in assigning an intervention level. To
-accommodate use in study designs incorporating outcome-dependent two-phase
-sampling (e.g., case-control), the package provides two types of modern
-corrections, both rooted in semiparametric theory, for constructing unbiased and
-efficient estimates, despite the significant limitations induced by such
-designs. Thus, `txshift` makes possible the estimation of the causal effects of
-stochastic interventions in experimental and observational study settings
-subject to real-world design limitations that commonly arise in modern
-scientific practice.
+Science is most often concerned with questions of _mechanism_. In myriad
+applications, only the portion of the effect of an exposure variable on an
+outcome variable through a particular pathway under study is of interest. The
+study of such path-specific, or mediation, effects has a rich history, first
+undertaken scientifically by wright1 and extended soon thereafter in wright2.
+Today, the study of such effects has attracted a great deal of attention in
+statistics and causal inference, often inspired by applications in disciplines
+from epidemiology and vaccinology to psychology and economics. Examples include
+understanding the biological mechanisms by which vaccines causally alter
+infection risk [@hejazi2020efficient; benkeser], assessing the effect of novel
+pharmacological therapies on substance abuse disorder relapse [@hejazi2021], and
+evaluating the effects of housing vouchers on adolescent development [@rudolph].
+The `medoutcon` `R` package provides researchers in each of these disciplines
+with the tools necessary to implement efficient estimators of the interventional
+(in)direct effects [diaz2020biometrika], a recently formulated set of causal
+effects robust to the presence of confounding of the mediator-outcome
+relationship by the exposure variable. In cases where such confounding is not
+a problem, the interventional (in)direct effects [tyler, many others] reduce to
+the well-studied natural (in)direct effects [robins, pearl], for which
+`medoutcon` provides efficient estimators similar to those of @zheng. By readily
+incorporating the use of machine learning in the estimation of nuisance
+parameters (through integration with the `sl3` `R` package [coyle] of the
+`tlverse` ecosystem [coyle]), `medoutcon` furnishes both researchers and
+analysts with access to state-of-the-art semiparametric estimation techniques,
+facilitating their use in a vast range of subject areas.
 
 # Statement of Need
 
-Researchers seeking to build upon or apply cutting-edge statistical approaches
-for causal inference often face significant obstacles: such methods are usually
-not accompanied by robust, well-tested, and well-documented software packages.
-Yet coding such methods from scratch is often impractical for the applied
-researcher, as understanding the theoretical underpinnings of these methods
-requires advanced training, severely complicating the assessment and testing of
-bespoke causal inference software. What's more, even when such software tools
-exist, they are usually minimal implementations, providing support only for
-deploying the statistical method in problem settings untouched by the
-complexities of real-world data. The `txshift` `R` package solves this problem
-by providing an open source tool for evaluating the causal effects of flexible,
-stochastic interventions, applicable to categorical or continuous-valued
-exposures, while providing corrections for appropriately handling data generated
-by commonly used but complex two-phase sampling designs.
+While there is demonstrable interest in causal mediation analysis in a large
+variety of disciplines, thoughtfully implementing data analysis strategies based
+on recent developments in this area is challenging. Developments in the causal
+inference and statistics literature often fall into two key areas. Broadly, the
+study of identification outlines novel causal effect parameters with properties
+desirable in real-world settings (e.g., the interventional effects, which can be
+learned under mediator-outcome confounding) and untestable assumptions under
+which a statistical functionals corresponds to a given causal effect. Another
+line of study develops semiparametric efficiency theory for the statistical
+functionals matching these novel causal estimands, allowing their robust
+estimation with tools from machine learning. While these complementary efforts
+are necessary, neither is concerned with opening the door to applying these
+estimators in real-world data analyses. What's more, the implementation of
+open source software for efficient estimators of causal effects is no easy feat
+-- for such a task, the data scientist must be knowledgeable of causal
+inference, semiparametric theory, machine learning, and the intersection of
+these disciplines (not to mention research software engineering best practices,
+including, for example, unit/regression testing and continuous integration).
+With these issues in mind, the `medoutcon` `R` package is a free, open source
+implementation of non/semi-parametric efficient estimators of the natural and
+interventional (in)direct effects, providing data scientists in research and in
+industry with access to state-of-the-art statistical methodology for causal
+mediation analysis.
 
-# Background
+# The Natural and Interventional Effects
 
-Causal inference has traditionally focused on the effects of static
-interventions, under which the magnitude of the exposure is set to a fixed,
-prespecified value for each unit. The evaluation of such interventions faces
-a host of issues, among them non-identification, violations of the assumption of
-positivity, and inefficiency. Stochastic interventions provide a promising
-solution to these fundamental issues by allowing for the target parameter to be
-defined as the mean counterfactual outcome under a hypothetically shifted
-version of the observed exposure distribution [@diaz2012population].
-Modified treatment policies, a particular class of such interventions, may be
-interpreted as shifting the natural exposure level at the level of a given
-observational unit [@haneuse2013estimation; @diaz2018stochastic].
+Paragraph on the Natural effects
 
-Despite the promise of such advances in causal inference, real data analyses are
-often further complicated by economic constraints, such as when the primary
-variable of interest is far more expensive to collect than auxiliary covariates.
-Two-phase sampling is often used to bypass these limitations -- unfortunately,
-these sampling schemes produce side effects that require further adjustment when
-formal statistical inference is the principal goal of a study. Among the rich
-literature on two-phase designs, @rose2011targeted2sd stand out for providing
-a study of nonparametric efficiency theory under a broad class of two-phase
-designs. Their work provides guidance on constructing efficient estimators of
-causal effects under general two-phase sampling designs.
+Paragraph on the Interventional Effects
 
-# `txshift`'s Scope
+# `medoutcon`'s Scope
 
-Building on these prior works, @hejazi2020efficient outlined a novel approach
+Building on existing efforts in the literature on the interventional effects,
+@diaz2020nonparametric recently developed non/semi-parametric efficiency theory
+
+outlined a novel approach
 for use in such settings: augmented targeted minimum loss (TML) and one-step
 estimators for the causal effects of stochastic interventions, with guarantees
 of consistency, efficiency, and multiple robustness despite the presence of
@@ -137,18 +124,17 @@ parameters to their true counterparts for efficiency of the resultant estimator.
 
 # Availability
 
-The `txshift` package has been made publicly available both [via
-GitHub](https://github.com/nhejazi/txshift) and the [Comprehensive `R` Archive
-Network](https://CRAN.R-project.org/package=txshift). Use of the `txshift`
-package has been extensively documented in the package's `README`, two
-vignettes, and its [`pkgdown` documentation
-website](https://code.nimahejazi.org/txshift).
+The `medoutcon` package has been made publicly available [via
+GitHub](https://github.com/nhejazi/medoutcon), with plans for submission to the
+Comprehensive `R` Archive Network, pending the inclusion of its dependencies in
+that repository. Use of the `medoutcon` package has been extensively documented
+in the package's `README`, a vignette, and its [`pkgdown` documentation
+website](https://code.nimahejazi.org/medoutcon).
 
 # Acknowledgments
 
-Nima Hejazi's contributions to this work were supported in part by a grant from
-the National Institutes of Health: [T32
-LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=9248418&icde=37849831&ddparam=&ddvalue=&ddsub=&cr=1&csb=default&cs=ASC&pball=).
+NH's contributions to this work were supported in part by a grant from the
+National Science Foundation (award number DMS TODO).
 
 # References
 

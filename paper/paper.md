@@ -103,12 +103,15 @@ between nodes. The natural (in)direct effects cannot be identified (i.e.,
 learned from the observed data) in the presence of intermediate confounding, so,
 for now, we make the simplifying assumption that the intermediate variable $Z$
 does not exist. In this simple case, the population average treatment effect
-(ATE) -- that is, the total effect of $A$ on $Y$ -- may be decomposed into the
-natural direct effect (NDE) and the natural indirect effect (NIE) as
+(ATE) -- that is, the total effect of $A$ on $Y$, comparing two exposure
+contrasts $\{a', a^{\star}\}$ -- may be decomposed into the natural direct
+effect (NDE) and the natural indirect effect (NIE) as
 \begin{equation*}
-  \mathbb{E}[Y(1) - Y(0)] =
-    \underbrace{\mathbb{E}[Y(1, M(0)) - Y(0, M(0))]}_{NDE} +
-    \underbrace{\mathbb{E}[Y(1, M(1)) - Y(1, M(0))]}_{NIE},
+  \mathbb{E}[Y(a') - Y(a^{\star})] =
+    \underbrace{\mathbb{E}[Y(a', M(a')) - Y(a',
+      M(a^{\star}))]}_{\text{Indirect effect (through $M$)}} +
+    \underbrace{\mathbb{E}[Y(a', M(a^{\star})) - Y(a^{\star},
+      M(a^{\star}))]}_{\text{Direct effect (not through $M$)}},
 \end{equation*}
 where the NIE captures the effect of the exposure $A$ on $Y$ through the
 mediating variables $M$ while the NDE captures the effect of $A$ on $Y$ through
@@ -128,13 +131,13 @@ analysis settings in which intermediate confounders abound, @didelez2006direct,
 development of the interventional (in)direct effects. Unlike the decomposition
 strategy that delineates the NDE and NIE, a more sophisticated approach to
 identification -- relying upon _stochastic_ interventions on the mediator(s) --
-is required. Specifically, for two exposure contrasts $\{a', a^{\star}\}$,
-the effect of $A$ on $Y$ can be defined as the
-difference in expected outcome in the hypothetical worlds in which $(A,M) = (a',
-G_{a'})$ versus $(A,M) = (a^{\star}, G_{a^{\star}})$ with probability one, where
-Let $G_a$ denote a random draw from the conditional distribution of $M_a$
-conditional on $W$ (defined by a stochastic intervention). The total effect can
-then be decomposed into direct and indirect effects as follows
+is required. Specifically, for the two exposure contrasts $\{a', a^{\star}\}$,
+the effect of $A$ on $Y$ can be defined as the difference in expected outcome in
+the hypothetical worlds in which $(A,M) = (a', G_{a'})$ versus $(A,M)
+= (a^{\star}, G_{a^{\star}})$ with probability one, where Let $G_a$ denote
+a random draw from the conditional distribution of $M_a$ conditional on $W$
+(defined by a stochastic intervention). The total effect can then be decomposed
+into direct and indirect effects as follows
 \begin{equation*}
 \mathbb{E}_c(Y_{a', G_{a'}} - Y_{a^{\star}, G_{a^{\star}}}) =
   \underbrace{\mathbb{E}_c(Y_{a', G_{a'}} - Y_{a',

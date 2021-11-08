@@ -1,3 +1,18 @@
+@article{hejazi2021nonparametric,
+  title = {Nonparametric causal mediation analysis for stochastic
+    interventional (in)direct effects},
+  author = {Hejazi, Nima S and Rudolph, Kara E and {van der Laan}, Mark J and
+    D{\'\i}az, Iv{\'a}n},
+  year = {2021},
+  url = {https://arxiv.org/abs/2009.06203},
+  doi = {},
+  journal = {\textnormal{revision invited at} Biostatistics},
+  volume = {},
+  number = {},
+  pages = {},
+  publisher = {}
+}
+
 @article{diaz2020nonparametric,
   title={Non-parametric efficient causal mediation with intermediate
     confounders},
@@ -110,16 +125,17 @@
   publisher={De Gruyter}
 }
 
-@misc{coyle2020sl3,
+@software{coyle-gh-sl3,
+  doi = {10.5281/zenodo.1342293},
+  url = {https://github.com/tlverse/sl3},
+  note = {{\texttt{R}} package},
+  version = {1.4.3},
   author = {Coyle, Jeremy R and Hejazi, Nima S and Malenica, Ivana and
-    Sofrygin, Oleg},
-  title = {\texttt{sl3}: Modern Pipelines for Machine Learning and {Super
+    Phillips, Rachael V and Sofrygin, Oleg},
+  author+an = {2=highlight},
+  title = {{\texttt{sl3}}: Modern pipelines for machine learning and {Super
     Learning}},
-  year = {2020},
-  howpublished = {\url{https://github.com/tlverse/sl3}},
-  note = {{R} package version 1.3.7},
-  url = {https://doi.org/10.5281/zenodo.1342293},
-  doi = {10.5281/zenodo.1342293}
+  keywords = {software-pkg}
 }
 
 @article{pfanzagl1985contributions,
@@ -168,9 +184,44 @@
 @article{benkeser2020nonparametric,
   title={Nonparametric inference for interventional effects with multiple
     mediators},
-  author={Benkeser, David},
-  journal={arXiv preprint arXiv:2001.06027},
-  year={2020}
+  author={Benkeser, David and Ran, Jialu},
+  year={2021},
+  doi = {10.1515/jci-2020-0018},
+  journal={Journal of Causal Inference},
+  volume={},
+  number={},
+  pages={},
+  publisher={De Gruyter}
+}
+
+@article{robins1992identifiability,
+  title={Identifiability and exchangeability for direct and indirect effects},
+  author={Robins, James M and Greenland, Sander},
+  journal={Epidemiology},
+  pages={143--155},
+  year={1992},
+  publisher={JSTOR}
+}
+
+@article{pearl2001direct,
+  title={Direct and indirect effects},
+  author={Pearl, Judea},
+  journal={arXiv preprint arXiv:1301.2300},
+  year={2001}
+}
+
+@article{tchetgen2012semiparametric,
+  author = {{Tchetgen Tchetgen}, Eric J and Shpitser, Ilya},
+  doi = {10.1214/12-AOS990},
+  journal = {Annals of Statistics},
+  language = {eng},
+  month = {jun},
+  number = {3},
+  pages = {1816--1845},
+  title = {Semiparametric Theory for Causal Mediation Analysis: efficiency
+    bounds, multiple  robustness, and sensitivity analysis},
+  volume = {40},
+  year = {2012}
 }
 
 @article{zheng2012targeted,
@@ -182,4 +233,84 @@
   title = {Targeted maximum likelihood estimation of natural direct effects},
   volume = {8},
   year = {2012}
+}
+
+@inproceedings{avin2005identifiability,
+  title={Identifiability of path-specific effects},
+  author={Avin, Chen and Shpitser, Ilya and Pearl, Judea},
+  booktitle={IJCAI International Joint Conference on Artificial Intelligence},
+  pages={357--363},
+  year={2005}
+}
+
+@inproceedings{didelez2006direct,
+  title={Direct and indirect effects of sequential treatments},
+  author={Didelez, Vanessa and Dawid, Philip and Geneletti, Sara},
+  booktitle={Proceedings of the 22nd Annual Conference on Uncertainty in
+    Artificial Intelligence},
+  pages={138--146},
+  year={2006}
+}
+
+@book{bickel1993efficient,
+  title={Efficient and Adaptive Estimation for Semiparametric Models},
+  author={Bickel, Peter J and Klaassen, Chris AJ and Ritov, YA'Acov and
+    Wellner, Jon A},
+  year={1993},
+  publisher={Johns Hopkins University Press Baltimore}
+}
+
+@incollection{zheng2011cross,
+  title={Cross-validated targeted minimum-loss-based estimation},
+  author={Zheng, Wenjing and {van der Laan}, Mark J},
+  booktitle={Targeted Learning: Causal Inference for Observational and
+    Experimental Data},
+  pages={459--474},
+  year={2011},
+  publisher={Springer}
+}
+
+@article{chernozhukov2017double,
+  title={Double/debiased/neyman machine learning of treatment effects},
+  author={Chernozhukov, Victor and Chetverikov, Denis and Demirer, Mert and
+    Duflo, Esther and Hansen, Christian and Newey, Whitney},
+  journal={American Economic Review},
+  volume={107},
+  number={5},
+  pages={261--65},
+  year={2017}
+}
+
+@manual{R,
+  address = {Vienna, Austria},
+  author = {{R Core Team}},
+  organization = {R Foundation for Statistical Computing},
+  title = {\text{R}: A Language and Environment for Statistical Computing},
+  url = {https://R-project.org/},
+  year = {2021}
+}
+
+@article{coyle2018origami,
+  author = {Coyle, Jeremy R and Hejazi, Nima S},
+  title = {origami: A Generalized Framework for Cross-Validation in R},
+  journal = {The Journal of Open Source Software},
+  volume = {3},
+  number = {21},
+  month = {January},
+  year  = {2018},
+  publisher = {The Open Journal},
+  doi = {10.21105/joss.00512},
+  url = {https://doi.org/10.21105/joss.00512}
+}
+
+@software{coyle-cran-origami,
+  doi = {10.5281/zenodo.835602},
+  url = {https://CRAN.R-project.org/package=origami},
+  note = {{\texttt{R}} package},
+  version = {1.0.5},
+  author = {Coyle, Jeremy R and Hejazi, Nima S and Malenica, Ivana and
+    Phillips, Rachael V},
+  author+an = {2=highlight},
+  title = {{\texttt{origami}}: Generalized framework for cross-validation},
+  keywords = {software-pkg}
 }

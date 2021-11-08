@@ -84,7 +84,7 @@ interventional (in)direct effects, providing data scientists in research and in
 industry with access to state-of-the-art statistical methodology for causal
 mediation analysis.
 
-# Causal Mediation Effects: From the Natural to the Interventional
+# Natural and Interventional Causal Mediation Effects
 
 To evaluate the causal effects of exposures on an outcome variable through
 mediating pathways, let's consider a dataset of $n$ units, where the observed

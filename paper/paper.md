@@ -139,11 +139,11 @@ a random draw from the conditional distribution of $M_a$ conditional on $W$
 (defined by a stochastic intervention). The total effect can then be decomposed
 into direct and indirect effects as follows
 \begin{equation*}
-\mathbb{E}_c(Y_{a', G_{a'}} - Y_{a^{\star}, G_{a^{\star}}}) =
-  \underbrace{\mathbb{E}_c(Y_{a', G_{a'}} - Y_{a',
-    G_{a^{\star}}})}_{\text{Indirect effect (through $M$)}} +
-  \underbrace{\mathbb{E}_c(Y_{a', G_{a^{\star}}} - Y_{a^{\star},
-      G_{a^{\star}}})}_{\text{Direct effect (not through $M$)}}.
+\mathbb{E}[Y(a', G_{a'}) - Y(a^{\star}, G_{a^{\star}})] =
+  \underbrace{\mathbb{E}[Y(a', G_{a'}) - Y(a',
+    G_{a^{\star}})]}_{\text{Indirect effect (through $M$)}} +
+  \underbrace{\mathbb{E}[Y(a', G_{a^{\star}}) - Y(a^{\star},
+      G_{a^{\star}})]}_{\text{Direct effect (not through $M$)}}.
 \end{equation*}
 Like the NDE, this interventional direct effect measures the effects through all
 paths avoiding the mediating variables. Analogous to the NIE, the interventional

@@ -182,8 +182,11 @@ identifying statistical functionals of the natural and interventional (in)direct
 effects in the absence of intermediate confounding. In this simplified case, the
 efficient estimators of the interventional (in)direct effects formulated by
 @diaz2020nonparametric are analogous to the efficient estimators of the natural
-(in)direct effects formulated by @zheng2012targeted.
-
+(in)direct effects formulated by @zheng2012targeted. By supporting this case,
+`medoutcon` serves as a one-stop tool for estimating these classical and popular
+causal mediation effects, allowing for practicing data scientists and applied
+statisticians to deploy cutting-edge estimators of the natural and
+interventional (in)direct effects through a unified application user interface.
 
 # Availability
 

@@ -106,9 +106,9 @@ does not exist. In this simple case, the population average treatment effect
 (ATE) -- that is, the total effect of $A$ on $Y$ -- may be decomposed into the
 natural direct effect (NDE) and the natural indirect effect (NIE) as
 \begin{equation*}
-  \E[Y(1) - Y(0)] =
-    \underbrace{\E[Y(1, M(0)) - Y(0, M(0))]}_{NDE} +
-    \underbrace{\E[Y(1, M(1)) - Y(1, M(0))]}_{NIE},
+  \mathbb{E}[Y(1) - Y(0)] =
+    \underbrace{\mathbb{E}[Y(1, M(0)) - Y(0, M(0))]}_{NDE} +
+    \underbrace{\mathbb{E}[Y(1, M(1)) - Y(1, M(0))]}_{NIE},
 \end{equation*}
 where the NIE captures the effect of the exposure $A$ on $Y$ through the
 mediating variables $M$ while the NDE captures the effect of $A$ on $Y$ through

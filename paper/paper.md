@@ -33,27 +33,30 @@ Science is most often concerned with questions of _mechanism_. In myriad
 applications, only the portion of the effect of an exposure variable on an
 outcome variable through a particular pathway under study is of interest. The
 study of such path-specific, or mediation, effects has a rich history, first
-undertaken scientifically by wright1 and extended soon thereafter in wright2.
-Today, the study of such effects has attracted a great deal of attention in
-statistics and causal inference, often inspired by applications in disciplines
-from epidemiology and vaccinology to psychology and economics. Examples include
-understanding the biological mechanisms by which vaccines causally alter
-infection risk [@hejazi2020efficient; benkeser], assessing the effect of novel
-pharmacological therapies on substance abuse disorder relapse [@hejazi2021], and
-evaluating the effects of housing vouchers on adolescent development [@rudolph].
-The `medoutcon` `R` package provides researchers in each of these disciplines
-with the tools necessary to implement efficient estimators of the interventional
-(in)direct effects [diaz2020biometrika], a recently formulated set of causal
-effects robust to the presence of confounding of the mediator-outcome
-relationship by the exposure variable. In cases where such confounding is not
-a problem, the interventional (in)direct effects [tyler, many others] reduce to
-the well-studied natural (in)direct effects [robins, pearl], for which
-`medoutcon` provides efficient estimators similar to those of @zheng. By readily
-incorporating the use of machine learning in the estimation of nuisance
-parameters (through integration with the `sl3` `R` package [coyle] of the
-`tlverse` ecosystem [coyle]), `medoutcon` furnishes both researchers and
-analysts with access to state-of-the-art semiparametric estimation techniques,
-facilitating their use in a vast range of subject areas.
+undertaken scientifically by @wright1921correlation and extended soon thereafter
+in @wright1934method. Today, the study of such effects has attracted a great
+deal of attention in statistics and causal inference, often inspired by
+applications in disciplines from epidemiology and vaccinology to psychology and
+economics. Examples include understanding the biological mechanisms by which
+vaccines causally alter infection risk [@hejazi2020efficient;
+@benkeser2021inference], assessing the effect of novel pharmacological therapies
+on substance abuse disorder relapse [@hejazi2021nonparametric;
+@rudolph2020explaining], and evaluating the effects of housing vouchers on
+adolescent development [@rudolph2021helped]. The `medoutcon` `R` package
+provides researchers in each of these disciplines with the tools necessary to
+implement efficient estimators of the interventional (in)direct effects
+[@diaz2020nonparametric], a recently formulated set of causal effects robust to
+the presence of confounding of the mediator-outcome relationship by the exposure
+variable. In cases where such confounding is a nonissue, the interventional
+(in)direct effects [tyler, many others] reduce to the well-studied natural
+(in)direct effects [@robins1992identifiability; @pearl2001direct], for which
+`medoutcon` provides efficient estimators similar to those of
+@zheng2012targeted. By readily incorporating the use of machine learning in the
+estimation of nuisance parameters (through integration with the `sl3` `R`
+package [@coyle-gh-sl3] of the `tlverse` ecosystem [@vdl2022targeted]),
+`medoutcon` furnishes both researchers and analysts with access to
+state-of-the-art semiparametric estimation techniques, facilitating their use in
+a vast range of subject areas.
 
 # Statement of Need
 

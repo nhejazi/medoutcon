@@ -53,6 +53,7 @@ Suggests:
     ranger,
     arm
 Remotes:
+    github::tlverse/hal9001,
     github::tlverse/sl3@devel
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon

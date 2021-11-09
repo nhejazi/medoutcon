@@ -30,33 +30,32 @@ bibliography: ../inst/REFERENCES.bib
 # Summary
 
 Science is most often concerned with questions of _mechanism_. In myriad
-applications, only the portion of the effect of an exposure variable on an
-outcome variable through a particular pathway under study is of interest. The
-study of such path-specific, or mediation, effects has a rich history, first
-undertaken scientifically by @wright1921correlation and expanded upon in
-@wright1934method. Today, the study of such effects has attracted a great deal
-of attention in statistics and causal inference, often inspired by applications
-in disciplines from epidemiology and vaccinology to psychology and economics.
-Examples include understanding the biological mechanisms by which vaccines
-causally alter infection risk [@hejazi2020efficient; @benkeser2021inference],
-assessing the effect of novel pharmacological therapies on substance abuse
-disorder relapse [@hejazi2021nonparametric; @rudolph2020explaining], and
-evaluating the effects of housing vouchers on adolescent development
-[@rudolph2021helped]. The `medoutcon` `R` package provides researchers in each
-of these disciplines with the tools necessary to implement efficient estimators
-of the interventional (in)direct effects [@diaz2020nonparametric], a recently
-formulated set of causal effects robust to the presence of confounding of the
-mediator-outcome relationship by the exposure variable. In cases where such
-confounding is a nonissue, the interventional (in)direct effects [tyler, many
-others] reduce to the well-studied natural (in)direct effects
-[@robins1992identifiability; @pearl2001direct], for which `medoutcon` provides
-efficient estimators similar to those of @zheng2012targeted. By readily
-incorporating the use of machine learning in the estimation of nuisance
-parameters (through integration with the `sl3` `R` package [@coyle-gh-sl3] of
-the `tlverse` ecosystem [@vdl2022targeted]), `medoutcon` furnishes both research
-scientists and data analysts with access to state-of-the-art non/semi-parametric
-estimation techniques, facilitating their application in a vast array of problem
-settings.
+applications, only the portion of the effect of an exposure on an outcome
+through a particular pathway under study is of interest. The study of such
+path-specific, or mediation, effects has a rich history, first undertaken
+scientifically by @wright1921correlation and expanded upon in @wright1934method.
+Today, the study of such effects has attracted a great deal of attention in
+statistics and causal inference, often inspired by applications in disciplines
+from epidemiology and vaccinology to psychology and economics. Examples include
+understanding the biological mechanisms by which vaccines causally alter
+infection risk [@hejazi2020efficient; @benkeser2021inference], assessing the
+effect of novel pharmacological therapies on substance abuse disorder relapse
+[@hejazi2021nonparametric; @rudolph2020explaining], and evaluating the effects
+of housing vouchers on adolescent development [@rudolph2021helped]. The
+`medoutcon` `R` package provides researchers in each of these disciplines with
+the tools necessary to implement efficient estimators of the interventional
+(in)direct effects [@diaz2020nonparametric], a recently formulated set of causal
+effects robust to the presence of confounding of the mediator-outcome
+relationship by the exposure variable. In cases where such confounding is
+a nonissue, the interventional (in)direct effects [tyler, many others] reduce to
+the well-studied natural (in)direct effects [@robins1992identifiability;
+@pearl2001direct], for which `medoutcon` provides efficient estimators similar
+to those of @zheng2012targeted. By readily incorporating the use of machine
+learning in the estimation of nuisance parameters (through integration with the
+`sl3` `R` package [@coyle-gh-sl3] of the `tlverse` ecosystem
+[@vdl2022targeted]), `medoutcon` furnishes both research scientists and data
+analysts with access to state-of-the-art non/semi-parametric estimation
+techniques, facilitating their application in a vast array of settings.
 
 # Statement of Need
 
@@ -68,28 +67,31 @@ study of identification outlines novel causal effect parameters with properties
 desirable in real-world settings (e.g., the interventional effects, which can be
 learned under mediator-outcome confounding) and untestable assumptions under
 which a statistical functionals corresponds to a given causal effect. Another
-line of study develops semiparametric efficiency theory for the statistical
+line of study develops non/semi-parametric efficiency theory for the statistical
 functionals matching these novel causal estimands, allowing their robust
 estimation with tools from machine learning. While these complementary efforts
 are necessary, neither is concerned with opening the door to applying these
-estimators in real-world data analyses. What's more, the implementation of
-open source software for efficient estimators of causal effects is no easy feat
--- for such a task, the data scientist must be knowledgeable of causal
-inference, semiparametric theory, machine learning, and the intersection of
-these disciplines (not to mention research software engineering best practices,
-including, for example, unit/regression testing and continuous integration).
-With these issues in mind, the `medoutcon` `R` package is a free, open source
-implementation of non/semi-parametric efficient estimators of the natural and
-interventional (in)direct effects, providing data scientists in research and in
-industry with access to state-of-the-art statistical methodology for causal
-mediation analysis.
+estimators in real-world data analyses. What's more, the implementation of open
+source software for efficient estimators of causal effects is no easy feat --
+for such a task, the data scientist must be knowledgeable of causal inference,
+semiparametric theory, machine learning, and the intersection of these
+disciplines, not to mention research software engineering best practices,
+including, for example, unit/regression testing and continuous integration
+checking. The `medoutcon` `R` package is a free, open source implementation of
+non/semi-parametric efficient estimators of the natural and interventional
+(in)direct effects, providing data scientists in research and in industry with
+access to state-of-the-art statistical methodology for causal mediation
+analysis. To the best of our knowledge, no other `R` package provides similarly
+convenient access to multiply robust, non/semi-parametric efficient estimators
+of causal mediation effects with a flexible interface to accommodate machine
+learning of nuisance parameters.
 
 # Natural and Interventional Causal Mediation Effects
 
 To evaluate the causal effects of exposures on an outcome variable through
 mediating pathways, let's consider a dataset of $n$ units, where the observed
 data on a single unit is assumed to have been generated by a nonparametric
-structural equation model (NPSEM) of the form:
+structural equation model (NPSEM) [@pearl2009causality] of the form:
 \begin{align*}
   W &= f_W(U_W); A = f_A(W, U_A); Z=f_Z(W, A, U_Z);\\ \nonumber
   M &= f_M(W, A, Z, U_M); Y = f_Y(W, A, Z, M, U_Y),
@@ -127,17 +129,17 @@ quantities.
 
 Recognizing the limitations of these effects, particularly in real-world data
 analysis settings in which intermediate confounders abound, @didelez2006direct,
-@vanderweele2014effect, and @rudolph2017robust, among others, contributed to the
-development of the interventional (in)direct effects. Unlike the decomposition
-strategy that delineates the NDE and NIE, a more sophisticated approach to
-identification -- relying upon _stochastic_ interventions on the mediator(s) --
-is required. Specifically, for the two exposure contrasts $\{a', a^{\star}\}$,
-the effect of $A$ on $Y$ can be defined as the difference in expected outcome in
-the hypothetical worlds in which $(A,M) = (a', G_{a'})$ versus $(A,M)
-= (a^{\star}, G_{a^{\star}})$ with probability one, where Let $G_a$ denote
-a random draw from the conditional distribution of $M_a$ conditional on $W$
-(defined by a stochastic intervention). The total effect can then be decomposed
-into direct and indirect effects as follows
+@petersen2006estimation, @vanderweele2014effect, and @rudolph2017robust, among
+others, contributed to the development of the interventional (in)direct effects.
+Unlike the decomposition strategy that delineates the NDE and NIE, a more
+sophisticated approach to identification -- relying upon _stochastic_
+interventions on the mediator(s) -- is required. Specifically, for the two
+exposure contrasts $\{a', a^{\star}\}$, the effect of $A$ on $Y$ can be defined
+as the difference in expected outcome in the hypothetical worlds in which $(A,M)
+= (a', G_{a'})$ versus $(A,M) = (a^{\star}, G_{a^{\star}})$ with probability
+one, where Let $G_a$ denote a random draw from the conditional distribution of
+$M_a$ conditional on $W$ (defined by a stochastic intervention). The ATE can be
+decomposed into direct and indirect effects as follows
 \begin{equation*}
 \mathbb{E}[Y(a', G_{a'}) - Y(a^{\star}, G_{a^{\star}})] =
   \underbrace{\mathbb{E}[Y(a', G_{a'}) - Y(a',
@@ -151,48 +153,50 @@ indirect effect measures the effect through paths involving the mediators. Note,
 however, that natural and interventional mediation effects have different
 interpretations. That is, the interventional indirect effect measures the effect
 of fixing the exposure at $a'$ while setting the mediator to a random draw
-$G_{a^{\star}}$ from those with exposure $a'$ versus a random draw $G_{a'}$ from
-those with exposure $a^{\star}$, given covariates $W$. Intuitively, the
-interventional effects remain identifiable under intermediate confounding since
-the stochastic intervention on the mediators breaks the relationship between $Z$
-and $M$. Prior to the work of @diaz2020nonparametric, and contemporaneous
-developments by @benkeser2020nonparametric, non/semi-parametric efficiency
-theory for the interventional (in)direct effects was unavailable. Recently,
-a novel family of interventional effects, accommodating flexible stochastic
-interventions on the exposure, have been formulated [@hejazi2021nonparametric].
+$G_{a^{\star}}$ (i.e., under an intervention setting the exposure to
+$a^{\star}$) versus a random draw $G_{a'}$ (i.e., after setting the exposure to
+$a'$), given covariates $W$. Intuitively, the interventional effects remain
+identifiable under intermediate confounding since the stochastic intervention on
+the mediators breaks the relationship between $Z$ and $M$. Prior to the work of
+@diaz2020nonparametric, and contemporaneous developments by
+@benkeser2020nonparametric, non/semi-parametric efficiency theory for the
+interventional (in)direct effects was unavailable. Recently, a novel family of
+interventional effects, accommodating flexible stochastic interventions on the
+exposure, have been formulated [@hejazi2021nonparametric].
 
 # `medoutcon`'s Scope
 
 Development of the `medoutcon` package began as a software accompaniment to the
 theoretical developments of @diaz2020nonparametric -- where the investigations
 of these authors outlined efficient estimators of the interventional (in)direct
-effects, `medoutcon` implements these efficient estimators in the `R` language
-and environment for statistical computing [@R], aiming for ease of use in data
-analysis applications. Specifically, `medoutcon` -- via a single, user-facing
-eponymous function `medoutcon()` -- provides access to both one-step and
-targeted minimum loss (TML) estimators of these causal (in)direct effects.
-Through a design that that tightly couples `medoutcon` with the `sl3` `R`
-package [@coyle-gh-sl3], state-of-the-art machine learning algorithms, including
-ensemble modeling [@vdl2007super], can be readily used for the estimation of
-relevant nuisance parameters. Via the `origami` `R` package [@coyle2018origami;
-@coyle-cran-origami], cross-fitting is automatically incorporated in computing
-the efficient estimators, allowing for some common but restrictive regularity
+effects, `medoutcon` implements these efficient estimators. Implemented in the
+`R` language and environment for statistical computing [@R], `medoutcon` aims to
+provide a simple application user interface (API) for convenience in a variety
+of data analytic applications. Specifically, `medoutcon` -- via a single,
+user-facing eponymous function `medoutcon()` -- provides access to both one-step
+and targeted minimum loss (TML) estimators of these causal (in)direct effects.
+State-of-the-art machine learning algorithms, including ensemble modeling
+[@vdl2007super], may readily be used for the estimation of relevant nuisance
+parameters, through a design that tightly couples `medoutcon` with the `sl3` `R`
+package [@coyle-gh-sl3]. Cross-fitting is automatically incorporated, via the
+`origami` `R` package [@coyle2018origami; @coyle-cran-origami], in computing the
+efficient estimators, allowing for some common but restrictive regularity
 conditions to be relaxed [bickel1993efficient; @zheng2011cross;
 @chernozhukov2017double].
 
-Beyond implementing the interventional effects, `medoutcon` additionally allows
-for analogs of the natural (in)direct effects to be estimated when intermediate
-confounders are omitted from the call to the `medoutcon()` function (i.e., by
-setting `Z = NULL`). This feature is based on a correspondence between the
-identifying statistical functionals of the natural and interventional (in)direct
-effects in the absence of intermediate confounding. In this simplified case, the
-efficient estimators of the interventional (in)direct effects formulated by
-@diaz2020nonparametric are analogous to the efficient estimators of the natural
-(in)direct effects formulated by @zheng2012targeted. By supporting this case,
-`medoutcon` serves as a one-stop tool for estimating these classical and popular
-causal mediation effects, allowing for practicing data scientists and applied
-statisticians to deploy cutting-edge estimators of the natural and
-interventional (in)direct effects through a unified application user interface.
+Beyond implementing the interventional (in)direct effects, `medoutcon`
+additionally allows for the natural (in)direct effects to be estimated when
+intermediate confounders are omitted from the call to the `medoutcon()` function
+(i.e., by setting `Z = NULL`). This feature is based on a correspondence between
+the identifying statistical functionals of the natural and interventional
+(in)direct effects in the absence of intermediate confounding. In this
+simplified case, the efficient estimators of the interventional (in)direct
+effects formulated by @diaz2020nonparametric are analogous to the efficient
+estimators of the natural (in)direct effects formulated by @zheng2012targeted.
+By supporting this case, `medoutcon` serves as a one-stop tool for estimating
+these classical and popular causal mediation effects, allowing for practicing
+data scientists and applied statisticians to deploy cutting-edge estimators of
+the natural and interventional (in)direct effects through a unified API.
 
 # Availability
 

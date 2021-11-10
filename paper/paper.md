@@ -1,5 +1,5 @@
 ---
-title: "`medoutcon`: Efficient causal mediation analysis with machine learning in `R`"
+title: "`medoutcon`: Nonparametric efficient causal mediation analysis with machine learning in `R`"
 tags:
   - causal inference
   - machine learning

@@ -1,5 +1,5 @@
 Package: medoutcon
-Title: Efficient Causal Mediation Analysis for the Natural and Interventional Effects
+Title: Efficient Causal Mediation Analysis with the Natural and Interventional Effects
 Version: 0.1.5
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",

@@ -1,5 +1,5 @@
 ---
-title: "Efficient causal mediation analysis with intermediate confounders"
+title: "Efficient causal mediation analysis with the natural and interventional effects"
 author: "[Nima Hejazi](https://nimahejazi.org), [Iván
   Díaz](https://www.idiaz.xyz/), and [Kara
   Rudolph](https://kararudolph.github.io/)"
@@ -7,7 +7,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{Efficient causal mediation analysis with intermediate confounders}
+  %\VignetteIndexEntry{Efficient causal mediation analysis with the natural and interventional effects}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

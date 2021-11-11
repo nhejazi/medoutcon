@@ -7,6 +7,7 @@ library(stringr)
 library(tibble)
 library(dplyr)
 library(hal9001)
+library(glmnet)
 library(sl3)
 library(SuperLearner)
 
@@ -22,7 +23,6 @@ m_names <- str_subset(colnames(data), "Z")
 # 2) use simpler SLs for testing functionality
 mean_lrnr <- Lrnr_mean$new()
 fglm_lrnr <- Lrnr_glm_fast$new()
-bayesglm_lrnr <- Lrnr_bayesglm$new()
 lasso_lrnr <- Lrnr_glmnet$new(alpha = 1, nfolds = 3L)
 enet_lrnr <- Lrnr_glmnet$new(alpha = 0.5, nfolds = 3L)
 rf_lrnr <- Lrnr_ranger$new(
@@ -37,7 +37,6 @@ sl_binary <- Lrnr_sl$new(
   learners = list(
     rf_lrnr,
     fglm_lrnr,
-    bayesglm_lrnr,
     lasso_lrnr,
     enet_lrnr,
     mean_lrnr
@@ -48,7 +47,6 @@ sl_contin <- Lrnr_sl$new(
   learners = list(
     rf_lrnr,
     fglm_lrnr,
-    bayesglm_lrnr,
     lasso_lrnr,
     enet_lrnr,
     mean_lrnr

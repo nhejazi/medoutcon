@@ -33,18 +33,19 @@ Science is most often concerned with questions of _mechanism_. In myriad
 applications, only the portion of the causal effect of an exposure on an outcome
 through a particular pathway under study is of interest. The study of such
 path-specific, or mediation, effects has a rich history, first undertaken
-scientifically by @wright1921correlation and expanded upon in @wright1934method.
-Today, the study of such effects has attracted a great deal of attention in
-statistics and causal inference, inspired by applications in disciplines ranging
-from epidemiology and vaccinology to psychology and economics. Examples include
-understanding the biological mechanisms by which vaccines causally alter
-infection risk [@hejazi2020efficient; @benkeser2021inference], assessing the
-effect of novel pharmacological therapies on substance abuse disorder relapse
+scientifically by @wright1921correlation and @wright1934method. Today, the study
+of such effects has attracted a great deal of attention in statistics and causal
+inference, inspired by applications in disciplines ranging from epidemiology and
+vaccinology to psychology and economics. Examples include understanding the
+biological mechanisms by which vaccines causally alter infection risk
+[@hejazi2020efficient; @benkeser2021inference], assessing the effect of novel
+pharmacological therapies on substance abuse disorder relapse
 [@hejazi2021nonparametric; @rudolph2020explaining], and evaluating the effects
 of housing vouchers on adolescent development [@rudolph2021helped]. The
 `medoutcon` `R` package provides researchers in each of these disciplines, and
 in others, with the tools necessary to implement statistically efficient
-estimators of the _interventional_ (in)direct effects [@diaz2020nonparametric],
+estimators of the _interventional_ direct and indirect effects
+[@diaz2020nonparametric] (for brevity, henceforth, (in)direct effects),
 a recently formulated set of causal effects robust to the presence of
 confounding of the mediator-outcome relationship by the exposure. In cases where
 such confounding is a nonissue, the interventional (in)direct effects
@@ -53,10 +54,9 @@ such confounding is a nonissue, the interventional (in)direct effects
 efficient estimators similar to those of @zheng2012targeted. By readily
 incorporating the use of machine learning in the estimation of nuisance
 parameters (through integration with the `sl3` `R` package [@coyle-gh-sl3] of
-the `tlverse` ecosystem [@vdl2022targeted]), `medoutcon` furnishes research
-scientists and data analysts alike with access to state-of-the-art
-non/semi-parametric estimation techniques, facilitating their adoption in a vast
-array of settings.
+the `tlverse` ecosystem [@vdl2022targeted]), `medoutcon` incorporates
+state-of-the-art non/semi-parametric estimation techniques, facilitating their
+adoption in a vast array of settings.
 
 # Background and Statement of Need
 
@@ -72,9 +72,9 @@ estimand of interest. A complementary line of study develops non/semi-parametric
 efficiency theory for the statistical functionals outlined in the causal
 identification literature, allowing for their robust estimation with modern
 techniques from machine learning. Neither concerns itself with opening the door
-to applying these estimators in real-world data analyses. What's more, the
+to applying these estimators in real-world data analyses. Moreover, the
 implementation of open source software for efficient estimators of causal
-effects is no easy feat -- for such a task, the data scientist must be
+effects is complex -- for such a task, the data scientist must be
 knowledgeable of causal inference, semiparametric statistical theory, machine
 learning, and the intersection of these disciplines, and that is to forego
 mention of research software engineering best practices, including, for example,
@@ -105,13 +105,13 @@ mediator-outcome relationship and is affected by exposure $A$, $M$ represents
 mediating variables, and $Y$ is the outcome. This NPSEM admits an equivalent
 representation as a directed acyclic graph (or DAG), in which each variable is
 a node and dependencies are represented by directed paths between the nodes. The
-natural (in)direct effects cannot be identified (i.e., learned from the observed
-data) in the presence of intermediate confounding, so, for now, we make the
-simplifying assumption that the intermediate variable $Z$ is absent. In this
-simple case, the population average treatment effect (ATE) -- that is, the total
-effect of $A$ on $Y$, comparing two exposure contrasts $\{a', a^{\star}\}$ --
-may be decomposed into the natural direct effect (NDE) and the natural indirect
-effect (NIE) as
+natural (in)direct effects cannot generally be identified (i.e., learned from
+the observed data) in the presence of intermediate confounding, so, for now, we
+make the simplifying assumption that the intermediate variable $Z$ is absent. In
+this simple case, the population average treatment effect (ATE) -- that is, the
+total effect of $A$ on $Y$, comparing two exposure contrasts $\{a', a^{\star}\}$
+-- may be decomposed into the natural direct effect (NDE) and the natural
+indirect effect (NIE) as
 \begin{equation*}
   \mathbb{E}[Y(a') - Y(a^{\star})] =
     \underbrace{\mathbb{E}[Y(a', M(a')) - Y(a',

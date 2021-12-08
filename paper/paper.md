@@ -58,7 +58,7 @@ the `tlverse` ecosystem [@vdl2022targeted]), `medoutcon` incorporates
 state-of-the-art non/semi-parametric estimation techniques, facilitating their
 adoption in a vast array of settings.
 
-# Background and Statement of Need
+# Statement of Need
 
 While there is demonstrable interest in causal mediation analysis in a large
 variety of disciplines, thoughtfully implementing data analysis strategies based

@@ -168,26 +168,26 @@ After using the `medoutcon` R package, please cite the following:
           url = {https://arxiv.org/abs/1912.09936},
           doi = {10.1093/biomet/asaa085},
           journal={Biometrika},
-          volume={},
-          number={},
-          pages={},
+          volume = {108},
+          number = {3},
+          pages = {627--641},
           publisher={Oxford University Press}
         }
 
         @software{hejazi2021medoutcon,
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-          title = {{medoutcon}: Efficient causal mediation analysis for the
-            natural and interventional effects},
+          title = {{medoutcon}: Efficient natural and interventional causal
+            mediation analysis},
           year  = {2021},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.1.5}
+          note = {R package version 0.1.6}
         }
 
 ---
 
 ## License
 
-&copy; 2020-2021 [Nima S. Hejazi](https://nimahejazi.org)
+&copy; 2020-2022 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:

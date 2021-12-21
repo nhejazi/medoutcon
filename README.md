@@ -33,17 +33,18 @@ by the treatment \(A\), these correspond to the *interventional*
 (in)direct effects described by Dı́az et al. (2020), though similar (yet
 less general) effect definitions and/or estimation strategies have
 appeared in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al.
-(2017), Zheng and van der Laan (2017), and Benkeser (2020). When no
-intermediate confounders are present, these effect definitions simplify
-to the well-studied *natural* (in)direct effects, and our estimators are
-analogs of those formulated by Zheng and van der Laan (2012). Both an
-efficient one-step bias-corrected estimator with cross-fitting (Pfanzagl
-and Wefelmeyer 1985; Zheng and van der Laan 2011; Chernozhukov et al.
-2018) and a cross-validated targeted minimum loss estimator (TMLE) (van
-der Laan and Rose 2011; Zheng and van der Laan 2011) are made available.
-`medoutcon` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to leverage
-statistical machine learning in the estimation procedure.
+(2017), Zheng and van der Laan (2017), and Benkeser and Ran (2021). When
+no intermediate confounders are present, these effect definitions
+simplify to the well-studied *natural* (in)direct effects, and our
+estimators are analogs of those formulated by Zheng and van der Laan
+(2012). Both an efficient one-step bias-corrected estimator with
+cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
+2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
+loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
+Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3)
+(<span class="citeproc-not-found" data-reference-id="coyle2020sl3">**???**</span>)
+to leverage statistical machine learning in the estimation procedure.
 
 -----
 
@@ -70,9 +71,9 @@ library(data.table)
 library(tidyverse)
 #> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.1 ──
 #> ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
-#> ✔ tibble  3.1.5     ✔ dplyr   1.0.7
+#> ✔ tibble  3.1.6     ✔ dplyr   1.0.7
 #> ✔ tidyr   1.1.4     ✔ stringr 1.4.0
-#> ✔ readr   2.0.2     ✔ forcats 0.5.1
+#> ✔ readr   2.1.1     ✔ forcats 0.5.1
 #> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::between()   masks data.table::between()
 #> ✖ dplyr::filter()    masks stats::filter()
@@ -195,19 +196,19 @@ After using the `medoutcon` R package, please cite the following:
       url = {https://arxiv.org/abs/1912.09936},
       doi = {10.1093/biomet/asaa085},
       journal={Biometrika},
-      volume={},
-      number={},
-      pages={},
+      volume = {108},
+      number = {3},
+      pages = {627--641},
       publisher={Oxford University Press}
     }
 
     @software{hejazi2021medoutcon,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Efficient causal mediation analysis for the
-        natural and interventional effects},
+      title = {{medoutcon}: Efficient natural and interventional causal
+        mediation analysis},
       year  = {2021},
       url = {https://github.com/nhejazi/medoutcon},
-      note = {R package version 0.1.5}
+      note = {R package version 0.1.6}
     }
 ```
 
@@ -215,14 +216,14 @@ After using the `medoutcon` R package, please cite the following:
 
 ## License
 
-© 2020-2021 [Nima S. Hejazi](https://nimahejazi.org)
+© 2020-2022 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2020-2021 Nima S. Hejazi
+    Copyright (c) 2020-2022 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -250,8 +251,9 @@ See below for details:
 
 <div id="ref-benkeser2020nonparametric">
 
-Benkeser, David. 2020. “Nonparametric Inference for Interventional
-Effects with Multiple Mediators.” *arXiv Preprint arXiv:2001.06027*.
+Benkeser, David, and Jialu Ran. 2021. “Nonparametric Inference for
+Interventional Effects with Multiple Mediators.” *Journal of Causal
+Inference*. <https://doi.org/10.1515/jci-2020-0018>.
 
 </div>
 
@@ -265,20 +267,12 @@ Parameters.” *The Econometrics Journal* 21 (1).
 
 </div>
 
-<div id="ref-coyle2020sl3">
-
-Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
-“`sl3`: Modern Pipelines for Machine Learning and Super Learning.”
-<https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.1342293>.
-
-</div>
-
 <div id="ref-diaz2020nonparametric">
 
 Dı́az, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.
 2020. “Non-Parametric Efficient Causal Mediation with Intermediate
-Confounders.” *Biometrika*. <https://doi.org/10.1093/biomet/asaa085>.
+Confounders.” *Biometrika* 108 (3): 627–41.
+<https://doi.org/10.1093/biomet/asaa085>.
 
 </div>
 
@@ -286,7 +280,7 @@ Confounders.” *Biometrika*. <https://doi.org/10.1093/biomet/asaa085>.
 
 Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General
 Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
-379–88.
+379–88. <https://doi.org/10.1007/978-1-4612-5769-1>.
 
 </div>
 
@@ -295,7 +289,7 @@ Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
 Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan.
 2017. “Robust and Flexible Estimation of Stochastic Mediation Effects: A
 Proposed Method and Example in a Randomized Trial Setting.”
-*Epidemiologic Methods* 7 (1).
+*Epidemiologic Methods* 7 (1). <https://doi.org/10.1515/em-2017-0007>.
 
 </div>
 
@@ -312,7 +306,7 @@ Business Media.
 VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014.
 “Effect Decomposition in the Presence of an Exposure-Induced
 Mediator-Outcome Confounder.” *Epidemiology (Cambridge, Mass.)* 25 (2):
-300.
+300. <https://doi.org/10.1097/ede.0000000000000034>.
 
 </div>
 
@@ -320,7 +314,7 @@ Mediator-Outcome Confounder.” *Epidemiology (Cambridge, Mass.)* 25 (2):
 
 Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted
 Minimum-Loss-Based Estimation.” In *Targeted Learning*, 459–74.
-Springer.
+Springer. <https://doi.org/10.1007/978-1-4419-9782-1_27>.
 
 </div>
 
@@ -336,7 +330,7 @@ Effects.” *International Journal of Biostatistics* 8 (1).
 
 ———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators
 and Exposures, with Application to Survival Outcomes.” *Journal of
-Causal Inference* 5 (2).
+Causal Inference* 5 (2). <https://doi.org/10.1515/jci-2016-0006>.
 
 </div>
 

@@ -1,6 +1,6 @@
 Package: medoutcon
-Title: Efficient Causal Mediation Analysis with the Natural and Interventional Effects
-Version: 0.1.5
+Title: Efficient Natural and Interventional Causal Mediation Analysis
+Version: 0.1.6
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -37,7 +37,9 @@ Imports:
     scales,
     stringr,
     origami (>= 1.0.3),
-    sl3 (>= 1.4.3)
+    sl3 (>= 1.4.3),
+    hal9001 (>= 0.4.1),
+    speedglm
 Suggests:
     testthat,
     knitr,
@@ -45,9 +47,7 @@ Suggests:
     covr,
     Rsolnp,
     nnls,
-    hal9001 (>= 0.4.1),
     SuperLearner,
-    speedglm,
     glmnet,
     xgboost,
     ranger,

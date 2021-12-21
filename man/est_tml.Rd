@@ -109,3 +109,4 @@ the step size of a given update exceeds this value, the update is avoided.}
 \description{
 TML estimator for stochastic interventional (in)direct effects
 }
+\keyword{internal}

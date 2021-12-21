@@ -110,3 +110,36 @@ is included for the updates introduced by the tilting (fluctuation) models.}
 \description{
 Efficient estimation of stochastic interventional (in)direct effects
 }
+\examples{
+# here, we show one-step and TML estimates of the interventional direct
+# effect; the indirect effect can be evaluated by a straightforward change
+# to the penultimate argument. the natural direct and indirect effects can
+# be evaluated by omitting the argument Z (inappropriate in this example).
+# create data: covariates W, exposure A, post-exposure-confounder Z,
+#              mediator M, outcome Y
+n_obs <- 200
+w_1 <- rbinom(n_obs, 1, prob = 0.6)
+w_2 <- rbinom(n_obs, 1, prob = 0.3)
+w <- as.data.frame(cbind(w_1, w_2))
+a <- as.numeric(rbinom(n_obs, 1, plogis(rowSums(w) - 2)))
+z <- rbinom(n_obs, 1, plogis(rowMeans(-log(2) + w - a) + 0.2))
+m_1 <- rbinom(n_obs, 1, plogis(rowSums(log(3) * w + a - z)))
+m_2 <- rbinom(n_obs, 1, plogis(rowSums(w - a - z)))
+m <- as.data.frame(cbind(m_1, m_2))
+y <- rbinom(n_obs, 1, plogis(1 / (rowSums(w) - z + a + rowSums(m))))
+
+# one-step estimate of the interventional direct effect
+os_de <- medoutcon(
+  W = w, A = a, Z = z, M = m, Y = y,
+  effect = "direct",
+  estimator = "onestep"
+)
+
+# TML estimate of the interventional direct effect
+# NOTE: improved variance estimate and de-biasing from targeting procedure
+tmle_de <- medoutcon(
+  W = w, A = a, Z = z, M = m, Y = y,
+  effect = "direct",
+  estimator = "tmle"
+)
+}

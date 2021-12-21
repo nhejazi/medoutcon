@@ -100,3 +100,4 @@ than or equal to 2; the default is to create 5 folds.}
 \description{
 One-step estimator for stochastic interventional (in)direct effects
 }
+\keyword{internal}

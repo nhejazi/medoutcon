@@ -315,7 +315,7 @@ cv_eif <- function(fold,
 #' @importFrom stats var weighted.mean
 #' @importFrom origami make_folds cross_validate folds_vfold
 #'
-#' @export
+#' @keywords internal
 est_onestep <- function(data,
                         contrast,
                         g_learners,
@@ -466,7 +466,7 @@ est_onestep <- function(data,
 #'  weighted.mean
 #' @importFrom origami make_folds cross_validate folds_vfold
 #'
-#' @export
+#' @keywords internal
 est_tml <- function(data,
                     contrast,
                     g_learners,

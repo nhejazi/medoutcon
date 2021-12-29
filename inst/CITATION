@@ -12,7 +12,7 @@ bibentry(bibtype = "Manual",
                     person("Kara", "Rudolph", "E")),
          year = year,
          note = note,
-         doi = "",
+         doi = "10.5281/zenodo.5809519",
          url = "https://github.com/nhejazi/medoutcon")
 
 bibentry(bibtype = "Article",

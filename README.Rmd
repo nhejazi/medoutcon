@@ -16,10 +16,13 @@ knitr::opts_chunk$set(
 
 # R/`medoutcon`
 
+<!-- badges: start -->
 [![R-CMD-check](https://github.com/nhejazi/medoutcon/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/medoutcon/actions)
 [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5809519.svg)](https://doi.org/10.5281/zenodo.5809519)
+<!-- badges: end -->
 
 > Efficient Causal Mediation Analysis for the Natural and Interventional Effects
 
@@ -47,7 +50,7 @@ an efficient one-step bias-corrected estimator with cross-fitting
 [@pfanzagl1985contributions; @zheng2011cross; @chernozhukov2018double] and a
 cross-validated targeted minimum loss estimator (TMLE) [@vdl2011targeted;
 @zheng2011cross] are made available. `medoutcon` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3) [coyle-gh-sl3] to leverage statistical
+package](https://github.com/tlverse/sl3) [@coyle-gh-sl3] to leverage statistical
 machine learning in the estimation procedure.
 
 ---
@@ -179,6 +182,7 @@ After using the `medoutcon` R package, please cite the following:
           title = {{medoutcon}: Efficient natural and interventional causal
             mediation analysis},
           year  = {2021},
+          doi = {10.5281/zenodo.5809519},
           url = {https://github.com/nhejazi/medoutcon},
           note = {R package version 0.1.6}
         }

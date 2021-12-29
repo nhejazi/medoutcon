@@ -3,6 +3,8 @@
 
 # R/`medoutcon`
 
+<!-- badges: start -->
+
 [![R-CMD-check](https://github.com/nhejazi/medoutcon/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/medoutcon/actions)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
@@ -11,6 +13,8 @@ state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5809519.svg)](https://doi.org/10.5281/zenodo.5809519)
+<!-- badges: end -->
 
 > Efficient Causal Mediation Analysis for the Natural and Interventional
 > Effects
@@ -42,7 +46,7 @@ cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
 loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
 Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3) \[coyle-gh-sl3\] to leverage
+package](https://github.com/tlverse/sl3) (Coyle et al. 2021) to leverage
 statistical machine learning in the estimation procedure.
 
 -----
@@ -68,12 +72,12 @@ confounder (`Z`), consider the following example:
 ``` r
 library(data.table)
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.1 ──
+#> ── Attaching packages ───────────────────────────────────────────────── tidyverse 1.3.1 ──
 #> ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
 #> ✔ tibble  3.1.6     ✔ dplyr   1.0.7
 #> ✔ tidyr   1.1.4     ✔ stringr 1.4.0
 #> ✔ readr   2.1.1     ✔ forcats 0.5.1
-#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ──────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::between()   masks data.table::between()
 #> ✖ dplyr::filter()    masks stats::filter()
 #> ✖ dplyr::first()     masks data.table::first()
@@ -205,6 +209,7 @@ After using the `medoutcon` R package, please cite the following:
       title = {{medoutcon}: Efficient natural and interventional causal
         mediation analysis},
       year  = {2021},
+      doi = {10.5281/zenodo.5809519},
       url = {https://github.com/nhejazi/medoutcon},
       note = {R package version 0.1.6}
     }
@@ -262,6 +267,14 @@ Christian Hansen, Whitney Newey, and James Robins. 2018.
 “Double/Debiased Machine Learning for Treatment and Structural
 Parameters.” *The Econometrics Journal* 21 (1).
 <https://doi.org/10.1111/ectj.12097>.
+
+</div>
+
+<div id="ref-coyle-gh-sl3">
+
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and
+Oleg Sofrygin. 2021. *`sl3`: Modern Machine Learning Pipelines for Super
+Learning* (version 1.4.4). <https://doi.org/10.5281/zenodo.1342293>.
 
 </div>
 

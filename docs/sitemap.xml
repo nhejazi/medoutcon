@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://code.nimahejazi.org/medoutcon/404.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/CONTRIBUTING.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/articles/intro_medoutcon.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/authors.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/medoutcon/index.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/medoutcon/news/index.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/bound_precision.html</loc>
@@ -37,6 +61,9 @@
     <loc>https://code.nimahejazi.org/medoutcon/reference/fit_treat_mech.html</loc>
   </url>
   <url>
+    <loc>https://code.nimahejazi.org/medoutcon/reference/index.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/medoutcon.html</loc>
   </url>
   <url>
@@ -50,8 +77,5 @@
   </url>
   <url>
     <loc>https://code.nimahejazi.org/medoutcon/reference/summary.medoutcon.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/medoutcon/articles/intro_medoutcon.html</loc>
   </url>
 </urlset>

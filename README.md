@@ -42,9 +42,8 @@ cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
 loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
 Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3)
-(<span class="citeproc-not-found" data-reference-id="coyle2020sl3">**???**</span>)
-to leverage statistical machine learning in the estimation procedure.
+package](https://github.com/tlverse/sl3) \[coyle-gh-sl3\] to leverage
+statistical machine learning in the estimation procedure.
 
 -----
 
@@ -82,8 +81,7 @@ library(tidyverse)
 #> ✖ dplyr::last()      masks data.table::last()
 #> ✖ purrr::transpose() masks data.table::transpose()
 library(medoutcon)
-#> medoutcon v0.1.5: Efficient Causal Mediation Analysis With Intermediate
-#> Confounders
+#> medoutcon v0.1.6: Efficient Natural and Interventional Causal Mediation Analysis
 set.seed(1584)
 
 # produces a simple data set based on ca causal model with mediation

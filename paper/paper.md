@@ -23,7 +23,7 @@ affiliations:
     index: 1
   - name: Department of Epidemiology, Mailman School of Public Health, Columbia University
     index: 2
-date: 07 November 2021
+date: 29 December 2021
 bibliography: ../inst/REFERENCES.bib
 ---
 
@@ -146,7 +146,7 @@ Recognizing the limitations of the natural effects in these settings,
 interventional (in)direct effects. Unlike the decomposition strategy that
 delineates the NDE and NIE, these effects require a more sophisticated approach
 to identification, relying upon _stochastic_ interventions on the mediator(s),
-which require random draws from the mediators post-intervention distribution
+which require random draws from the mediator's post-intervention distribution
 rather than the setting of fixed counterfactual values. Specifically, for the
 two exposure contrasts $\{a', a^{\star}\}$, the effect of $A$ on $Y$ can be
 defined as the difference in expected outcome in the hypothetical worlds in
@@ -176,12 +176,12 @@ the mediators breaks the relationship between $Z$ and $M$. Prior to the work of
 @benkeser2020nonparametric, non/semi-parametric efficiency theory for the
 interventional (in)direct effects was unavailable. Recently, a novel family of
 interventional effects, accommodating flexible stochastic interventions on the
-exposure, have been formulated [@hejazi2021nonparametric].
+exposure [@hejazi2021nonparametric], have been formulated as well.
 
 # `medoutcon`'s Scope
 
 Development of the `medoutcon` package began as a software accompaniment to the
-theoretical developments of @diaz2020nonparametric -- where the investigations
+theoretical developments of @diaz2020nonparametric. Where the investigations
 of these authors outlined efficient estimators of the interventional (in)direct
 effects, `medoutcon` implements these efficient estimators. Implemented in the
 `R` language and environment for statistical computing [@R], `medoutcon` aims to
@@ -194,8 +194,8 @@ State-of-the-art machine learning algorithms, including ensemble modeling
 parameters, through a design that tightly couples `medoutcon` with the `sl3` `R`
 package [@coyle-gh-sl3]. Cross-fitting is automatically incorporated, via the
 `origami` `R` package [@coyle2018origami; @coyle-cran-origami], in computing the
-efficient estimators, allowing for some common but restrictive regularity
-conditions to be relaxed [@bickel1993efficient; @zheng2011cross;
+efficient estimators, allowing for some common but restrictive theoretical
+regularity conditions to be relaxed [@bickel1993efficient; @zheng2011cross;
 @chernozhukov2017double].
 
 Beyond implementing the interventional (in)direct effects, `medoutcon`
@@ -208,9 +208,10 @@ simplified case, the efficient estimators of the interventional (in)direct
 effects formulated by @diaz2020nonparametric are analogous to the efficient
 estimators of the natural (in)direct effects formulated by @zheng2012targeted.
 By supporting this case, `medoutcon` serves as a one-stop tool for estimating
-these classical and popular causal mediation effects, allowing for practicing
-data scientists and applied statisticians to deploy cutting-edge estimators of
-the natural and interventional (in)direct effects through a unified API.
+these scientifically informative causal mediation effects, allowing for
+practicing data scientists and applied statisticians to deploy cutting-edge
+estimators of the natural and interventional (in)direct effects through
+a unified API.
 
 # Availability
 
@@ -222,7 +223,10 @@ been extensively documented in the package's `README`, a vignette, and its
 [documentation website](https://code.nimahejazi.org/medoutcon). Ongoing
 development of the package incorporates research and data science software
 engineering best practices, including a suite of unit tests and automated
-continuous integration checking.
+continuous integration checking. `medoutcon` has and will continue to be used in
+the teaching of conference workshops on modern causal mediation analysis (e.g.,
+see [recent materials from SER
+2021](https://code.nimahejazi.org/ser2021_mediation_workshop/)).
 
 # Acknowledgments
 

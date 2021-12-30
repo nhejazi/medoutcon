@@ -19,11 +19,11 @@ authors:
     orcid: 0000-0001-9056-2047
     affiliation: 1
 affiliations:
-  - name: Division of Biostatistics, Department of Population Health Sciences, Weill Cornell Medicine
+  - name: Division of Biostatistics, Department of Population Health Sciences, Weill Cornell Medicine, USA
     index: 1
-  - name: Department of Epidemiology, Mailman School of Public Health, Columbia University
+  - name: Department of Epidemiology, Mailman School of Public Health, Columbia University, USA
     index: 2
-date: 29 December 2021
+date: 30 December 2021
 bibliography: ../inst/REFERENCES.bib
 ---
 

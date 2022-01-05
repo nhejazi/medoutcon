@@ -16,6 +16,16 @@ bibentry(bibtype = "Manual",
          url = "https://github.com/nhejazi/medoutcon")
 
 bibentry(bibtype = "Article",
+         journal = "Journal of Open Source Software",
+         title = "{medoutcon}: Nonparametric efficient causal mediation analysis with machine learning in {R}",
+         author = c(person("Nima", "Hejazi", "S"),
+                    person("Iván", "Díaz"),
+                    person("Kara", "Rudolph", "E")),
+         year = "2022",
+         doi = "10.21105/joss.03979",
+         url = "https://doi.org/10.21105/joss.03979")
+
+bibentry(bibtype = "Article",
          journal = "Biometrika",
          title = "Non-parametric efficient causal mediation with intermediate confounders",
          author = c(person("Iván", "Díaz"),

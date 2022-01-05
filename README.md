@@ -14,6 +14,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5809519.svg)](https://doi.org/10.5281/zenodo.5809519)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.03979/status.svg)](https://doi.org/10.21105/joss.03979)
 <!-- badges: end -->
 
 > Efficient Causal Mediation Analysis for the Natural and Interventional
@@ -72,12 +73,12 @@ confounder (`Z`), consider the following example:
 ``` r
 library(data.table)
 library(tidyverse)
-#> ── Attaching packages ───────────────────────────────────────────────── tidyverse 1.3.1 ──
+#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.1 ──
 #> ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
 #> ✔ tibble  3.1.6     ✔ dplyr   1.0.7
 #> ✔ tidyr   1.1.4     ✔ stringr 1.4.0
 #> ✔ readr   2.1.1     ✔ forcats 0.5.1
-#> ── Conflicts ──────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::between()   masks data.table::between()
 #> ✖ dplyr::filter()    masks stats::filter()
 #> ✖ dplyr::first()     masks data.table::first()
@@ -204,11 +205,23 @@ After using the `medoutcon` R package, please cite the following:
       publisher={Oxford University Press}
     }
 
-    @software{hejazi2021medoutcon,
+    @article{hejazi2022medoutcon-joss,
+      author = {Hejazi, Nima S and Rudolph, Kara E and D{\'\i}az,
+        Iv{\'a}n},
+      title = {{medoutcon}: Nonparametric efficient causal mediation
+        analysis with machine learning in {R}},
+      year = {2022},
+      doi = {10.21105/joss.03979},
+      url = {https://doi.org/10.21105/joss.03979},
+      journal = {Journal of Open Source Software},
+      publisher = {The Open Journal}
+    }
+
+    @software{hejazi2022medoutcon-rpkg,
       author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
       title = {{medoutcon}: Efficient natural and interventional causal
         mediation analysis},
-      year  = {2021},
+      year  = {2022},
       doi = {10.5281/zenodo.5809519},
       url = {https://github.com/nhejazi/medoutcon},
       note = {R package version 0.1.6}
@@ -316,16 +329,17 @@ Business Media.
 
 VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014.
 “Effect Decomposition in the Presence of an Exposure-Induced
-Mediator-Outcome Confounder.” *Epidemiology (Cambridge, Mass.)* 25 (2):
-300. <https://doi.org/10.1097/ede.0000000000000034>.
+Mediator-Outcome Confounder.” *Epidemiology* 25 (2): 300.
+<https://doi.org/10.1097/ede.0000000000000034>.
 
 </div>
 
 <div id="ref-zheng2011cross">
 
 Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted
-Minimum-Loss-Based Estimation.” In *Targeted Learning*, 459–74.
-Springer. <https://doi.org/10.1007/978-1-4419-9782-1_27>.
+Minimum-Loss-Based Estimation.” In *Targeted Learning: Causal Inference
+for Observational and Experimental Data*, 459–74. Springer.
+<https://doi.org/10.1007/978-1-4419-9782-1_27>.
 
 </div>
 

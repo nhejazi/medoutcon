@@ -9,9 +9,11 @@ medoutcon(
   A,
   Z,
   M,
+  S = NULL,
   Y,
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
+  two_phase_weights = NULL,
   effect = c("direct", "indirect"),
   contrast = NULL,
   g_learners = sl3::Lrnr_glm_fast$new(),
@@ -40,6 +42,11 @@ mediators M, and outcome Y, but unaffected itself by the mediators).}
 similar corresponding to a set of mediators (on the causal pathway between
 the intervention A and the outcome Y).}
 
+\item{S}{A \code{logical} vector indicating whether an observation's mediator
+was measured in a two-phase sampling design. Defaults to \code{NULL},
+implying that two-phase sampling did not occur. Available exclusively for
+the natural direct effect.}
+
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights.
@@ -48,6 +55,12 @@ The default is to give all observations equal weighting.}
 \item{svy_weights}{A \code{numeric} vector of observation-level weights that
 have been computed externally, such as survey sampling weights. Such
 weights are used in the construction of re-weighted efficient estimators.}
+
+\item{two_phase_weights}{A \code{numeric} vector of known observation-level
+weights corresponding to the inverse probability of the mediator being
+measured. These weights should only be provided if \code{S} is
+is specified. Defaults to \code{NULL}. Available exclusively for the
+natural direct effect.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct
 or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.

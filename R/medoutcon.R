@@ -7,6 +7,10 @@
 #' @param Z A \code{numeric} vector corresponding to an intermediate confounder
 #'  affected by treatment (on the causal pathway between the intervention A,
 #'  mediators M, and outcome Y, but unaffected itself by the mediators).
+#' @param S A \code{logical} vector indicating whether an observation's mediator
+#'  was measured in a two-phase sampling design. Defaults to \code{NULL},
+#'  implying that two-phase sampling did not occur. Available exclusively for
+#'  the natural direct effect.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'  similar corresponding to a set of mediators (on the causal pathway between
 #'  the intervention A and the outcome Y).
@@ -16,6 +20,11 @@
 #' @param svy_weights A \code{numeric} vector of observation-level weights that
 #'  have been computed externally, such as survey sampling weights. Such
 #'  weights are used in the construction of re-weighted efficient estimators.
+#' @param two_phase_weights A \code{numeric} vector of known observation-level
+#'  weights corresponding to the inverse probability of the mediator being
+#'  measured. These weights should only be provided if \code{S} is
+#'  is specified. Defaults to \code{NULL}. Available exclusively for the
+#'  natural direct effect.
 #' @param effect A \code{character} indicating whether to compute the direct
 #'  or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
 #'  This is ignored when the argument \code{contrast} is provided. By default,
@@ -106,9 +115,11 @@ medoutcon <- function(W,
                       A,
                       Z,
                       M,
+                      S = NULL,
                       Y,
                       obs_weights = rep(1, length(Y)),
                       svy_weights = NULL,
+                      two_phase_weights = NULL,
                       effect = c("direct", "indirect"),
                       contrast = NULL,
                       g_learners = sl3::Lrnr_glm_fast$new(),
@@ -139,15 +150,34 @@ medoutcon <- function(W,
     effect_type <- "interventional"
   }
 
+  # ensure that the two-phase sampling indicator and weights are only used
+  # where for NDE estimation
+  if (effect != "direct") {
+    S <- rep(1, length(Y))
+    two_phase_weights <- NULL
+  } else {
+    if (is.null(S) && is.null(two_phase_weights)) {
+      S <- rep(1, length(Y))
+    } else if ((!is.null(S) && is.null(two_phase_weights)) ||
+        (is.null(S) && !is.null(two_phase_weights))) {
+      stop(paste("Both S and two_phase_weights arguments must be",
+                 "provided to account for two-phase sampling."))
+    } else if (!is.null(S) && effect_type != "natural") {
+      stop(paste("Only the natural direct effect may be estimated with",
+                 "two-phase sampling designs."))
+    }
+  }
+
   # construct input data structure
-  data <- data.table::as.data.table(cbind(Y, M, Z, A, W, obs_weights))
+  data <- data.table::as.data.table(cbind(Y, M, Z, S, A, W, obs_weights))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
   )
   m_names <- paste("M", seq_len(dim(data.table::as.data.table(M))[2]),
     sep = "_"
   )
-  data.table::setnames(data, c("Y", m_names, "Z", "A", w_names, "obs_weights"))
+  data.table::setnames(data, c("Y", m_names, "Z", "S", "A", w_names,
+                               "obs_weights"))
 
   # bound outcome Y in unit interval
   min_y <- min(data[["Y"]])

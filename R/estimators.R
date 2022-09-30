@@ -605,7 +605,11 @@ est_tml <- function(data,
 
     # perform iterative targeting for intermediate confounding mechanism
     q_prime_Z_one_logit <- q_prime_Z_one %>%
-      bound_precision() %>%
+      bound_precision(
+        # NOTE: tricky tricky, even mild numerical bounding can backfire in
+        #       large enough samples such that plogis(qlogis(x)) != x
+        tol = ifelse(effect_type == "natural", .Machine$double.eps, 1e-6)
+      ) %>%
       stats::qlogis()
 
     # fit tilting model for the intermediate confounding mechanism

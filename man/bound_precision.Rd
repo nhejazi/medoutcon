@@ -7,7 +7,7 @@
 bound_precision(vals, tol = 1e-06)
 }
 \arguments{
-\item{vals}{A \code{numeric} vector of values in the interval [0, 1].}
+\item{vals}{A \code{numeric} vector of values in the unit interval [0, 1].}
 
 \item{tol}{A \code{numeric} indicating the tolerance limit to which extreme
 values should be truncated. Realizations of \code{val} less than \code{tol}

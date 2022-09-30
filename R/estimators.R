@@ -250,6 +250,22 @@ cv_eif <- function(fold,
 
 ###############################################################################
 
+#' Plug-in estimator
+#'
+#' A convenience function for the plug-in estimator.
+#'
+#' @param v_pred A \code{numeric} vector of the predicted values of the v(a, w)
+#'   nuisance parameter.
+#'
+#' @return A \code{numeric} representing the plug-in estimate of the estimand.
+#'
+#' @keywords internal
+est_plugin <- function(v_pred) {
+  mean(v_pred)
+}
+
+###############################################################################
+
 #' Two-phase sampling adjusted, un-centered efficient influence function
 #'
 #' Adjust the efficient influence function to account for the two-phase sampling

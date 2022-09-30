@@ -13,8 +13,8 @@ implying that two-phase sampling did not occur.}
 
 \item{two_phase_weights}{A \code{numeric} vector of known observation-level
 weights corresponding to the inverse probability of the mediator being
-measured. These weights should only be provided if \code{S} is
-is specified. Defaults to \code{NULL}.}
+measured. These weights should only be provided if \code{S} is is
+specified. Defaults to \code{NULL}.}
 
 \item{eif}{A \code{numeric} vector of the efficient influence function.}
 
@@ -25,8 +25,11 @@ influence function, conditioning on the mediator being measured.}
 given contrast.}
 }
 \value{
-An un-centered
+An un-centered efficeint influence function that accounts for the
+  two-phase sampling design.
 }
 \description{
-Two-phase sampling adjusted, un-centered efficient influence function
+Adjust the efficient influence function to account for the two-phase sampling
+design.
 }
+\keyword{internal}

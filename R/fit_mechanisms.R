@@ -813,8 +813,9 @@ fit_nuisance_v <- function(train_data,
 #' Fit estimated efficient influence function, conditioning on W, A, S, M, Z, Y
 #'
 #' This function estimates the conditional efficient influence function, setting
-#' the treatement to a^\star and conditioning on W, A, S, Z and Y. It is used to
-#' adjust the traditional efficient influence in two-phase sampling designs.
+#' the treatement to \ifelse{html}{\out{a<sup>*</sup>}}{\eqn{a^\star}} and
+#' conditioning on W, A, S, Z and Y. It is used to adjust the traditional
+#' efficient influence in two-phase sampling designs.
 #'
 #' @param train_data A \code{data.table} containing observed data, with columns
 #'   in the order specified by the NPSEM (Y, M, Z, A, W), with column names set
@@ -859,7 +860,6 @@ fit_nuisance_v <- function(train_data,
 #' @importFrom sl3 sl3_Task
 #'
 #' @keywords internal
-
 fit_nuisance_d <- function(train_data,
                            valid_data,
                            contrast,
@@ -883,6 +883,9 @@ fit_nuisance_d <- function(train_data,
   g_prime <- g_out$treat_est_train$treat_pred_A_prime
   u_prime <- u_out$u_train_pred
   v_star <- v_out$v_train_pred
+  q_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime
+  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime
+  r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
 
   # NOTE: assuming Z in {0,1}; other cases not supported yet
   u_int_eif <- lapply(c(1, 0), function(z_val) {
@@ -927,11 +930,11 @@ fit_nuisance_d <- function(train_data,
 
   # compute the centered eif
   plugin_est <- est_plugin(v_pred = v_star)
-  eif <- eif_y + eif_u + eif_v + v_star - plugin_est
+  centered_eif <- eif_y + eif_u + eif_v + v_star - plugin_est
 
   # create a dataset to for the estimation task
   eif_data_train <- data.table::copy(train_data)
-  eif_data_train[, `:=` (eif = eif)]
+  eif_data_train[, eif := centered_eif]
   eif_data_train <- eif_data_train[S == 1, ]
 
   # generate the sl3 task
@@ -939,7 +942,7 @@ fit_nuisance_d <- function(train_data,
     data = eif_data_train,
     weights = "obs_weights",
     covariates = c(w_names, "A", m_names, "Z", "Y"),
-    outcome = "eid",
+    outcome = "eif",
     outcome_type = "continuous"
   )
 
@@ -962,7 +965,7 @@ fit_nuisance_d <- function(train_data,
   ## return prediction on validation set
   return(list(
       "d_fit" = d_param_fit,
-      "d_pred" = as.numeric(d_valid_pred),
+      "d_pred" = as.numeric(d_valid_pred)
   ))
 
 }

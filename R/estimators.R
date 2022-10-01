@@ -42,6 +42,11 @@ utils::globalVariables(c("..w_names", "A", "Z"))
 #'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'   learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
 #'   for in the efficient influence function.
+#' @param d_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit an initial efficient influence
+#'   function regression when computing the efficient influence function in a
+#'   two-phase sampling design.
 #' @param effect_type A \code{character} indicating whether components of the
 #'   interventional or natural (in)direct effects are to be estimated. In the
 #'   case of the natural (in)direct effects, estimation of several nuisance
@@ -69,6 +74,7 @@ cv_eif <- function(fold,
                    r_learners,
                    u_learners,
                    v_learners,
+                   d_learners,
                    effect_type = c("interventional", "natural"),
                    w_names,
                    m_names) {
@@ -231,6 +237,40 @@ cv_eif <- function(fold,
 
   # un-centered efficient influence function
   eif <- eif_y + eif_u + eif_v + v_star
+
+  # adjust the un-centered efficient influence function for two-phase sampling
+  # design
+  if (!all(data_in$S == 1) || !(all(data_in$two_phase_weights == 1))) {
+
+    # compute a centered EIF
+    plugin_est <- est_plugin(v_pred = v_star)
+    centered_eif <- eif - plugin_est
+
+    # estimate the conditional EIF using the validation data
+    d_out <- fit_nuisance_d(
+      train_data = train_data,
+      valid_data = valid_data,
+      contrast = contrast,
+      learners = d_learners,
+      b_out = b_out,
+      g_out = g_out,
+      h_out = h_out,
+      q_out = q_out,
+      r_out = r_out,
+      u_out = u_out,
+      v_out = v_out,
+      m_names = m_names,
+      w_names = w_names
+    )
+    centered_eif_pred <- d_out$est_valid$eif_pred
+
+    # compute the two-phase sampling un-centered EIF
+    eif <- two_phase_eif(S = valid_data$S,
+                         two_phase_weights = valid_data$two_phase_weights,
+                         eif = centered_eif,
+                         eif_predictions = centered_eif_pred,
+                         plugin_est = plugin_est)
+  }
 
   # output list
   out <- list(data.table::data.table(

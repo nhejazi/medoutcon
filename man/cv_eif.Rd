@@ -15,6 +15,7 @@ cv_eif(
   r_learners,
   u_learners,
   v_learners,
+  d_learners,
   effect_type = c("interventional", "natural"),
   w_names,
   m_names
@@ -70,6 +71,12 @@ for in the efficient influence function.}
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
 for in the efficient influence function.}
+
+\item{d_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit an initial efficient influence
+function regression when computing the efficient influence function in a
+two-phase sampling design.}
 
 \item{effect_type}{A \code{character} indicating whether components of the
 interventional or natural (in)direct effects are to be estimated. In the

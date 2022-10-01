@@ -8,9 +8,8 @@
 #'  affected by treatment (on the causal pathway between the intervention A,
 #'  mediators M, and outcome Y, but unaffected itself by the mediators).
 #' @param S A \code{logical} vector indicating whether an observation's mediator
-#'  was measured in a two-phase sampling design. Defaults to \code{NULL},
-#'  implying that two-phase sampling did not occur. Available exclusively for
-#'  the natural direct effect.
+#'  was measured in a two-phase sampling design. Defaults to a vector of ones,
+#'  implying that two-phase sampling did not occur.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'  similar corresponding to a set of mediators (on the causal pathway between
 #'  the intervention A and the outcome Y).
@@ -22,9 +21,7 @@
 #'  weights are used in the construction of re-weighted efficient estimators.
 #' @param two_phase_weights A \code{numeric} vector of known observation-level
 #'  weights corresponding to the inverse probability of the mediator being
-#'  measured. These weights should only be provided if \code{S} is
-#'  is specified. Defaults to \code{NULL}. Available exclusively for the
-#'  natural direct effect.
+#'  measured. Defaults to a vector of ones.
 #' @param effect A \code{character} indicating whether to compute the direct
 #'  or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
 #'  This is ignored when the argument \code{contrast} is provided. By default,
@@ -62,6 +59,11 @@
 #'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'  learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
 #'  for in the efficient influence function.
+#' @param d_learners A \code{\link[sl3]{Stack}} object, or other learner class
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit an initial efficient influence
+#'   function regression when computing the efficient influence function in a
+#'   two-phase sampling design.
 #' @param estimator The desired estimator of the direct or indirect effect (or
 #'   contrast-specific parameter) to be computed. Both an efficient one-step
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
@@ -115,11 +117,11 @@ medoutcon <- function(W,
                       A,
                       Z,
                       M,
-                      S = NULL,
                       Y,
+                      S = rep(1, length(Y)),
                       obs_weights = rep(1, length(Y)),
                       svy_weights = NULL,
-                      two_phase_weights = NULL,
+                      two_phase_weights = rep(1, length(Y)),
                       effect = c("direct", "indirect"),
                       contrast = NULL,
                       g_learners = sl3::Lrnr_glm_fast$new(),
@@ -129,6 +131,7 @@ medoutcon <- function(W,
                       r_learners = sl3::Lrnr_glm_fast$new(),
                       u_learners = sl3::Lrnr_hal9001$new(),
                       v_learners = sl3::Lrnr_hal9001$new(),
+                      d_learners = sl3::Lrnr_glm_fast$new(),
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5L, max_iter = 5L,
@@ -149,27 +152,9 @@ medoutcon <- function(W,
   } else {
     effect_type <- "interventional"
   }
-
-  # ensure that the two-phase sampling indicator and weights are only used
-  # where for NDE estimation
-  if (effect != "direct") {
-    S <- rep(1, length(Y))
-    two_phase_weights <- NULL
-  } else {
-    if (is.null(S) && is.null(two_phase_weights)) {
-      S <- rep(1, length(Y))
-    } else if ((!is.null(S) && is.null(two_phase_weights)) ||
-        (is.null(S) && !is.null(two_phase_weights))) {
-      stop(paste("Both S and two_phase_weights arguments must be",
-                 "provided to account for two-phase sampling."))
-    } else if (!is.null(S) && effect_type != "natural") {
-      stop(paste("Only the natural direct effect may be estimated with",
-                 "two-phase sampling designs."))
-    }
-  }
-
   # construct input data structure
-  data <- data.table::as.data.table(cbind(Y, M, Z, S, A, W, obs_weights))
+  data <- data.table::as.data.table(cbind(Y, M, Z, S, A, W, obs_weights,
+                                          two_phase_weights))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
   )
@@ -177,7 +162,7 @@ medoutcon <- function(W,
     sep = "_"
   )
   data.table::setnames(data, c("Y", m_names, "Z", "S", "A", w_names,
-                               "obs_weights"))
+                               "obs_weights", "two_phase_weights"))
 
   # bound outcome Y in unit interval
   min_y <- min(data[["Y"]])
@@ -213,6 +198,7 @@ medoutcon <- function(W,
         r_learners = r_learners,
         u_learners = u_learners,
         v_learners = v_learners,
+        d_learners = d_learners,
         w_names = w_names,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
@@ -235,6 +221,7 @@ medoutcon <- function(W,
         r_learners = r_learners,
         u_learners = u_learners,
         v_learners = v_learners,
+        d_learners = d_learners,
         w_names = w_names,
         m_names = m_names,
         y_bounds = c(min_y, max_y),

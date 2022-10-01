@@ -14,6 +14,7 @@ est_onestep(
   r_learners,
   u_learners,
   v_learners,
+  d_learners,
   w_names,
   m_names,
   y_bounds,
@@ -69,6 +70,12 @@ for in the efficient influence function.}
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
 for in the efficient influence function.}
+
+\item{d_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit an initial efficient influence
+function regression when computing the efficient influence function in a
+two-phase sampling design.}
 
 \item{w_names}{A \code{character} vector of the names of the columns that
 correspond to baseline covariates (W). The input for this argument is

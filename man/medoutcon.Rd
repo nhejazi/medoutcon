@@ -9,8 +9,8 @@ medoutcon(
   A,
   Z,
   M,
-  S = rep(1, length(Y)),
   Y,
+  S = rep(1, length(Y)),
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
   two_phase_weights = rep(1, length(Y)),
@@ -23,6 +23,7 @@ medoutcon(
   r_learners = sl3::Lrnr_glm_fast$new(),
   u_learners = sl3::Lrnr_hal9001$new(),
   v_learners = sl3::Lrnr_hal9001$new(),
+  d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
   estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 10)
 )
@@ -42,11 +43,11 @@ mediators M, and outcome Y, but unaffected itself by the mediators).}
 similar corresponding to a set of mediators (on the causal pathway between
 the intervention A and the outcome Y).}
 
+\item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
+
 \item{S}{A \code{logical} vector indicating whether an observation's mediator
 was measured in a two-phase sampling design. Defaults to a vector of ones,
 implying that two-phase sampling did not occur.}
-
-\item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights.
 The default is to give all observations equal weighting.}
@@ -104,6 +105,12 @@ for in the efficient influence function.}
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
 for in the efficient influence function.}
+
+\item{d_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit an initial efficient influence
+function regression when computing the efficient influence function in a
+two-phase sampling design.}
 
 \item{estimator}{The desired estimator of the direct or indirect effect (or
 contrast-specific parameter) to be computed. Both an efficient one-step

@@ -1,3 +1,8 @@
+# medoutcon 0.2.0
+
+* Added support for two-phase sampling designs with known weights in
+  `medoutcon`.
+
 # medoutcon 0.1.5
 
 * For user clarity, the name of the argument for providing externally computed

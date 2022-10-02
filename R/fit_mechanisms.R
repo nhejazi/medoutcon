@@ -1,6 +1,6 @@
 utils::globalVariables(c(
   "..w_names", "A", "Z", "V_pseudo", "S", "obs_weights",
-  "two_phase_weights"
+  "two_phase_weights", "eif"
 ))
 
 #' Fit propensity scores for treatment contrasts
@@ -872,7 +872,7 @@ fit_nuisance_d <- function(train_data,
                            u_out,
                            v_out,
                            m_names,
-                           w_names = w_names
+                           w_names
                            ) {
 
   ## extract nuisance estimates necessary for constructing pseudo-outcome
@@ -953,9 +953,7 @@ fit_nuisance_d <- function(train_data,
   d_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
     weights = "obs_weights",
-    covariates = c(w_names, "A", m_names, "Z", "Y"),
-    outcome = "eif",
-    outcome_type = "continuous"
+    covariates = c(w_names, "A", m_names, "Z", "Y")
   )
 
 

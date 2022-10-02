@@ -273,7 +273,7 @@ test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
 })
 
 ################################################################################
-# Unit tests for estimators
+# Integration tests for estimators
 ################################################################################
 
 context(paste("Estimators of natural effects are close to true parameters in",
@@ -291,8 +291,8 @@ library(sl3)
 library(SuperLearner)
 
 # options
-set.seed(618394)
-n_obs <- 5000
+set.seed(61234)
+n_obs <- 500
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
@@ -427,11 +427,13 @@ nie_true <- mean(EY_A1_Z1 - EY_A1_Z0)
 
 # 5) testing estimators for the NDE
 test_that("NDE: One-step estimate is near DGP truth", {
-  expect_equal(nde_os$theta, nde_true, tol = 0.05)
+  expect_equal(nde_os$theta, nde_true,
+               tol = 1.96 * sqrt(var(nde_os$eif) / n_obs))
 })
 
 test_that("NDE: TML estimate is near DGP truth", {
-  expect_equal(nde_tmle$theta, nde_true, tol = 0.05)
+  expect_equal(nde_tmle$theta, nde_true,
+               tol = 1.96 * sqrt(var(nde_tmle$eif) / n_obs))
 })
 
 test_that("NDE: Mean of estimated EIF is nearly zero for the one-step", {
@@ -445,11 +447,13 @@ test_that("NDE: Mean of estimated EIF is approximately solved for the TMLE", {
 
 # 6) testing estimators for the NIE
 test_that("NIE: One-step estimate is near DGP truth", {
-  expect_equal(nie_os$theta, nie_true, tol = 0.05)
+  expect_equal(nie_os$theta, nie_true,
+               tol = 1.96 * sqrt(var(nie_os$eif) / n_obs))
 })
 
 test_that("NIE: TML estimate is near DGP truth", {
-  expect_equal(nie_tmle$theta, nie_true, tol = 0.05)
+  expect_equal(nie_tmle$theta, nie_true,
+               tol = 1.96 * sqrt(var(nie_tmle$eif) / n_obs))
 })
 
 test_that("NIE: Mean of estimated EIF is nearly zero for the one-step", {

@@ -17,7 +17,7 @@ fit_nuisance_d(
   u_out,
   v_out,
   m_names,
-  w_names = w_names
+  w_names
 )
 }
 \arguments{

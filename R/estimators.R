@@ -342,7 +342,7 @@ two_phase_eif <- function(S,
   two_phase_eif <- ipw_two_phase * eif + (1 - ipw_two_phase) * eif_predictions
 
   # return the un-centered two-phase eif
-  uncentered_two_phase_eif <- two_phase_eif - plugin_est
+  uncentered_two_phase_eif <- two_phase_eif + plugin_est
   return(uncentered_two_phase_eif)
 
 }

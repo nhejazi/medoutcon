@@ -262,7 +262,7 @@ cv_eif <- function(fold,
       m_names = m_names,
       w_names = w_names
     )
-    centered_eif_pred <- d_out$est_valid$eif_pred
+    centered_eif_pred <- d_out$d_pred
 
     # compute the two-phase sampling un-centered EIF
     eif <- two_phase_eif(S = valid_data$S,

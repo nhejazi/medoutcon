@@ -74,7 +74,7 @@ b_out <- fit_out_mech(
 )
 test_that("MSE of outcome regression estimates is sufficiently low", {
   b_mse <- mean((b_out$b_est_train$b_pred_A_prime - my(m, z, aprime, w))^2)
-  expect_lt(b_mse, 0.01)
+  expect_lt(b_mse, 0.03)
 })
 
 ## fit mediator-outcome confounder regression, excluding mediator(s)
@@ -127,7 +127,7 @@ u_out <- fit_nuisance_u(
 )
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   u_mse <- mean((u_out$u_pred - u(z, w, aprime, astar))^2)
-  expect_lt(u_mse, 0.01)
+  expect_lt(u_mse, 0.03)
 })
 
 ## fit v

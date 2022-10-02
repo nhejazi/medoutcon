@@ -87,11 +87,6 @@ g_out <- fit_treat_mech(
   train_data = data, valid_data = data, contrast = c(aprime, astar),
   learners = g_learners, w_names = w_names, type = "g"
 )
-test_that("Estimates of propensity score are close to the truth", {
-  expect_equal(g_out$treat_est_train$treat_pred_A_star, g(astar, w),
-    tol = 0.05
-  )
-})
 test_that("MSE of propensity score estimates is sufficiently low", {
   g_mse <- mean((g_out$treat_est_train$treat_pred_A_star - g(astar, w))^2)
   expect_lt(g_mse, 1e-3)
@@ -103,11 +98,6 @@ h_out <- fit_treat_mech(
   learners = h_learners, w_names = w_names,
   m_names = m_names, type = "h"
 )
-test_that("Estimates of mediator propensity score are close to the truth", {
-  expect_equal(h_out$treat_est_train$treat_pred_A_prime, e(aprime, m, w),
-    tol = 0.05
-  )
-})
 test_that("MSE of mediator propensity score estimates is sufficiently low", {
   h_mse <- mean((h_out$treat_est_train$treat_pred_A_prime - e(aprime, m, w))^2)
   expect_lt(h_mse, 1e-3)
@@ -118,11 +108,6 @@ b_out <- fit_out_mech(
   train_data = data, valid_data = data, contrast = c(aprime, astar),
   learners = b_learners, m_names = m_names, w_names = w_names
 )
-test_that("Estimates of outcome regression are close to the truth", {
-  expect_equal(b_out$b_est_train$b_pred_A_prime, my(m, z, aprime, w),
-    tol = 0.2
-  )
-})
 test_that("MSE of outcome regression estimates is sufficiently low", {
   b_mse <- mean((b_out$b_est_train$b_pred_A_prime - my(m, z, aprime, w))^2)
   expect_lt(b_mse, 0.01)
@@ -138,11 +123,6 @@ q_out <- fit_moc_mech(
   w_names = w_names,
   type = "q"
 )
-test_that("Estimates of confounder regression q are close to the truth", {
-  expect_equal(q_out$moc_est_train_Z_one$moc_pred_A_prime, pz(1, aprime, w),
-    tol = 0.05
-  )
-})
 test_that("MSE of confounder regression q estimates is sufficiently low", {
   q_mse <- mean((q_out$moc_est_train_Z_one$moc_pred_A_prime -
     pz(1, aprime, w))^2)
@@ -159,12 +139,6 @@ r_out <- fit_moc_mech(
   w_names = w_names,
   type = "r"
 )
-test_that("Estimates of confounder regression r are close to the truth", {
-  expect_equal(r_out$moc_est_train_Z_one$moc_pred_A_prime,
-    r(1, aprime, m, w),
-    tol = 0.07
-  )
-})
 test_that("MSE of confounder regression r estimates is sufficiently low", {
   r_mse <- mean((r_out$moc_est_train_Z_one$moc_pred_A_prime -
     r(1, aprime, m, w))^2)
@@ -187,9 +161,6 @@ u_out <- fit_nuisance_u(
   h_out = h_out,
   w_names = w_names
 )
-test_that("Estimates of pseudo-outcome regression are close to the truth", {
-  expect_equal(u_out$u_pred, u(z, w, aprime, astar), tol = 0.1)
-})
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   u_mse <- mean((u_out$u_pred - u(z, w, aprime, astar))^2)
   expect_lt(u_mse, 0.01)
@@ -209,15 +180,9 @@ v_out <- fit_nuisance_v(
 v_star <- intv(1, w, aprime) * pmaw(1, astar, w) + intv(0, w, aprime) *
   pmaw(0, astar, w)
 
-test_that("Estimates of pseudo-outcome regression are close to the truth", {
-  expect_equal(v_out$v_pred, v_star, tol = 0.08)
-})
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   v_mse <- mean((v_out$v_pred - v_star)^2)
   expect_lt(v_mse, 0.005)
-})
-test_that("Estimates of pseudo-outcome used in v are close to the truth", {
-  expect_equal(v_out$v_pseudo, intv(m, w, aprime), tol = 0.1)
 })
 test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
   v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w, aprime))^2)

@@ -46,7 +46,7 @@ contrast <- c(0, 1)
 aprime <- contrast[1]
 astar <- contrast[2]
 set.seed(245627)
-n_samp <- 10000
+n_samp <- 5000
 
 # set up learners for each nuisance parameter
 hal_binomial_lrnr <- Lrnr_hal9001$new(
@@ -65,7 +65,8 @@ hal_gaussian_lrnr <- Lrnr_hal9001$new(
 )
 g_learners <- h_learners <- b_learners <- q_learners <- r_learners <-
   hal_binomial_lrnr
-d_learners <- u_learners <- v_learners <- hal_gaussian_lrnr
+u_learners <- v_learners <- hal_gaussian_lrnr
+d_learners <- Lrnr_xgboost$new()
 
 # simulate smaller data set for computing estimates
 data <- sim_medoutcon_data(n_obs = n_samp)

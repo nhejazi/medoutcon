@@ -1,64 +1,66 @@
 #' Efficient estimation of stochastic interventional (in)direct effects
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar object corresponding
-#'  to a set of baseline covariates.
+#'   to a set of baseline covariates.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
-#'  parameter of interest is defined as a location shift of this quantity.
+#'   parameter of interest is defined as a location shift of this quantity.
 #' @param Z A \code{numeric} vector corresponding to an intermediate confounder
-#'  affected by treatment (on the causal pathway between the intervention A,
-#'  mediators M, and outcome Y, but unaffected itself by the mediators).
+#'   affected by treatment (on the causal pathway between the intervention A,
+#'   mediators M, and outcome Y, but unaffected itself by the mediators).
+#'   Setting this to \code{NULL} permits estimation of the natural (in)direct
+#'   effects.
 #' @param S A \code{logical} vector indicating whether an observation's mediator
-#'  was measured in a two-phase sampling design. Defaults to a vector of ones,
-#'  implying that two-phase sampling did not occur.
+#'   was measured in a two-phase sampling design. Defaults to a vector of ones,
+#'   implying that two-phase sampling did not occur.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
-#'  similar corresponding to a set of mediators (on the causal pathway between
-#'  the intervention A and the outcome Y).
+#'   similar corresponding to a set of mediators (on the causal pathway between
+#'   the intervention A and the outcome Y).
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
-#' @param obs_weights A \code{numeric} vector of observation-level weights.
-#'  The default is to give all observations equal weighting.
+#' @param obs_weights A \code{numeric} vector of observation-level weights. The
+#'   default is to give all observations equal weighting.
 #' @param svy_weights A \code{numeric} vector of observation-level weights that
-#'  have been computed externally, such as survey sampling weights. Such
-#'  weights are used in the construction of re-weighted efficient estimators.
+#'   have been computed externally, such as survey sampling weights. Such
+#'   weights are used in the construction of re-weighted efficient estimators.
 #' @param two_phase_weights A \code{numeric} vector of known observation-level
-#'  weights corresponding to the inverse probability of the mediator being
-#'  measured. Defaults to a vector of ones.
-#' @param effect A \code{character} indicating whether to compute the direct
-#'  or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
-#'  This is ignored when the argument \code{contrast} is provided. By default,
-#'  the direct effect is estimated.
+#'   weights corresponding to the inverse probability of the mediator being
+#'   measured. Defaults to a vector of ones.
+#' @param effect A \code{character} indicating whether to compute the direct or
+#'   the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
+#'   This is ignored when the argument \code{contrast} is provided. By default,
+#'   the direct effect is estimated.
 #' @param contrast A \code{numeric} double indicating the two values of the
-#'  intervention \code{A} to be compared. The default value of \code{NULL} has
-#'  no effect, as the value of the argument \code{effect} is instead used to
-#'  define the contrasts. To override \code{effect}, provide a \code{numeric}
-#'  double vector, giving the values of a' and a*, e.g., \code{c(0, 1)}.
+#'   intervention \code{A} to be compared. The default value of \code{NULL} has
+#'   no effect, as the value of the argument \code{effect} is instead used to
+#'   define the contrasts. To override \code{effect}, provide a \code{numeric}
+#'   double vector, giving the values of a' and a*, e.g., \code{c(0, 1)}.
 #' @param g_learners A \code{\link[sl3]{Stack}} object, or other learner class
-#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
-#'  learners from \pkg{sl3}; used to fit a model for the propensity score.
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit a model for the propensity score.
 #' @param h_learners A \code{\link[sl3]{Stack}} object, or other learner class
-#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
-#'  learners from \pkg{sl3}; used to fit a model for a parameterization of the
-#'  propensity score that conditions on the mediators.
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit a model for a parameterization of the
+#'   propensity score that conditions on the mediators.
 #' @param b_learners A \code{\link[sl3]{Stack}} object, or other learner class
-#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
-#'  learners from \pkg{sl3}; used to fit a model for the outcome regression.
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit a model for the outcome regression.
 #' @param q_learners A \code{\link[sl3]{Stack}} object, or other learner class
-#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
-#'  learners from \pkg{sl3}; used to fit a model for a nuisance regression of
-#'  the intermediate confounder, conditioning on the treatment and potential
-#'  baseline covariates.
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+#'   the intermediate confounder, conditioning on the treatment and potential
+#'   baseline covariates.
 #' @param r_learners A \code{\link[sl3]{Stack}} object, or other learner class
-#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
-#'  learners from \pkg{sl3}; used to fit a model for a nuisance regression of
-#'  the intermediate confounder, conditioning on the mediators, the treatment,
-#'  and potential baseline confounders.
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit a model for a nuisance regression of
+#'   the intermediate confounder, conditioning on the mediators, the treatment,
+#'   and potential baseline confounders.
 #' @param u_learners A \code{\link[sl3]{Stack}} object, or other learner class
-#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
-#'  learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
-#'  for in the efficient influence function.
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+#'   for in the efficient influence function.
 #' @param v_learners A \code{\link[sl3]{Stack}} object, or other learner class
-#'  (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
-#'  learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
-#'  for in the efficient influence function.
+#'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+#'   learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
+#'   for in the efficient influence function.
 #' @param d_learners A \code{\link[sl3]{Stack}} object, or other learner class
 #'   (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 #'   learners from \pkg{sl3}; used to fit an initial efficient influence
@@ -69,11 +71,11 @@
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
 #'   estimator (TMLE) are available. The default is the TML estimator.
 #' @param estimator_args A \code{list} of extra arguments to be passed (via
-#'  \code{...}) to the function call for the specified estimator. The default
-#'  is chosen so as to allow the number of folds used in computing the one-step
-#'  or TML estimators to be easily adjusted. In the case of the TML estimator,
-#'  the number of update (fluctuation) iterations is limited, and a tolerance
-#'  is included for the updates introduced by the tilting (fluctuation) models.
+#'   \code{...}) to the function call for the specified estimator. The default
+#'   is chosen so as to allow the number of folds used in computing the one-step
+#'   or TML estimators to be easily adjusted. In the case of the TML estimator,
+#'   the number of update (fluctuation) iterations is limited, and a tolerance
+#'   is included for the updates introduced by the tilting (fluctuation) models.
 #'
 #' @importFrom data.table as.data.table setnames set
 #' @importFrom sl3 Lrnr_glm_fast Lrnr_hal9001

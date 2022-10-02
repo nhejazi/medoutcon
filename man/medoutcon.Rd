@@ -37,7 +37,9 @@ parameter of interest is defined as a location shift of this quantity.}
 
 \item{Z}{A \code{numeric} vector corresponding to an intermediate confounder
 affected by treatment (on the causal pathway between the intervention A,
-mediators M, and outcome Y, but unaffected itself by the mediators).}
+mediators M, and outcome Y, but unaffected itself by the mediators).
+Setting this to \code{NULL} permits estimation of the natural (in)direct
+effects.}
 
 \item{M}{A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 similar corresponding to a set of mediators (on the causal pathway between
@@ -49,8 +51,8 @@ the intervention A and the outcome Y).}
 was measured in a two-phase sampling design. Defaults to a vector of ones,
 implying that two-phase sampling did not occur.}
 
-\item{obs_weights}{A \code{numeric} vector of observation-level weights.
-The default is to give all observations equal weighting.}
+\item{obs_weights}{A \code{numeric} vector of observation-level weights. The
+default is to give all observations equal weighting.}
 
 \item{svy_weights}{A \code{numeric} vector of observation-level weights that
 have been computed externally, such as survey sampling weights. Such
@@ -60,8 +62,8 @@ weights are used in the construction of re-weighted efficient estimators.}
 weights corresponding to the inverse probability of the mediator being
 measured. Defaults to a vector of ones.}
 
-\item{effect}{A \code{character} indicating whether to compute the direct
-or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
+\item{effect}{A \code{character} indicating whether to compute the direct or
+the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
 This is ignored when the argument \code{contrast} is provided. By default,
 the direct effect is estimated.}
 

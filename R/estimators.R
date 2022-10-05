@@ -605,11 +605,7 @@ est_tml <- function(data,
 
     # perform iterative targeting for intermediate confounding mechanism
     q_prime_Z_one_logit <- q_prime_Z_one %>%
-      bound_precision(
-        # NOTE: tricky tricky, even mild numerical bounding can backfire in
-        #       large enough samples such that plogis(qlogis(x)) != x
-        tol = ifelse(effect_type == "natural", .Machine$double.eps, 1e-6)
-      ) %>%
+      bound_precision() %>%
       stats::qlogis()
 
     # fit tilting model for the intermediate confounding mechanism
@@ -627,6 +623,7 @@ est_tml <- function(data,
         start = 0
       )
     )
+
     # NOTE: for the natural (in)direct effects, the regressor on the RHS is
     #       uniquely ~ZERO~ so the estimated parameter should always be NaN
     if (effect_type == "natural") {
@@ -641,10 +638,16 @@ est_tml <- function(data,
     q_tilt_coef <- unname(stats::coef(q_tilt_fit))
 
     # update nuisance estimates via tilting model for intermediate confounder
-    q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
-      cv_eif_est$u_int_diff)
-    q_prime_Z_natural <- (data$Z * q_prime_Z_one) + ((1 - data$Z) *
-      (1 - q_prime_Z_one))
+    if (effect_type == "natural") {
+      # for the natural (in)direct effects, no updates necessary
+      q_prime_Z_one <- data$Z
+      q_prime_Z_natural <- data$Z
+    } else {
+      q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
+        cv_eif_est$u_int_diff)
+      q_prime_Z_natural <- (data$Z * q_prime_Z_one) + ((1 - data$Z) *
+        (1 - q_prime_Z_one))
+    }
 
     # compute efficient score for intermediate confounding component
     q_score <- ipw_prime * cv_eif_est$u_int_diff * (data$Z - q_prime_Z_one)

@@ -10,7 +10,7 @@ medoutcon(
   Z,
   M,
   Y,
-  S = rep(1, length(Y)),
+  C = rep(1, length(Y)),
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
   two_phase_weights = rep(1, length(Y)),
@@ -25,7 +25,7 @@ medoutcon(
   v_learners = sl3::Lrnr_hal9001$new(),
   d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
-  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5)
 )
 }
 \arguments{
@@ -37,9 +37,8 @@ parameter of interest is defined as a location shift of this quantity.}
 
 \item{Z}{A \code{numeric} vector corresponding to an intermediate confounder
 affected by treatment (on the causal pathway between the intervention A,
-mediators M, and outcome Y, but unaffected itself by the mediators).
-Setting this to \code{NULL} permits estimation of the natural (in)direct
-effects.}
+mediators M, and outcome Y, but unaffected itself by the mediators). When
+set to \code{NULL}, the natural (in)direct effects are estimated.}
 
 \item{M}{A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 similar corresponding to a set of mediators (on the causal pathway between
@@ -47,9 +46,9 @@ the intervention A and the outcome Y).}
 
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
-\item{S}{A \code{logical} vector indicating whether an observation's mediator
-was measured in a two-phase sampling design. Defaults to a vector of ones,
-implying that two-phase sampling did not occur.}
+\item{C}{A \code{logical} vector indicating whether a unit's mediator was
+measured via a two-phase sampling design. Defaults to a vector of ones,
+implying that two-phase sampling was not performed.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights. The
 default is to give all observations equal weighting.}

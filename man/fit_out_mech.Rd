@@ -15,10 +15,10 @@ fit_out_mech(
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing the observed data, with
-columns in the order specified by the NPSEM (Y, M, Z, A, W), with column
-names set based on the original input data. Such a structure is merely a
-convenience utility to passing data around to the various core estimation
-routines and is automatically generated \code{\link{medoutcon}}.}
+columns in the order specified by the NPSEM (Y, M, Z, C, A, W), with column
+names set based on the input data. Such a structure is a convenience
+utility to passing data around to the various core estimation routines and
+is automatically generated \code{\link{medoutcon}}.}
 
 \item{valid_data}{A holdout data set, with columns exactly matching those
 appearing in the preceding argument \code{data}, to be used for estimation

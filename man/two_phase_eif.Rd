@@ -4,32 +4,30 @@
 \alias{two_phase_eif}
 \title{Two-phase sampling adjusted, un-centered efficient influence function}
 \usage{
-two_phase_eif(S, two_phase_weights, eif, eif_predictions, plugin_est)
+two_phase_eif(C, two_phase_weights, eif, eif_predictions, plugin_est)
 }
 \arguments{
-\item{S}{A \code{logical} vector indicating whether an observation's mediator
-was measured in a two-phase sampling design. Defaults to \code{NULL},
-implying that two-phase sampling did not occur.}
+\item{C}{A \code{logical} vector indicating whether an unit's mediators were
+measured using a two-phase sampling design.}
 
 \item{two_phase_weights}{A \code{numeric} vector of known observation-level
-weights corresponding to the inverse probability of the mediator being
-measured. These weights should only be provided if \code{S} is is
-specified. Defaults to \code{NULL}.}
+weights corresponding to the inverse probability of the mediators being
+measured. These weights should only be provided if \code{C} is specified.}
 
 \item{eif}{A \code{numeric} vector of the efficient influence function.}
 
 \item{eif_predictions}{A \code{numeric} vector of the predicted efficient
 influence function, conditioning on the mediator being measured.}
 
-\item{plugin_est}{A \code{numeric} representing the plug-in estimate for the
-given contrast.}
+\item{plugin_est}{A \code{numeric} corresponding to the plug-in estimate for
+the given contrast.}
 }
 \value{
 An un-centered efficeint influence function that accounts for the
   two-phase sampling design.
 }
 \description{
-Adjust the efficient influence function to account for the two-phase sampling
-design.
+Adjust the efficient influence function to account for the use of two-phase
+sampling designs in measuring the mediators.
 }
 \keyword{internal}

@@ -11,6 +11,9 @@ Authors@R: c(
     person("Kara", "Rudolph", email = "kr2854@cumc.columbia.edu",
            role = "aut",
            comment = c(ORCID = "0000-0002-9417-7960")),
+    person("Philippe", "Boileau", email = "philippe_boileau@berkeley.edu",
+           role = "ctb",
+           comment = c(ORCID = "0000-0002-4850-2507")),
     person("Mark", "van der Laan", email = "laan@berkeley.edu",
            role = c("ctb", "ths"),
            comment = c(ORCID = "0000-0003-1432-5511"))
@@ -61,4 +64,4 @@ BugReports: https://github.com/nhejazi/medoutcon/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1

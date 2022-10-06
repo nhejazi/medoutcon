@@ -6,12 +6,11 @@
 #'   parameter of interest is defined as a location shift of this quantity.
 #' @param Z A \code{numeric} vector corresponding to an intermediate confounder
 #'   affected by treatment (on the causal pathway between the intervention A,
-#'   mediators M, and outcome Y, but unaffected itself by the mediators).
-#'   Setting this to \code{NULL} permits estimation of the natural (in)direct
-#'   effects.
-#' @param S A \code{logical} vector indicating whether an observation's mediator
-#'   was measured in a two-phase sampling design. Defaults to a vector of ones,
-#'   implying that two-phase sampling did not occur.
+#'   mediators M, and outcome Y, but unaffected itself by the mediators). When
+#'   set to \code{NULL}, the natural (in)direct effects are estimated.
+#' @param C A \code{logical} vector indicating whether a unit's mediator was
+#'   measured via a two-phase sampling design. Defaults to a vector of ones,
+#'   implying that two-phase sampling was not performed.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'   similar corresponding to a set of mediators (on the causal pathway between
 #'   the intervention A and the outcome Y).
@@ -120,7 +119,7 @@ medoutcon <- function(W,
                       Z,
                       M,
                       Y,
-                      S = rep(1, length(Y)),
+                      C = rep(1, length(Y)),
                       obs_weights = rep(1, length(Y)),
                       svy_weights = NULL,
                       two_phase_weights = rep(1, length(Y)),
@@ -137,7 +136,7 @@ medoutcon <- function(W,
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5L, max_iter = 5L,
-                        tiltmod_tol = 10
+                        tiltmod_tol = 5
                       )) {
   # set defaults
   estimator <- match.arg(estimator)
@@ -155,7 +154,7 @@ medoutcon <- function(W,
     effect_type <- "interventional"
   }
   # construct input data structure
-  data <- data.table::as.data.table(cbind(Y, M, Z, S, A, W, obs_weights,
+  data <- data.table::as.data.table(cbind(Y, M, Z, C, A, W, obs_weights,
                                           two_phase_weights))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
@@ -163,7 +162,7 @@ medoutcon <- function(W,
   m_names <- paste("M", seq_len(dim(data.table::as.data.table(M))[2]),
     sep = "_"
   )
-  data.table::setnames(data, c("Y", m_names, "Z", "S", "A", w_names,
+  data.table::setnames(data, c("Y", m_names, "Z", "C", "A", w_names,
                                "obs_weights", "two_phase_weights"))
 
   # bound outcome Y in unit interval

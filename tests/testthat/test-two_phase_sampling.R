@@ -6,19 +6,19 @@ context("Two-phase sampling EIF convenience function")
 test_that("two_phase_eif returns an uncentered EIF", {
 
   # generate fake inputs
-  S <- c(1, 0, 0, 0, 1, 1)
+  R <- c(1, 0, 0, 0, 1, 1)
   two_phase_weights <- c(rep(1 / 2, 3), rep(2, 3))
-  eif <- c(rep(1/2, 3), rep(-1 / 2, 3))
+  eif <- c(rep(1 / 2, 3), rep(-1 / 2, 3))
   eif_predictions <- c(rep(1 / 3, 3), rep(-1 / 3, 3))
   plugin_est <- 1
 
   # independently compute the adjusted EIF
-  uncentered_eif <- S * two_phase_weights * eif +
-    (1 - S * two_phase_weights) * eif_predictions + plugin_est
+  uncentered_eif <- R * two_phase_weights * eif +
+    (1 - R * two_phase_weights) * eif_predictions + plugin_est
 
   # assert that result is identical to two_phase_eif's
   expect_equal(
-    two_phase_eif(S = S,
+    two_phase_eif(R = R,
                   two_phase_weights = two_phase_weights,
                   eif = eif,
                   eif_predictions = eif_predictions,
@@ -72,7 +72,7 @@ d_learners <- Lrnr_xgboost$new()
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
-data[, `:=`(S = rbinom(n_samp, 1, 0.9),
+data[, `:=`(R = rbinom(n_samp, 1, 0.9),
             two_phase_weights = 1,
             obs_weights = 1)]
 w <- as_tibble(data)[, w_names]
@@ -80,7 +80,7 @@ a <- data$A
 z <- data$Z
 m <- data$M
 y <- data$Y
-s <- data$S
+R <- data$R
 
 # compute estimates of nuisance parameters
 ## fit propensity score
@@ -207,8 +207,8 @@ d_out <- fit_nuisance_d(
   w_names = w_names
 )
 
-## compute full data eif values
-data[, S := 1]
+## compute complete-data EIF values
+data[, R := 1]
 folds <- make_folds(data, fold_fun = folds_vfold, V = 1)
 fold_obj <- folds[[1]]
 fold_obj$training_set <- fold_obj$validation_set
@@ -228,9 +228,9 @@ eif <- cv_eif(
   w_names = w_names,
   m_names = m_names
 )
-full_data_eif <- eif[[1]]$D_star - mean(v_out$v_pred)
+full_data_eif <- eif[[1]]$D_star - est_plugin(v_out$v_pred)
 
-test_that("MSE of pseudo-outcome used in eif estimation is sufficiently low", {
+test_that("MSE of pseudo-outcome used in EIF estimation is sufficiently low", {
   expect_lt(mean((d_out$d_pred - full_data_eif)^2), 0.1)
 })
 
@@ -258,7 +258,7 @@ n_obs <- 500
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
-data[, `:=`(S = rbinom(n_obs, 1, 0.9),
+data[, `:=`(R = rbinom(n_obs, 1, 0.9),
             two_phase_weights = 1,
             obs_weights = 1)]
 w_names <- str_subset(colnames(data), "W")
@@ -308,7 +308,7 @@ d_learners <- u_learners <- v_learners <- b_learners <- rf_lrnr
 # 3) test different estimators
 nde_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
-  M = data[, ..m_names], Y = data$Y, S = data$S,
+  M = data[, ..m_names], Y = data$Y, R = data$R,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -325,7 +325,7 @@ summary(nde_os)
 
 nie_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
-  M = data[, ..m_names], Y = data$Y, S = data$S,
+  M = data[, ..m_names], Y = data$Y, R = data$R,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -342,7 +342,7 @@ summary(nie_os)
 
 nde_tmle <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
-  M = data[, ..m_names], Y = data$Y, S = data$S,
+  M = data[, ..m_names], Y = data$Y, R = data$R,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -353,13 +353,13 @@ nde_tmle <- medoutcon(
   d_learners = d_learners,
   effect = "direct",
   estimator = "tmle",
-  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 5)
 )
 summary(nde_tmle)
 
 nie_tmle <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
-  M = data[, ..m_names], Y = data$Y, S = data$S,
+  M = data[, ..m_names], Y = data$Y, R = data$R,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -370,7 +370,7 @@ nie_tmle <- medoutcon(
   d_learners = d_learners,
   effect = "indirect",
   estimator = "tmle",
-  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5, max_iter = 10, tiltmod_tol = 5)
 )
 summary(nie_tmle)
 

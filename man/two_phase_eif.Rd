@@ -4,15 +4,16 @@
 \alias{two_phase_eif}
 \title{Two-phase sampling adjusted, un-centered efficient influence function}
 \usage{
-two_phase_eif(C, two_phase_weights, eif, eif_predictions, plugin_est)
+two_phase_eif(R, two_phase_weights, eif, eif_predictions, plugin_est)
 }
 \arguments{
-\item{C}{A \code{logical} vector indicating whether an unit's mediators were
-measured using a two-phase sampling design.}
+\item{R}{A \code{logical} vector indicating whether an sampled observation's
+mediators were measured using a two-phase sampling design.}
 
 \item{two_phase_weights}{A \code{numeric} vector of known observation-level
 weights corresponding to the inverse probability of the mediators being
-measured. These weights should only be provided if \code{C} is specified.}
+measured. These weights should only be provided if the two-phase sampling
+indicator \code{R} is specified.}
 
 \item{eif}{A \code{numeric} vector of the efficient influence function.}
 

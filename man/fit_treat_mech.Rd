@@ -16,7 +16,7 @@ fit_treat_mech(
 }
 \arguments{
 \item{train_data}{A \code{data.table} containing the observed data; columns
-are in the order specified by the NPSEM (Y, M, Z, C, A, W), with column
+are in the order specified by the NPSEM (Y, M, R, Z, A, W), with column
 names set appropriately based on the data. Such a structure is merely a
 convenience utility to passing data around to the various core estimation
 routines and is automatically generated \code{\link{medoutcon}}.}

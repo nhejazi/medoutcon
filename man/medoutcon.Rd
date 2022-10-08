@@ -10,7 +10,7 @@ medoutcon(
   Z,
   M,
   Y,
-  C = rep(1, length(Y)),
+  R = rep(1, length(Y)),
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
   two_phase_weights = rep(1, length(Y)),
@@ -46,9 +46,9 @@ the intervention A and the outcome Y).}
 
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
-\item{C}{A \code{logical} vector indicating whether a unit's mediator was
-measured via a two-phase sampling design. Defaults to a vector of ones,
-implying that two-phase sampling was not performed.}
+\item{R}{A \code{logical} vector indicating whether a sampled observation's
+mediator was measured via a two-phase sampling design. Defaults to a
+vector of ones, implying that two-phase sampling was not performed.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights. The
 default is to give all observations equal weighting.}

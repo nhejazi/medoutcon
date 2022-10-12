@@ -38,7 +38,7 @@ u_learners <- v_learners <- hal_gaussian_lrnr
 data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
-data[, `:=`(obs_weights = 1, S = 1, two_phase_weights = 1)]
+data[, `:=`(obs_weights = 1, R = 1, two_phase_weights = 1)]
 w <- as_tibble(data)[, w_names]
 a <- data$A
 z <- data$Z

@@ -66,7 +66,6 @@ hal_gaussian_lrnr <- Lrnr_hal9001$new(
 g_learners <- h_learners <- b_learners <- q_learners <- r_learners <-
   hal_binomial_lrnr
 u_learners <- v_learners <- hal_gaussian_lrnr
-d_learners <- Lrnr_xgboost$new()
 
 # simulate smaller data set for computing estimates
 data <- sim_medoutcon_data(n_obs = n_samp)
@@ -188,50 +187,6 @@ test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
 test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
   v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w, aprime))^2)
   expect_lt(v_pseudo_mse, 0.05)
-})
-
-## fit eif regression
-d_out <- fit_nuisance_d(
-  train_data = data,
-  valid_data = data,
-  contrast = contrast,
-  learners = d_learners,
-  b_out = b_out,
-  g_out = g_out,
-  h_out = h_out,
-  q_out = q_out,
-  r_out = r_out,
-  u_out = u_out,
-  v_out = v_out,
-  m_names = m_names,
-  w_names = w_names
-)
-
-## compute complete-data EIF values
-data[, R := 1]
-folds <- make_folds(data, fold_fun = folds_vfold, V = 1)
-fold_obj <- folds[[1]]
-fold_obj$training_set <- fold_obj$validation_set
-eif <- cv_eif(
-  fold = fold_obj,
-  data = data,
-  contrast = contrast,
-  g_learners = g_learners,
-  h_learners = h_learners,
-  b_learners = b_learners,
-  q_learners = q_learners,
-  r_learners = r_learners,
-  u_learners = u_learners,
-  v_learners = v_learners,
-  d_learners = d_learners,
-  effect_type = "interventional",
-  w_names = w_names,
-  m_names = m_names
-)
-full_data_eif <- eif[[1]]$D_star - est_plugin(v_out$v_pred)
-
-test_that("MSE of pseudo-outcome used in EIF estimation is sufficiently low", {
-  expect_lt(mean((d_out$d_pred - full_data_eif)^2), 0.1)
 })
 
 ################################################################################

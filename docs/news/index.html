@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -58,6 +58,12 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.0" id="medoutcon-020">medoutcon 0.2.0<a class="anchor" aria-label="anchor" href="#medoutcon-020"></a></h2>
+<ul><li>Added support for a semiparametric correction for outcome-dependent two-phase sampling designs with known or estimated sampling weights.</li>
+<li>Tightened sanity checks for estimation of natural direct and indirect effects by requiring that EIF scores related to intermediate confounders uniformly be zero when <code>Z = NULL</code> is specified.</li>
+<li>The above required minor changes to <code><a href="../reference/est_tml.html">est_tml()</a></code> so as to avoid fluctuation models for the TMLE step from updating the intermediate confounder nuisance components (i.e., <code>q_prime_Z_one</code>, <code>q_prime_Z_natural</code>) and causing numerical issues that violate the above internal checks.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.5" id="medoutcon-015">medoutcon 0.1.5<a class="anchor" aria-label="anchor" href="#medoutcon-015"></a></h2>
 <ul><li>For user clarity, the name of the argument for providing externally computed observation-level weights has changed (from <code>ext_weights</code>) to <code>svy_weights</code>.</li>
 <li>Support for the natural direct and indirect effects has been added, requiring the addition of the new internal argument <code>effect_type</code> across functions for estimation, including <code><a href="../reference/cv_eif.html">cv_eif()</a></code>, <code><a href="../reference/est_onestep.html">est_onestep()</a></code>, and <code><a href="../reference/est_tml.html">est_tml()</a></code>. When <code>Z = NULL</code> is set in <code><a href="../reference/medoutcon.html">medoutcon()</a></code>, a natural effect estimate corresponding to the argument <code>effect</code> is returned instead of an interventional effect.</li>
@@ -81,7 +87,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

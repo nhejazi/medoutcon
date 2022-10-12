@@ -154,16 +154,20 @@ medoutcon <- function(W,
     effect_type <- "interventional"
   }
   # construct input data structure
-  data <- data.table::as.data.table(cbind(Y, M, R, Z, A, W, obs_weights,
-                                          two_phase_weights))
+  data <- data.table::as.data.table(cbind(
+    Y, M, R, Z, A, W, obs_weights,
+    two_phase_weights
+  ))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
   )
   m_names <- paste("M", seq_len(dim(data.table::as.data.table(M))[2]),
     sep = "_"
   )
-  data.table::setnames(data, c("Y", m_names, "R", "Z", "A", w_names,
-                               "obs_weights", "two_phase_weights"))
+  data.table::setnames(data, c(
+    "Y", m_names, "R", "Z", "A", w_names,
+    "obs_weights", "two_phase_weights"
+  ))
 
   # bound outcome Y in unit interval
   min_y <- min(data[["Y"]])

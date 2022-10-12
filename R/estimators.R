@@ -331,8 +331,7 @@ two_phase_eif <- function(R,
                           two_phase_weights,
                           eif,
                           eif_predictions,
-                          plugin_est
-                         ) {
+                          plugin_est) {
 
   # compute the weights for the EIF update
   ipw_two_phase <- R * two_phase_weights
@@ -345,7 +344,6 @@ two_phase_eif <- function(R,
   # return the un-centered two-phase eif
   uncentered_two_phase_eif <- two_phase_eif + plugin_est
   return(uncentered_two_phase_eif)
-
 }
 
 ###############################################################################

@@ -1,7 +1,7 @@
 # medoutcon 0.2.0
 
-* Added support for EIF-based corrections for two-phase sampling designs with
-  known or estimated sampling weights.
+* Added support for a semiparametric correction for outcome-dependent two-phase
+  sampling designs with known or estimated sampling weights.
 * Tightened sanity checks for estimation of natural direct and indirect effects
   by requiring that EIF scores related to intermediate confounders uniformly be
   zero when `Z = NULL` is specified.

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -63,26 +63,29 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">medoutcon</span><span class="op">(</span>
-  <span class="va">W</span>,
-  <span class="va">A</span>,
-  <span class="va">Z</span>,
-  <span class="va">M</span>,
-  <span class="va">Y</span>,
-  obs_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,
-  svy_weights <span class="op">=</span> <span class="cn">NULL</span>,
-  effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"direct"</span>, <span class="st">"indirect"</span><span class="op">)</span>,
-  contrast <span class="op">=</span> <span class="cn">NULL</span>,
-  g_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
-  h_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
-  b_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
-  q_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
-  r_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
-  u_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_hal9001.html" class="external-link">Lrnr_hal9001</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
-  v_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_hal9001.html" class="external-link">Lrnr_hal9001</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
-  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmle"</span>, <span class="st">"onestep"</span><span class="op">)</span>,
-  estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">5L</span>, max_iter <span class="op">=</span> <span class="fl">5L</span>, tiltmod_tol <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">medoutcon</span><span class="op">(</span></span>
+<span>  <span class="va">W</span>,</span>
+<span>  <span class="va">A</span>,</span>
+<span>  <span class="va">Z</span>,</span>
+<span>  <span class="va">M</span>,</span>
+<span>  <span class="va">Y</span>,</span>
+<span>  R <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  obs_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  svy_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  two_phase_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"direct"</span>, <span class="st">"indirect"</span><span class="op">)</span>,</span>
+<span>  contrast <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  g_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  h_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  b_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  q_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  r_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  u_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_hal9001.html" class="external-link">Lrnr_hal9001</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  v_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_hal9001.html" class="external-link">Lrnr_hal9001</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  d_learners <span class="op">=</span> <span class="fu">sl3</span><span class="fu">::</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html" class="external-link">Lrnr_glm_fast</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmle"</span>, <span class="st">"onestep"</span><span class="op">)</span>,</span>
+<span>  estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">5L</span>, max_iter <span class="op">=</span> <span class="fl">5L</span>, tiltmod_tol <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -90,77 +93,132 @@
     <dl><dt>W</dt>
 <dd><p>A <code>matrix</code>, <code>data.frame</code>, or similar object corresponding
 to a set of baseline covariates.</p></dd>
+
+
 <dt>A</dt>
 <dd><p>A <code>numeric</code> vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.</p></dd>
+
+
 <dt>Z</dt>
 <dd><p>A <code>numeric</code> vector corresponding to an intermediate confounder
 affected by treatment (on the causal pathway between the intervention A,
-mediators M, and outcome Y, but unaffected itself by the mediators).</p></dd>
+mediators M, and outcome Y, but unaffected itself by the mediators). When
+set to <code>NULL</code>, the natural (in)direct effects are estimated.</p></dd>
+
+
 <dt>M</dt>
 <dd><p>A <code>numeric</code> vector, <code>matrix</code>, <code>data.frame</code>, or
 similar corresponding to a set of mediators (on the causal pathway between
 the intervention A and the outcome Y).</p></dd>
+
+
 <dt>Y</dt>
 <dd><p>A <code>numeric</code> vector corresponding to an outcome variable.</p></dd>
+
+
+<dt>R</dt>
+<dd><p>A <code>logical</code> vector indicating whether a sampled observation's
+mediator was measured via a two-phase sampling design. Defaults to a
+vector of ones, implying that two-phase sampling was not performed.</p></dd>
+
+
 <dt>obs_weights</dt>
-<dd><p>A <code>numeric</code> vector of observation-level weights.
-The default is to give all observations equal weighting.</p></dd>
+<dd><p>A <code>numeric</code> vector of observation-level weights. The
+default is to give all observations equal weighting.</p></dd>
+
+
 <dt>svy_weights</dt>
 <dd><p>A <code>numeric</code> vector of observation-level weights that
 have been computed externally, such as survey sampling weights. Such
 weights are used in the construction of re-weighted efficient estimators.</p></dd>
+
+
+<dt>two_phase_weights</dt>
+<dd><p>A <code>numeric</code> vector of known observation-level
+weights corresponding to the inverse probability of the mediator being
+measured. Defaults to a vector of ones.</p></dd>
+
+
 <dt>effect</dt>
-<dd><p>A <code>character</code> indicating whether to compute the direct
-or the indirect effect as discussed in &lt;https://arxiv.org/abs/1912.09936&gt;.
+<dd><p>A <code>character</code> indicating whether to compute the direct or
+the indirect effect as discussed in &lt;https://arxiv.org/abs/1912.09936&gt;.
 This is ignored when the argument <code>contrast</code> is provided. By default,
 the direct effect is estimated.</p></dd>
+
+
 <dt>contrast</dt>
 <dd><p>A <code>numeric</code> double indicating the two values of the
 intervention <code>A</code> to be compared. The default value of <code>NULL</code> has
 no effect, as the value of the argument <code>effect</code> is instead used to
 define the contrasts. To override <code>effect</code>, provide a <code>numeric</code>
 double vector, giving the values of a' and a*, e.g., <code>c(0, 1)</code>.</p></dd>
+
+
 <dt>g_learners</dt>
 <dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
 (inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a model for the propensity score.</p></dd>
+
+
 <dt>h_learners</dt>
 <dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
 (inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a model for a parameterization of the
 propensity score that conditions on the mediators.</p></dd>
+
+
 <dt>b_learners</dt>
 <dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
 (inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a model for the outcome regression.</p></dd>
+
+
 <dt>q_learners</dt>
 <dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
 (inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a model for a nuisance regression of
 the intermediate confounder, conditioning on the treatment and potential
 baseline covariates.</p></dd>
+
+
 <dt>r_learners</dt>
 <dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
 (inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a model for a nuisance regression of
 the intermediate confounder, conditioning on the mediators, the treatment,
 and potential baseline confounders.</p></dd>
+
+
 <dt>u_learners</dt>
 <dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
 (inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a pseudo-outcome regression required
 for in the efficient influence function.</p></dd>
+
+
 <dt>v_learners</dt>
 <dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
 (inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
 learners from <span class="pkg">sl3</span>; used to fit a pseudo-outcome regression required
 for in the efficient influence function.</p></dd>
+
+
+<dt>d_learners</dt>
+<dd><p>A <code><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></code> object, or other learner class
+(inheriting from <code><a href="https://tlverse.org/sl3/reference/Lrnr_base.html" class="external-link">Lrnr_base</a></code>), containing instantiated
+learners from <span class="pkg">sl3</span>; used to fit an initial efficient influence
+function regression when computing the efficient influence function in a
+two-phase sampling design.</p></dd>
+
+
 <dt>estimator</dt>
 <dd><p>The desired estimator of the direct or indirect effect (or
 contrast-specific parameter) to be computed. Both an efficient one-step
 estimator using cross-fitting and a cross-validated targeted minimum loss
 estimator (TMLE) are available. The default is the TML estimator.</p></dd>
+
+
 <dt>estimator_args</dt>
 <dd><p>A <code>list</code> of extra arguments to be passed (via
 <code>...</code>) to the function call for the specified estimator. The default
@@ -168,41 +226,42 @@ is chosen so as to allow the number of folds used in computing the one-step
 or TML estimators to be easily adjusted. In the case of the TML estimator,
 the number of update (fluctuation) iterations is limited, and a tolerance
 is included for the updates introduced by the tilting (fluctuation) models.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># here, we show one-step and TML estimates of the interventional direct</span></span>
-<span class="r-in"><span class="co"># effect; the indirect effect can be evaluated by a straightforward change</span></span>
-<span class="r-in"><span class="co"># to the penultimate argument. the natural direct and indirect effects can</span></span>
-<span class="r-in"><span class="co"># be evaluated by omitting the argument Z (inappropriate in this example).</span></span>
-<span class="r-in"><span class="co"># create data: covariates W, exposure A, post-exposure-confounder Z,</span></span>
-<span class="r-in"><span class="co">#              mediator M, outcome Y</span></span>
-<span class="r-in"><span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">200</span></span>
-<span class="r-in"><span class="va">w_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">w_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">w_1</span>, <span class="va">w_2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">w</span> <span class="op">-</span> <span class="va">a</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">m_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="va">w</span> <span class="op">+</span> <span class="va">a</span> <span class="op">-</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">m_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span> <span class="op">-</span> <span class="va">a</span> <span class="op">-</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">m_1</span>, <span class="va">m_2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="va">z</span> <span class="op">+</span> <span class="va">a</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># one-step estimate of the interventional direct effect</span></span>
-<span class="r-in"><span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu">medoutcon</span><span class="op">(</span></span>
-<span class="r-in">  W <span class="op">=</span> <span class="va">w</span>, A <span class="op">=</span> <span class="va">a</span>, Z <span class="op">=</span> <span class="va">z</span>, M <span class="op">=</span> <span class="va">m</span>, Y <span class="op">=</span> <span class="va">y</span>,</span>
-<span class="r-in">  effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
-<span class="r-in">  estimator <span class="op">=</span> <span class="st">"onestep"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># TML estimate of the interventional direct effect</span></span>
-<span class="r-in"><span class="co"># NOTE: improved variance estimate and de-biasing from targeting procedure</span></span>
-<span class="r-in"><span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu">medoutcon</span><span class="op">(</span></span>
-<span class="r-in">  W <span class="op">=</span> <span class="va">w</span>, A <span class="op">=</span> <span class="va">a</span>, Z <span class="op">=</span> <span class="va">z</span>, M <span class="op">=</span> <span class="va">m</span>, Y <span class="op">=</span> <span class="va">y</span>,</span>
-<span class="r-in">  effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
-<span class="r-in">  estimator <span class="op">=</span> <span class="st">"tmle"</span></span>
-<span class="r-in"><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># here, we show one-step and TML estimates of the interventional direct</span></span></span>
+<span class="r-in"><span><span class="co"># effect; the indirect effect can be evaluated by a straightforward change</span></span></span>
+<span class="r-in"><span><span class="co"># to the penultimate argument. the natural direct and indirect effects can</span></span></span>
+<span class="r-in"><span><span class="co"># be evaluated by omitting the argument Z (inappropriate in this example).</span></span></span>
+<span class="r-in"><span><span class="co"># create data: covariates W, exposure A, post-exposure-confounder Z,</span></span></span>
+<span class="r-in"><span><span class="co">#              mediator M, outcome Y</span></span></span>
+<span class="r-in"><span><span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">200</span></span></span>
+<span class="r-in"><span><span class="va">w_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">w_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">w_1</span>, <span class="va">w_2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">w</span> <span class="op">-</span> <span class="va">a</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">m_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="va">w</span> <span class="op">+</span> <span class="va">a</span> <span class="op">-</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">m_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span> <span class="op">-</span> <span class="va">a</span> <span class="op">-</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">m_1</span>, <span class="va">m_2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="va">z</span> <span class="op">+</span> <span class="va">a</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># one-step estimate of the interventional direct effect</span></span></span>
+<span class="r-in"><span><span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu">medoutcon</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  W <span class="op">=</span> <span class="va">w</span>, A <span class="op">=</span> <span class="va">a</span>, Z <span class="op">=</span> <span class="va">z</span>, M <span class="op">=</span> <span class="va">m</span>, Y <span class="op">=</span> <span class="va">y</span>,</span></span>
+<span class="r-in"><span>  effect <span class="op">=</span> <span class="st">"direct"</span>,</span></span>
+<span class="r-in"><span>  estimator <span class="op">=</span> <span class="st">"onestep"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># TML estimate of the interventional direct effect</span></span></span>
+<span class="r-in"><span><span class="co"># NOTE: improved variance estimate and de-biasing from targeting procedure</span></span></span>
+<span class="r-in"><span><span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu">medoutcon</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  W <span class="op">=</span> <span class="va">w</span>, A <span class="op">=</span> <span class="va">a</span>, Z <span class="op">=</span> <span class="va">z</span>, M <span class="op">=</span> <span class="va">m</span>, Y <span class="op">=</span> <span class="va">y</span>,</span></span>
+<span class="r-in"><span>  effect <span class="op">=</span> <span class="st">"direct"</span>,</span></span>
+<span class="r-in"><span>  estimator <span class="op">=</span> <span class="st">"tmle"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -217,7 +276,7 @@ is included for the updates introduced by the tilting (fluctuation) models.</p><
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

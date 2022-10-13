@@ -28,7 +28,9 @@ Description: Efficient estimators of interventional (in)direct effects in the
     minimum loss estimators based on the formulation of Díaz, Hejazi, Rudolph,
     and van der Laan (2020) <doi:10.1093/biomet/asaa085>. Support for efficient
     estimation of the natural (in)direct effects is also provided, appropriate
-    for settings in which intermediate confounders are absent.
+    for settings in which intermediate confounders are absent. The package also
+    supports estimation of these effects when the mediators are measured using
+    outcome-dependent two-phase sampling designs (e.g., case-cohort).
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -40,9 +42,7 @@ Imports:
     scales,
     stringr,
     origami (>= 1.0.3),
-    sl3 (>= 1.4.3),
-    hal9001 (>= 0.4.1),
-    speedglm
+    sl3 (>= 1.4.3)
 Suggests:
     testthat,
     knitr,
@@ -52,6 +52,8 @@ Suggests:
     nnls,
     SuperLearner,
     glmnet,
+    hal9001 (>= 0.4.1),
+    speedglm,
     xgboost,
     ranger,
     arm

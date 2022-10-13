@@ -876,8 +876,7 @@ fit_nuisance_d <- function(train_data,
                            u_out,
                            v_out,
                            m_names,
-                           w_names
-                          ) {
+                           w_names) {
 
   ## extract nuisance estimates necessary for constructing pseudo-outcome
   b_prime <- b_out$b_est_train$b_pred_A_prime
@@ -965,7 +964,7 @@ fit_nuisance_d <- function(train_data,
 
   ## return prediction on validation set
   return(list(
-      "d_fit" = d_param_fit,
-      "d_pred" = as.numeric(d_valid_pred)
+    "d_fit" = d_param_fit,
+    "d_pred" = as.numeric(d_valid_pred)
   ))
 }

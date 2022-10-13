@@ -141,7 +141,7 @@ print.medoutcon <- function(x, ...) {
 #' Bounds extreme values to a specified tolerance level, for use with sensitive
 #' quantities that must be transformed, e.g., via \code{\link[stats]{qlogis}}.
 #'
-#' @param vals A \code{numeric} vector of values in the interval [0, 1].
+#' @param vals A \code{numeric} vector of values in the unit interval [0, 1].
 #' @param tol A \code{numeric} indicating the tolerance limit to which extreme
 #'  values should be truncated. Realizations of \code{val} less than \code{tol}
 #'  are truncated to \code{tol} while those greater than (1 - \code{tol}) are

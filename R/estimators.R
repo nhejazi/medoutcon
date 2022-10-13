@@ -232,7 +232,7 @@ cv_eif <- function(fold,
 
   # SANITY CHECK: EIF_U should be ~ZERO~ for natural (in)direct effects
   if (effect_type == "natural") {
-    assertthat::assert_that(sum(eif_u) == 0)
+    assertthat::assert_that(all(eif_u == 0))
   }
 
   # un-centered efficient influence function
@@ -331,8 +331,7 @@ two_phase_eif <- function(R,
                           two_phase_weights,
                           eif,
                           eif_predictions,
-                          plugin_est
-                         ) {
+                          plugin_est) {
 
   # compute the weights for the EIF update
   ipw_two_phase <- R * two_phase_weights
@@ -345,7 +344,6 @@ two_phase_eif <- function(R,
   # return the un-centered two-phase eif
   uncentered_two_phase_eif <- two_phase_eif + plugin_est
   return(uncentered_two_phase_eif)
-
 }
 
 ###############################################################################
@@ -738,6 +736,7 @@ est_tml <- function(data,
         start = 0
       )
     )
+
     # NOTE: for the natural (in)direct effects, the regressor on the RHS is
     #       uniquely ~ZERO~ so the estimated parameter should always be NaN
     if (effect_type == "natural") {
@@ -752,10 +751,16 @@ est_tml <- function(data,
     q_tilt_coef <- unname(stats::coef(q_tilt_fit))
 
     # update nuisance estimates via tilting model for intermediate confounder
-    q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
-      cv_eif_est$u_int_diff)
-    q_prime_Z_natural <- (data$Z * q_prime_Z_one) + ((1 - data$Z) *
-      (1 - q_prime_Z_one))
+    if (effect_type == "natural") {
+      # for the natural (in)direct effects, no updates necessary
+      q_prime_Z_one <- data$Z
+      q_prime_Z_natural <- data$Z
+    } else {
+      q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
+        cv_eif_est$u_int_diff)
+      q_prime_Z_natural <- (data$Z * q_prime_Z_one) + ((1 - data$Z) *
+        (1 - q_prime_Z_one))
+    }
 
     # compute efficient score for intermediate confounding component
     q_score <- ipw_prime * cv_eif_est$u_int_diff * (data$Z - q_prime_Z_one)
@@ -808,7 +813,7 @@ est_tml <- function(data,
 
   # SANITY CHECK: EIF_U should be ~ZERO~ for natural (in)direct effects
   if (effect_type == "natural") {
-    assertthat::assert_that(abs(mean(eif_u)) < .Machine$double.eps)
+    assertthat::assert_that(all(eif_u == 0))
   }
 
   # compute influence function with centering at the TML estimate

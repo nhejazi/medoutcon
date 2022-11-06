@@ -10,8 +10,10 @@ medoutcon(
   Z,
   M,
   Y,
+  R = rep(1, length(Y)),
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
+  two_phase_weights = rep(1, length(Y)),
   effect = c("direct", "indirect"),
   contrast = NULL,
   g_learners = sl3::Lrnr_glm_fast$new(),
@@ -21,8 +23,9 @@ medoutcon(
   r_learners = sl3::Lrnr_glm_fast$new(),
   u_learners = sl3::Lrnr_hal9001$new(),
   v_learners = sl3::Lrnr_hal9001$new(),
+  d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
-  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 10)
+  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5)
 )
 }
 \arguments{
@@ -34,7 +37,8 @@ parameter of interest is defined as a location shift of this quantity.}
 
 \item{Z}{A \code{numeric} vector corresponding to an intermediate confounder
 affected by treatment (on the causal pathway between the intervention A,
-mediators M, and outcome Y, but unaffected itself by the mediators).}
+mediators M, and outcome Y, but unaffected itself by the mediators). When
+set to \code{NULL}, the natural (in)direct effects are estimated.}
 
 \item{M}{A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 similar corresponding to a set of mediators (on the causal pathway between
@@ -42,15 +46,23 @@ the intervention A and the outcome Y).}
 
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
-\item{obs_weights}{A \code{numeric} vector of observation-level weights.
-The default is to give all observations equal weighting.}
+\item{R}{A \code{logical} vector indicating whether a sampled observation's
+mediator was measured via a two-phase sampling design. Defaults to a
+vector of ones, implying that two-phase sampling was not performed.}
+
+\item{obs_weights}{A \code{numeric} vector of observation-level weights. The
+default is to give all observations equal weighting.}
 
 \item{svy_weights}{A \code{numeric} vector of observation-level weights that
 have been computed externally, such as survey sampling weights. Such
 weights are used in the construction of re-weighted efficient estimators.}
 
-\item{effect}{A \code{character} indicating whether to compute the direct
-or the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
+\item{two_phase_weights}{A \code{numeric} vector of known observation-level
+weights corresponding to the inverse probability of the mediator being
+measured. Defaults to a vector of ones.}
+
+\item{effect}{A \code{character} indicating whether to compute the direct or
+the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
 This is ignored when the argument \code{contrast} is provided. By default,
 the direct effect is estimated.}
 
@@ -94,6 +106,12 @@ for in the efficient influence function.}
 (inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
 learners from \pkg{sl3}; used to fit a pseudo-outcome regression required
 for in the efficient influence function.}
+
+\item{d_learners}{A \code{\link[sl3]{Stack}} object, or other learner class
+(inheriting from \code{\link[sl3]{Lrnr_base}}), containing instantiated
+learners from \pkg{sl3}; used to fit an initial efficient influence
+function regression when computing the efficient influence function in a
+two-phase sampling design.}
 
 \item{estimator}{The desired estimator of the direct or indirect effect (or
 contrast-specific parameter) to be computed. Both an efficient one-step

@@ -21,7 +21,9 @@
     minimum loss estimators based on the formulation of Díaz, Hejazi, Rudolph,
     and van der Laan (2020) &lt;doi:10.1093/biomet/asaa085&gt;. Support for efficient
     estimation of the natural (in)direct effects is also provided, appropriate
-    for settings in which intermediate confounders are absent.">
+    for settings in which intermediate confounders are absent. The package also
+    supports estimation of these effects when the mediators are measured using
+    outcome-dependent two-phase sampling designs (e.g., case-cohort).">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -42,7 +44,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -52,7 +54,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -100,7 +102,7 @@
 <div class="section level2">
 <h2 id="whats-medoutcon">What’s <code>medoutcon</code>?<a class="anchor" aria-label="anchor" href="#whats-medoutcon"></a>
 </h2>
-<p>The <code>medoutcon</code> R package provides facilities for efficient estimation of path-specific (in)direct effects that measure the impact of a treatment variable (A) on an outcome variable (Y), through a direct path (through (A) only) and an indirect path (through a set of mediators (M) only). In the presence of an intermediate <b>med</b>iator-<b>out</b>come <b>con</b>founder (Z), itself affected by the treatment (A), these correspond to the <em>interventional</em> (in)direct effects described by Dı́az et al. (2020), though similar (yet less general) effect definitions and/or estimation strategies have appeared in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al. (2017), Zheng and van der Laan (2017), and Benkeser and Ran (2021). When no intermediate confounders are present, these effect definitions simplify to the well-studied <em>natural</em> (in)direct effects, and our estimators are analogs of those formulated by Zheng and van der Laan (2012). Both an efficient one-step bias-corrected estimator with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der Laan 2011) are made available. <code>medoutcon</code> integrates with the <a href="https://github.com/tlverse/sl3" class="external-link"><code>sl3</code> R package</a> (Coyle et al. 2021) to leverage statistical machine learning in the estimation procedure.</p>
+<p>The <code>medoutcon</code> R package provides facilities for efficient estimation of path-specific (in)direct effects that measure the impact of a treatment variable <span class="math inline"><em>A</em></span> on an outcome variable <span class="math inline"><em>Y</em></span>, through a direct path (through <span class="math inline"><em>A</em></span> only) and an indirect path (through a set of mediators <span class="math inline"><em>M</em></span> only). In the presence of an intermediate <b>med</b>iator-<b>out</b>come <b>con</b>founder <span class="math inline"><em>Z</em></span>, itself affected by the treatment <span class="math inline"><em>A</em></span>, these correspond to the <em>interventional</em> (in)direct effects described by Dı́az et al. (2020), though similar (yet less general) effect definitions and/or estimation strategies have appeared in VanderWeele, Vansteelandt, and Robins (2014), Rudolph et al. (2017), Zheng and van der Laan (2017), and Benkeser and Ran (2021). When no intermediate confounders are present, these effect definitions simplify to the well-studied <em>natural</em> (in)direct effects, and our estimators are analogs of those formulated by Zheng and van der Laan (2012). Both an efficient one-step bias-corrected estimator with cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der Laan 2011) are made available. <code>medoutcon</code> integrates with the <a href="https://github.com/tlverse/sl3" class="external-link"><code>sl3</code> R package</a> (Coyle et al. 2021) to leverage statistical machine learning in the estimation procedure.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -108,7 +110,7 @@
 </h2>
 <p>Install the most recent <em>stable release</em> from GitHub via <a href="https://CRAN.R-project.org/package=remotes" class="external-link"><code>remotes</code></a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"nhejazi/medoutcon"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"nhejazi/medoutcon"</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -116,96 +118,96 @@
 </h2>
 <p>To illustrate how <code>medoutcon</code> may be used to estimate stochastic interventional (in)direct effects of the exposure (<code>A</code>) on the outcome (<code>Y</code>) in the presence of mediator(s) (<code>M</code>) and a mediator-outcome confounder (<code>Z</code>), consider the following example:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
-<span class="co">#&gt; ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.1 ──</span>
-<span class="co">#&gt; ✔ ggplot2 3.3.5     ✔ purrr   0.3.4</span>
-<span class="co">#&gt; ✔ tibble  3.1.6     ✔ dplyr   1.0.7</span>
-<span class="co">#&gt; ✔ tidyr   1.1.4     ✔ stringr 1.4.0</span>
-<span class="co">#&gt; ✔ readr   2.1.1     ✔ forcats 0.5.1</span>
-<span class="co">#&gt; ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span>
-<span class="co">#&gt; ✖ dplyr::between()   masks data.table::between()</span>
-<span class="co">#&gt; ✖ dplyr::filter()    masks stats::filter()</span>
-<span class="co">#&gt; ✖ dplyr::first()     masks data.table::first()</span>
-<span class="co">#&gt; ✖ dplyr::lag()       masks stats::lag()</span>
-<span class="co">#&gt; ✖ dplyr::last()      masks data.table::last()</span>
-<span class="co">#&gt; ✖ purrr::transpose() masks data.table::transpose()</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/medoutcon" class="external-link">medoutcon</a></span><span class="op">)</span>
-<span class="co">#&gt; medoutcon v0.1.6: Efficient Natural and Interventional Causal Mediation Analysis</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1584</span><span class="op">)</span>
-
-<span class="co"># produces a simple data set based on ca causal model with mediation</span>
-<span class="va">make_example_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_obs</span> <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">{</span>
-  <span class="co">## baseline covariates</span>
-  <span class="va">w_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
-  <span class="va">w_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>
-  <span class="va">w_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="fl">0.2</span> <span class="op">+</span> <span class="op">(</span><span class="va">w_1</span> <span class="op">+</span> <span class="va">w_2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">w_1</span>, <span class="va">w_2</span>, <span class="va">w_3</span><span class="op">)</span>
-  <span class="va">w_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
-
-  <span class="co">## exposure</span>
-  <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-
-  <span class="co">## mediator-outcome confounder affected by treatment</span>
-  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">w</span> <span class="op">-</span> <span class="va">a</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span>
-
-  <span class="co">## mediator -- could be multivariate</span>
-  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="va">w</span><span class="op">[</span>, <span class="op">-</span><span class="fl">3</span><span class="op">]</span> <span class="op">+</span> <span class="va">a</span> <span class="op">-</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">m_names</span> <span class="op">&lt;-</span> <span class="st">"M"</span>
-
-  <span class="co">## outcome</span>
-  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="va">z</span> <span class="op">+</span> <span class="va">a</span> <span class="op">+</span> <span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-
-  <span class="co">## construct output</span>
-  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>w <span class="op">=</span> <span class="va">w</span>, a <span class="op">=</span> <span class="va">a</span>, z <span class="op">=</span> <span class="va">z</span>, m <span class="op">=</span> <span class="va">m</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span>
-  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">w_names</span>, <span class="st">"A"</span>, <span class="st">"Z"</span>, <span class="va">m_names</span>, <span class="st">"Y"</span><span class="op">)</span><span class="op">)</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="co"># set seed and simulate example data</span>
-<span class="va">example_data</span> <span class="op">&lt;-</span> <span class="fu">make_example_data</span><span class="op">(</span><span class="op">)</span>
-<span class="va">w_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html" class="external-link">str_subset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>, <span class="st">"W"</span><span class="op">)</span>
-<span class="va">m_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html" class="external-link">str_subset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>, <span class="st">"M"</span><span class="op">)</span>
-
-<span class="co"># quick look at the data</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>
-<span class="co">#&gt;    W_1 W_2 W_3 A Z M Y</span>
-<span class="co">#&gt; 1:   1   0   1 0 0 0 1</span>
-<span class="co">#&gt; 2:   0   1   0 0 0 1 0</span>
-<span class="co">#&gt; 3:   1   1   1 1 0 1 1</span>
-<span class="co">#&gt; 4:   0   1   1 0 0 1 0</span>
-<span class="co">#&gt; 5:   0   0   0 0 0 1 1</span>
-<span class="co">#&gt; 6:   1   0   1 1 0 1 0</span>
-
-<span class="co"># compute one-step estimate of the interventional direct effect</span>
-<span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,
-                   A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,
-                   Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,
-                   M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,
-                   Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,
-                   effect <span class="op">=</span> <span class="st">"direct"</span>,
-                   estimator <span class="op">=</span> <span class="st">"onestep"</span><span class="op">)</span>
-<span class="va">os_de</span>
-<span class="co">#&gt; Interventional Direct Effect</span>
-<span class="co">#&gt; Estimator: onestep</span>
-<span class="co">#&gt; Estimate: -0.075</span>
-<span class="co">#&gt; Std. Error: 0.056</span>
-<span class="co">#&gt; 95% CI: [-0.186, 0.035]</span>
-
-<span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span>
-<span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,
-                     A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,
-                     Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,
-                     M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,
-                     Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,
-                     effect <span class="op">=</span> <span class="st">"direct"</span>,
-                     estimator <span class="op">=</span> <span class="st">"tmle"</span><span class="op">)</span>
-<span class="va">tmle_de</span>
-<span class="co">#&gt; Interventional Direct Effect</span>
-<span class="co">#&gt; Estimator: tmle</span>
-<span class="co">#&gt; Estimate: -0.078</span>
-<span class="co">#&gt; Std. Error: 0.059</span>
-<span class="co">#&gt; 95% CI: [-0.193, 0.037]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; ── Attaching packages ─────────────────────────────────────────────────────── tidyverse 1.3.2 ──</span></span>
+<span><span class="co">#&gt; ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 </span></span>
+<span><span class="co">#&gt; ✔ tibble  3.1.8      ✔ dplyr   1.0.10</span></span>
+<span><span class="co">#&gt; ✔ tidyr   1.2.1      ✔ stringr 1.4.1 </span></span>
+<span><span class="co">#&gt; ✔ readr   2.1.2      ✔ forcats 0.5.2 </span></span>
+<span><span class="co">#&gt; ── Conflicts ────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></span>
+<span><span class="co">#&gt; ✖ dplyr::between()   masks data.table::between()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::filter()    masks stats::filter()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::first()     masks data.table::first()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::lag()       masks stats::lag()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::last()      masks data.table::last()</span></span>
+<span><span class="co">#&gt; ✖ purrr::transpose() masks data.table::transpose()</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/medoutcon" class="external-link">medoutcon</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; medoutcon v0.1.6: Efficient Natural and Interventional Causal Mediation Analysis</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1584</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># produces a simple data set based on ca causal model with mediation</span></span>
+<span><span class="va">make_example_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_obs</span> <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co">## baseline covariates</span></span>
+<span>  <span class="va">w_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
+<span>  <span class="va">w_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
+<span>  <span class="va">w_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="fl">0.2</span> <span class="op">+</span> <span class="op">(</span><span class="va">w_1</span> <span class="op">+</span> <span class="va">w_2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">w_1</span>, <span class="va">w_2</span>, <span class="va">w_3</span><span class="op">)</span></span>
+<span>  <span class="va">w_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co">## exposure</span></span>
+<span>  <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co">## mediator-outcome confounder affected by treatment</span></span>
+<span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">w</span> <span class="op">-</span> <span class="va">a</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co">## mediator -- could be multivariate</span></span>
+<span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span> <span class="op">*</span> <span class="va">w</span><span class="op">[</span>, <span class="op">-</span><span class="fl">3</span><span class="op">]</span> <span class="op">+</span> <span class="va">a</span> <span class="op">-</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">m_names</span> <span class="op">&lt;-</span> <span class="st">"M"</span></span>
+<span></span>
+<span>  <span class="co">## outcome</span></span>
+<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="va">z</span> <span class="op">+</span> <span class="va">a</span> <span class="op">+</span> <span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co">## construct output</span></span>
+<span>  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>w <span class="op">=</span> <span class="va">w</span>, a <span class="op">=</span> <span class="va">a</span>, z <span class="op">=</span> <span class="va">z</span>, m <span class="op">=</span> <span class="va">m</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">w_names</span>, <span class="st">"A"</span>, <span class="st">"Z"</span>, <span class="va">m_names</span>, <span class="st">"Y"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># set seed and simulate example data</span></span>
+<span><span class="va">example_data</span> <span class="op">&lt;-</span> <span class="fu">make_example_data</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">w_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html" class="external-link">str_subset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>, <span class="st">"W"</span><span class="op">)</span></span>
+<span><span class="va">m_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html" class="external-link">str_subset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span>, <span class="st">"M"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># quick look at the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    W_1 W_2 W_3 A Z M Y</span></span>
+<span><span class="co">#&gt; 1:   1   0   1 0 0 0 1</span></span>
+<span><span class="co">#&gt; 2:   0   1   0 0 0 1 0</span></span>
+<span><span class="co">#&gt; 3:   1   1   1 1 0 1 1</span></span>
+<span><span class="co">#&gt; 4:   0   1   1 0 0 1 0</span></span>
+<span><span class="co">#&gt; 5:   0   0   0 0 0 1 1</span></span>
+<span><span class="co">#&gt; 6:   1   0   1 1 0 1 0</span></span>
+<span></span>
+<span><span class="co"># compute one-step estimate of the interventional direct effect</span></span>
+<span><span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
+<span>                   A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
+<span>                   Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
+<span>                   M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
+<span>                   Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
+<span>                   effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
+<span>                   estimator <span class="op">=</span> <span class="st">"onestep"</span><span class="op">)</span></span>
+<span><span class="va">os_de</span></span>
+<span><span class="co">#&gt; Interventional Direct Effect</span></span>
+<span><span class="co">#&gt; Estimator: onestep</span></span>
+<span><span class="co">#&gt; Estimate: -0.065</span></span>
+<span><span class="co">#&gt; Std. Error: 0.054</span></span>
+<span><span class="co">#&gt; 95% CI: [-0.17, 0.041]</span></span>
+<span></span>
+<span><span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span></span>
+<span><span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
+<span>                     A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
+<span>                     Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
+<span>                     M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
+<span>                     Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
+<span>                     effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
+<span>                     estimator <span class="op">=</span> <span class="st">"tmle"</span><span class="op">)</span></span>
+<span><span class="va">tmle_de</span></span>
+<span><span class="co">#&gt; Interventional Direct Effect</span></span>
+<span><span class="co">#&gt; Estimator: tmle</span></span>
+<span><span class="co">#&gt; Estimate: -0.06</span></span>
+<span><span class="co">#&gt; Std. Error: 0.058</span></span>
+<span><span class="co">#&gt; 95% CI: [-0.173, 0.053]</span></span></code></pre></div>
 <p>For details on how to use data adaptive regression (machine learning) techniques in the estimation of nuisance parameters, consider consulting the vignette that accompanies the package.</p>
 <hr>
 </div>
@@ -225,42 +227,42 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>After using the <code>medoutcon</code> R package, please cite the following:</p>
-<pre><code>    @article{diaz2020nonparametric,
-      title={Non-parametric efficient causal mediation with intermediate
-        confounders},
-      author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S and Rudolph, Kara E
-        and {van der Laan}, Mark J},
-      year={2020},
-      url = {https://arxiv.org/abs/1912.09936},
-      doi = {10.1093/biomet/asaa085},
-      journal={Biometrika},
-      volume = {108},
-      number = {3},
-      pages = {627--641},
-      publisher={Oxford University Press}
-    }
-
-    @article{hejazi2022medoutcon-joss,
-      author = {Hejazi, Nima S and Rudolph, Kara E and D{\'\i}az,
-        Iv{\'a}n},
-      title = {{medoutcon}: Nonparametric efficient causal mediation
-        analysis with machine learning in {R}},
-      year = {2022},
-      doi = {10.21105/joss.03979},
-      url = {https://doi.org/10.21105/joss.03979},
-      journal = {Journal of Open Source Software},
-      publisher = {The Open Journal}
-    }
-
-    @software{hejazi2022medoutcon-rpkg,
-      author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
-      title = {{medoutcon}: Efficient natural and interventional causal
-        mediation analysis},
-      year  = {2022},
-      doi = {10.5281/zenodo.5809519},
-      url = {https://github.com/nhejazi/medoutcon},
-      note = {R package version 0.1.6}
-    }</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    <span class="sc">@</span>article{diaz2020nonparametric,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>      title<span class="ot">=</span>{Non<span class="sc">-</span>parametric efficient causal mediation with intermediate</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        confounders},</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      author<span class="ot">=</span>{D{\<span class="st">'\i}az, Iv{</span><span class="sc">\'</span><span class="st">a}n and Hejazi, Nima S and Rudolph, Kara E</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="st">        and {van der Laan}, Mark J},</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="st">      year={2020},</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="st">      url = {https://arxiv.org/abs/1912.09936},</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="st">      doi = {10.1093/biomet/asaa085},</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="st">      journal={Biometrika},</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">      volume = {108},</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">      number = {3},</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="st">      pages = {627--641},</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="st">      publisher={Oxford University Press}</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="st">    @article{hejazi2022medoutcon-joss,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="st">      author = {Hejazi, Nima S and Rudolph, Kara E and D{</span><span class="sc">\'</span><span class="st">\i}az,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="st">        Iv{</span><span class="sc">\'</span><span class="st">a}n},</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="st">      title = {{medoutcon}: Nonparametric efficient causal mediation</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="st">        analysis with machine learning in {R}},</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="st">      year = {2022},</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="st">      doi = {10.21105/joss.03979},</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="st">      url = {https://doi.org/10.21105/joss.03979},</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="st">      journal = {Journal of Open Source Software},</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="st">      publisher = {The Open Journal}</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="st">    @software{hejazi2022medoutcon-rpkg,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="st">      author={Hejazi, Nima S and D{</span><span class="sc">\'</span><span class="st">\i}az, Iv{</span><span class="sc">\'</span><span class="st">a}n and Rudolph, Kara E},</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="st">      title = {{medoutcon}: Efficient natural and interventional causal</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="st">        mediation analysis},</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="st">      year  = {2022},</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="st">      doi = {10.5281/zenodo.5809519},</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="st">      url = {https://github.com/nhejazi/medoutcon},</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="st">      note = {R package version 0.1.6}</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -268,65 +270,65 @@
 </h2>
 <p>© 2020-2022 <a href="https://nimahejazi.org" class="external-link">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">MIT License</a>
-<a class="sourceLine" id="cb4-2" title="2"></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="kw">Copyright</span> (c) <span class="dv">2020-2022</span> Nima S. Hejazi</a>
-<a class="sourceLine" id="cb4-4" title="4"></a>
-<a class="sourceLine" id="cb4-5" title="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
-<a class="sourceLine" id="cb4-6" title="6">of this software and associated documentation <span class="kw">files</span> (the <span class="st">"Software"</span>), to deal</a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
-<a class="sourceLine" id="cb4-8" title="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
-<a class="sourceLine" id="cb4-9" title="9">copies of the Software, and to permit persons to whom the Software is</a>
-<a class="sourceLine" id="cb4-10" title="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
-<a class="sourceLine" id="cb4-11" title="11"></a>
-<a class="sourceLine" id="cb4-12" title="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
-<a class="sourceLine" id="cb4-13" title="13">copies or substantial portions of the Software.</a>
-<a class="sourceLine" id="cb4-14" title="14"></a>
-<a class="sourceLine" id="cb4-15" title="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
-<a class="sourceLine" id="cb4-16" title="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
-<a class="sourceLine" id="cb4-17" title="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
-<a class="sourceLine" id="cb4-18" title="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
-<a class="sourceLine" id="cb4-19" title="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
-<a class="sourceLine" id="cb4-20" title="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
-<a class="sourceLine" id="cb4-21" title="21">SOFTWARE.</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>MIT License</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Copyright</span> (c) <span class="dv">2020-2022</span> Nima S. Hejazi</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>of this software and associated documentation <span class="fu">files</span> (the <span class="st">"Software"</span>), to deal</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">in</span> the Software without restriction, including without limitation the rights</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>to use, copy, modify, merge, publish, distribute, sublicense, and<span class="sc">/</span>or sell</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>copies of the Software, and to permit persons to whom the Software is</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>furnished to do so, subject to the following conditions<span class="sc">:</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>copies or substantial portions of the Software.</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>SOFTWARE.</span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-benkeser2020nonparametric">
-<p>Benkeser, David, and Jialu Ran. 2021. “Nonparametric Inference for Interventional Effects with Multiple Mediators.” <em>Journal of Causal Inference</em>. <a href="https://doi.org/10.1515/jci-2020-0018" class="external-link uri">https://doi.org/10.1515/jci-2020-0018</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-benkeser2020nonparametric" class="csl-entry">
+Benkeser, David, and Jialu Ran. 2021. “Nonparametric Inference for Interventional Effects with Multiple Mediators.” <em>Journal of Causal Inference</em>. <a href="https://doi.org/10.1515/jci-2020-0018" class="external-link uri">https://doi.org/10.1515/jci-2020-0018</a>.
 </div>
-<div id="ref-chernozhukov2018double">
-<p>Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. 2018. “Double/Debiased Machine Learning for Treatment and Structural Parameters.” <em>The Econometrics Journal</em> 21 (1). <a href="https://doi.org/10.1111/ectj.12097" class="external-link uri">https://doi.org/10.1111/ectj.12097</a>.</p>
+<div id="ref-chernozhukov2018double" class="csl-entry">
+Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. 2018. “Double/Debiased Machine Learning for Treatment and Structural Parameters.” <em>The Econometrics Journal</em> 21 (1). <a href="https://doi.org/10.1111/ectj.12097" class="external-link uri">https://doi.org/10.1111/ectj.12097</a>.
 </div>
-<div id="ref-coyle-gh-sl3">
-<p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and Oleg Sofrygin. 2021. <em><code>sl3</code>: Modern Machine Learning Pipelines for Super Learning</em> (version 1.4.4). <a href="https://doi.org/10.5281/zenodo.1342293" class="external-link uri">https://doi.org/10.5281/zenodo.1342293</a>.</p>
+<div id="ref-coyle-gh-sl3" class="csl-entry">
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and Oleg Sofrygin. 2021. <em><code>sl3</code>: Modern Machine Learning Pipelines for Super Learning</em> (version 1.4.4). <a href="https://doi.org/10.5281/zenodo.1342293" class="external-link uri">https://doi.org/10.5281/zenodo.1342293</a>.
 </div>
-<div id="ref-diaz2020nonparametric">
-<p>Dı́az, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan. 2020. “Non-Parametric Efficient Causal Mediation with Intermediate Confounders.” <em>Biometrika</em> 108 (3): 627–41. <a href="https://doi.org/10.1093/biomet/asaa085" class="external-link uri">https://doi.org/10.1093/biomet/asaa085</a>.</p>
+<div id="ref-diaz2020nonparametric" class="csl-entry">
+Dı́az, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan. 2020. “Non-Parametric Efficient Causal Mediation with Intermediate Confounders.” <em>Biometrika</em> 108 (3): 627–41. <a href="https://doi.org/10.1093/biomet/asaa085" class="external-link uri">https://doi.org/10.1093/biomet/asaa085</a>.
 </div>
-<div id="ref-pfanzagl1985contributions">
-<p>Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General Asymptotic Statistical Theory.” <em>Statistics &amp; Risk Modeling</em> 3 (3-4): 379–88. <a href="https://doi.org/10.1007/978-1-4612-5769-1" class="external-link uri">https://doi.org/10.1007/978-1-4612-5769-1</a>.</p>
+<div id="ref-pfanzagl1985contributions" class="csl-entry">
+Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General Asymptotic Statistical Theory.” <em>Statistics &amp; Risk Modeling</em> 3 (3-4): 379–88. <a href="https://doi.org/10.1007/978-1-4612-5769-1" class="external-link uri">https://doi.org/10.1007/978-1-4612-5769-1</a>.
 </div>
-<div id="ref-rudolph2017robust">
-<p>Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan. 2017. “Robust and Flexible Estimation of Stochastic Mediation Effects: A Proposed Method and Example in a Randomized Trial Setting.” <em>Epidemiologic Methods</em> 7 (1). <a href="https://doi.org/10.1515/em-2017-0007" class="external-link uri">https://doi.org/10.1515/em-2017-0007</a>.</p>
+<div id="ref-rudolph2017robust" class="csl-entry">
+Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan. 2017. “Robust and Flexible Estimation of Stochastic Mediation Effects: A Proposed Method and Example in a Randomized Trial Setting.” <em>Epidemiologic Methods</em> 7 (1). <a href="https://doi.org/10.1515/em-2017-0007" class="external-link uri">https://doi.org/10.1515/em-2017-0007</a>.
 </div>
-<div id="ref-vdl2011targeted">
-<p>van der Laan, Mark J, and Sherri Rose. 2011. <em>Targeted Learning: Causal Inference for Observational and Experimental Data</em>. Springer Science &amp; Business Media.</p>
+<div id="ref-vdl2011targeted" class="csl-entry">
+van der Laan, Mark J, and Sherri Rose. 2011. <em>Targeted Learning: Causal Inference for Observational and Experimental Data</em>. Springer Science &amp; Business Media.
 </div>
-<div id="ref-vanderweele2014effect">
-<p>VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014. “Effect Decomposition in the Presence of an Exposure-Induced Mediator-Outcome Confounder.” <em>Epidemiology</em> 25 (2): 300. <a href="https://doi.org/10.1097/ede.0000000000000034" class="external-link uri">https://doi.org/10.1097/ede.0000000000000034</a>.</p>
+<div id="ref-vanderweele2014effect" class="csl-entry">
+VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014. “Effect Decomposition in the Presence of an Exposure-Induced Mediator-Outcome Confounder.” <em>Epidemiology</em> 25 (2): 300. <a href="https://doi.org/10.1097/ede.0000000000000034" class="external-link uri">https://doi.org/10.1097/ede.0000000000000034</a>.
 </div>
-<div id="ref-zheng2011cross">
-<p>Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted Minimum-Loss-Based Estimation.” In <em>Targeted Learning: Causal Inference for Observational and Experimental Data</em>, 459–74. Springer. <a href="https://doi.org/10.1007/978-1-4419-9782-1_27" class="external-link uri">https://doi.org/10.1007/978-1-4419-9782-1_27</a>.</p>
+<div id="ref-zheng2011cross" class="csl-entry">
+Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted Minimum-Loss-Based Estimation.” In <em>Targeted Learning: Causal Inference for Observational and Experimental Data</em>, 459–74. Springer. <a href="https://doi.org/10.1007/978-1-4419-9782-1_27" class="external-link uri">https://doi.org/10.1007/978-1-4419-9782-1_27</a>.
 </div>
-<div id="ref-zheng2012targeted">
-<p>———. 2012. “Targeted Maximum Likelihood Estimation of Natural Direct Effects.” <em>International Journal of Biostatistics</em> 8 (1). <a href="https://doi.org/10.2202/1557-4679.1361" class="external-link uri">https://doi.org/10.2202/1557-4679.1361</a>.</p>
+<div id="ref-zheng2012targeted" class="csl-entry">
+———. 2012. “Targeted Maximum Likelihood Estimation of Natural Direct Effects.” <em>International Journal of Biostatistics</em> 8 (1). <a href="https://doi.org/10.2202/1557-4679.1361" class="external-link uri">https://doi.org/10.2202/1557-4679.1361</a>.
 </div>
-<div id="ref-zheng2017longitudinal">
-<p>———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators and Exposures, with Application to Survival Outcomes.” <em>Journal of Causal Inference</em> 5 (2). <a href="https://doi.org/10.1515/jci-2016-0006" class="external-link uri">https://doi.org/10.1515/jci-2016-0006</a>.</p>
+<div id="ref-zheng2017longitudinal" class="csl-entry">
+———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators and Exposures, with Application to Survival Outcomes.” <em>Journal of Causal Inference</em> 5 (2). <a href="https://doi.org/10.1515/jci-2016-0006" class="external-link uri">https://doi.org/10.1515/jci-2016-0006</a>.
 </div>
 </div>
 </div>
@@ -397,7 +399,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

@@ -1,6 +1,6 @@
 Package: medoutcon
 Title: Efficient Natural and Interventional Causal Mediation Analysis
-Version: 0.1.6
+Version: 0.2.0
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -11,6 +11,9 @@ Authors@R: c(
     person("Kara", "Rudolph", email = "kr2854@cumc.columbia.edu",
            role = "aut",
            comment = c(ORCID = "0000-0002-9417-7960")),
+    person("Philippe", "Boileau", email = "philippe_boileau@berkeley.edu",
+           role = "ctb",
+           comment = c(ORCID = "0000-0002-4850-2507")),
     person("Mark", "van der Laan", email = "laan@berkeley.edu",
            role = c("ctb", "ths"),
            comment = c(ORCID = "0000-0003-1432-5511"))
@@ -25,7 +28,9 @@ Description: Efficient estimators of interventional (in)direct effects in the
     minimum loss estimators based on the formulation of Díaz, Hejazi, Rudolph,
     and van der Laan (2020) <doi:10.1093/biomet/asaa085>. Support for efficient
     estimation of the natural (in)direct effects is also provided, appropriate
-    for settings in which intermediate confounders are absent.
+    for settings in which intermediate confounders are absent. The package also
+    supports estimation of these effects when the mediators are measured using
+    outcome-dependent two-phase sampling designs (e.g., case-cohort).
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -37,9 +42,7 @@ Imports:
     scales,
     stringr,
     origami (>= 1.0.3),
-    sl3 (>= 1.4.3),
-    hal9001 (>= 0.4.1),
-    speedglm
+    sl3 (>= 1.4.3)
 Suggests:
     testthat,
     knitr,
@@ -49,6 +52,8 @@ Suggests:
     nnls,
     SuperLearner,
     glmnet,
+    hal9001 (>= 0.4.1),
+    speedglm,
     xgboost,
     ranger,
     arm

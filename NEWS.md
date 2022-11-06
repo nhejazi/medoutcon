@@ -1,3 +1,15 @@
+# medoutcon 0.2.0
+
+* Added support for a semiparametric correction for outcome-dependent two-phase
+  sampling designs with known or estimated sampling weights.
+* Tightened sanity checks for estimation of natural direct and indirect effects
+  by requiring that EIF scores related to intermediate confounders uniformly be
+  zero when `Z = NULL` is specified.
+* The above required minor changes to `est_tml()` so as to avoid fluctuation
+  models for the TMLE step from updating the intermediate confounder nuisance
+  components (i.e., `q_prime_Z_one`, `q_prime_Z_natural`) and causing numerical
+  issues that violate the above internal checks.
+
 # medoutcon 0.1.5
 
 * For user clarity, the name of the argument for providing externally computed

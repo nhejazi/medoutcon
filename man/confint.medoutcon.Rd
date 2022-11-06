@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{confint.medoutcon}
 \alias{confint.medoutcon}
-\title{Confidence intervals for interventional mediation effect estimates}
+\title{Confidence intervals for natural/interventional (in)direct effect estimates}
 \usage{
 \method{confint}{medoutcon}(object, parm = seq_len(object$theta), level = 0.95, ...)
 }

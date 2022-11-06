@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{summary.medoutcon}
 \alias{summary.medoutcon}
-\title{Summary for interventional mediation effect estimate objects}
+\title{Summary for natural/interventional (in)direct effect estimate objects}
 \usage{
 \method{summary}{medoutcon}(object, ..., ci_level = 0.95)
 }

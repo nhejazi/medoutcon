@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimators.R
 \name{est_tml}
 \alias{est_tml}
-\title{TML estimator for stochastic interventional (in)direct effects}
+\title{TML estimator for natural and interventional (in)direct effects}
 \usage{
 est_tml(
   data,
@@ -107,6 +107,6 @@ taken when performing TMLE updates based on logistic tilting models. When
 the step size of a given update exceeds this value, the update is avoided.}
 }
 \description{
-TML estimator for stochastic interventional (in)direct effects
+TML estimator for natural and interventional (in)direct effects
 }
 \keyword{internal}

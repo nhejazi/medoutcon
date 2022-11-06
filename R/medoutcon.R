@@ -1,4 +1,4 @@
-#' Efficient estimation of interventional (in)direct effects
+#' Efficient estimation of natural and interventional (in)direct effects
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar object corresponding
 #'  to a set of baseline covariates.

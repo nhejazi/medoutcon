@@ -1,6 +1,6 @@
 utils::globalVariables(c("effect", "param"))
 
-#' Confidence intervals for interventional mediation effect estimates
+#' Confidence intervals for natural/interventional (in)direct effect estimates
 #'
 #' Compute confidence intervals for objects of class \code{medoutcon}, which
 #' contain estimates produced by \code{\link{medoutcon}}.
@@ -53,7 +53,7 @@ confint.medoutcon <- function(object,
 
 ###############################################################################
 
-#' Summary for interventional mediation effect estimate objects
+#' Summary for natural/interventional (in)direct effect estimate objects
 #'
 #' Print a convenient summary for objects of \code{S3} class \code{medoutcon}.
 #'
@@ -93,7 +93,7 @@ summary.medoutcon <- function(object,
 
 ###############################################################################
 
-#' Print method for interventional mediation effect estimate objects
+#' Print method for natural/interventional (in)direct effect estimate objects
 #'
 #' The \code{print} method for objects of class \code{medoutcon}.
 #'

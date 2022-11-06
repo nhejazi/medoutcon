@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{print.medoutcon}
 \alias{print.medoutcon}
-\title{Print method for interventional mediation effect estimate objects}
+\title{Print method for natural/interventional (in)direct effect estimate objects}
 \usage{
 \method{print}{medoutcon}(x, ...)
 }

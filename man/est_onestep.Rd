@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimators.R
 \name{est_onestep}
 \alias{est_onestep}
-\title{One-step estimator for stochastic interventional (in)direct effects}
+\title{One-step estimator for natural and interventional (in)direct effects}
 \usage{
 est_onestep(
   data,
@@ -98,6 +98,6 @@ conditions on the one-step estimator to be relaxed. For compatibility with
 than or equal to 2; the default is to create 5 folds.}
 }
 \description{
-One-step estimator for stochastic interventional (in)direct effects
+One-step estimator for natural and interventional (in)direct effects
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/medoutcon.R
 \name{medoutcon}
 \alias{medoutcon}
-\title{Efficient estimation of stochastic interventional (in)direct effects}
+\title{Efficient estimation of natural and interventional (in)direct effects}
 \usage{
 medoutcon(
   W,
@@ -108,7 +108,7 @@ the number of update (fluctuation) iterations is limited, and a tolerance
 is included for the updates introduced by the tilting (fluctuation) models.}
 }
 \description{
-Efficient estimation of stochastic interventional (in)direct effects
+Efficient estimation of natural and interventional (in)direct effects
 }
 \examples{
 # here, we show one-step and TML estimates of the interventional direct

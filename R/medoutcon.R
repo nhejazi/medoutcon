@@ -123,7 +123,7 @@ medoutcon <- function(W,
                       obs_weights = rep(1, length(Y)),
                       svy_weights = NULL,
                       two_phase_weights = rep(1, length(Y)),
-                      effect = c("direct", "indirect"),
+                      effect = c("direct", "indirect", "pm"),
                       contrast = NULL,
                       g_learners = sl3::Lrnr_glm_fast$new(),
                       h_learners = sl3::Lrnr_glm_fast$new(),
@@ -176,14 +176,21 @@ medoutcon <- function(W,
 
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {
-    # select appropriate component for direct vs indirect effects
-    is_effect_direct <- (effect == "direct")
-    contrast_grid <- list(switch(2 - is_effect_direct,
-      c(0, 0),
-      c(1, 1)
-    ))
-    # term needed in the decomposition for both effects
-    contrast_grid[[2]] <- c(1, 0)
+
+    if (effect != "pm") {
+      # select appropriate component for direct vs indirect effects
+      is_effect_direct <- (effect == "direct")
+      contrast_grid <- list(switch(2 - is_effect_direct,
+        c(0, 0),
+        c(1, 1)
+      ))
+      # term needed in the decomposition for both effects
+      contrast_grid[[2]] <- c(1, 0)
+    } else {
+      contrast_grid <- list(
+        c(1, 1), c(0, 0), c(1, 0)
+      )
+    }
   } else {
     # otherwise, simply estimate for the user-given contrast
     contrast_grid <- list(contrast)
@@ -276,6 +283,34 @@ medoutcon <- function(W,
       eif = ie_eif_est,
       type = estimator,
       param = paste("indirect", effect_type, sep = "_"),
+      outcome = as.numeric(Y)
+    )
+    class(ie_est_out) <- "medoutcon"
+    return(ie_est_out)
+  } else if (is.null(contrast) && (effect == "pm")) {
+    # compute parameter estimate, influence function, and variances
+    ie_theta_est <-  1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
+      log(est_params[[1]]$theta / est_params[[2]]$theta)
+    ie_eif_est <- -est_params[[3]]$eif /
+      (est_params[[3]]$theta * log(est_params[[1]]$theta /
+                                   est_params[[2]]$theta)) +
+      est_params[[2]]$eif * log(est_params[[1]]$theta /
+                                est_params[[3]]$theta) /
+      (est_params[[2]]$theta * log(est_params[[1]]$theta /
+                                   est_params[[2]]$theta)) +
+      est_params[[1]]$eif * log(est_params[[3]]$theta /
+                                est_params[[2]]$theta) /
+      (est_params[[1]]$theta * log(est_params[[1]]$theta /
+                                   est_params[[2]]$theta))
+    ie_var_est <- stats::var(ie_eif_est) / nrow(data)
+
+    # construct output in same style as for contrast-specific parameter
+    ie_est_out <- list(
+      theta = ie_theta_est,
+      var = ie_var_est,
+      eif = ie_eif_est,
+      type = estimator,
+      param = paste("pm", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
     class(ie_est_out) <- "medoutcon"

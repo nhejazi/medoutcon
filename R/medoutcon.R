@@ -294,14 +294,15 @@ medoutcon <- function(W,
     ie_eif_est <- -est_params[[3]]$eif /
       (est_params[[3]]$theta * log(est_params[[1]]$theta /
                                    est_params[[2]]$theta)) +
-      est_params[[2]]$eif * log(est_params[[1]]$theta /
-                                est_params[[3]]$theta) /
-      (est_params[[2]]$theta * log(est_params[[1]]$theta /
-                                   est_params[[2]]$theta)) +
+      est_params[[2]]$eif * (
+        (log(est_params[[1]]$theta / est_params[[2]]$theta) -
+         log(est_params[[3]]$theta / est_params[[2]]$theta)) /
+          (est_params[[2]]$theta *
+           (log(est_params[[1]]$theta / est_params[[2]]$theta))^2)) +
       est_params[[1]]$eif * log(est_params[[3]]$theta /
                                 est_params[[2]]$theta) /
-      (est_params[[1]]$theta * log(est_params[[1]]$theta /
-                                   est_params[[2]]$theta))
+      (est_params[[1]]$theta * (log(est_params[[1]]$theta /
+                                   est_params[[2]]$theta))^2)
     ie_var_est <- stats::var(ie_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter

@@ -9,8 +9,8 @@
 #'   mediators M, and outcome Y, but unaffected itself by the mediators). When
 #'   set to \code{NULL}, the natural (in)direct effects are estimated.
 #' @param R A \code{logical} vector indicating whether a sampled observation's
-#'   mediator was measured via a two-phase sampling design. Defaults to a
-#'   vector of ones, implying that two-phase sampling was not performed.
+#'   mediator was measured via a two-phase sampling design. Defaults to a vector
+#'   of ones, implying that two-phase sampling was not performed.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'   similar corresponding to a set of mediators (on the causal pathway between
 #'   the intervention A and the outcome Y).
@@ -24,9 +24,10 @@
 #'   weights corresponding to the inverse probability of the mediator being
 #'   measured. Defaults to a vector of ones.
 #' @param effect A \code{character} indicating whether to compute the direct or
-#'   the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
-#'   This is ignored when the argument \code{contrast} is provided. By default,
-#'   the direct effect is estimated.
+#'   the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>. The
+#'   proportion mediated, as discussed in <https://arxiv.org/abs/2103.02643>, is
+#'   estimated when set to \code{"pm"}. This is ignored when the argument
+#'   \code{contrast} is provided. By default, the direct effect is estimated.
 #' @param contrast A \code{numeric} double indicating the two values of the
 #'   intervention \code{A} to be compared. The default value of \code{NULL} has
 #'   no effect, as the value of the argument \code{effect} is instead used to
@@ -291,18 +292,20 @@ medoutcon <- function(W,
     # compute parameter estimate, influence function, and variances
     ie_theta_est <-  1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
       log(est_params[[1]]$theta / est_params[[2]]$theta)
+
     ie_eif_est <- -est_params[[3]]$eif /
-      (est_params[[3]]$theta * log(est_params[[1]]$theta /
-                                   est_params[[2]]$theta)) +
+      (est_params[[3]]$theta *
+       log(est_params[[1]]$theta / est_params[[2]]$theta)) +
       est_params[[2]]$eif * (
         (log(est_params[[1]]$theta / est_params[[2]]$theta) -
          log(est_params[[3]]$theta / est_params[[2]]$theta)) /
           (est_params[[2]]$theta *
            (log(est_params[[1]]$theta / est_params[[2]]$theta))^2)) +
-      est_params[[1]]$eif * log(est_params[[3]]$theta /
-                                est_params[[2]]$theta) /
-      (est_params[[1]]$theta * (log(est_params[[1]]$theta /
-                                   est_params[[2]]$theta))^2)
+      est_params[[1]]$eif *
+        log(est_params[[3]]$theta / est_params[[2]]$theta) /
+        (est_params[[1]]$theta *
+         (log(est_params[[1]]$theta / est_params[[2]]$theta))^2)
+
     ie_var_est <- stats::var(ie_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter

@@ -14,7 +14,7 @@ medoutcon(
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
   two_phase_weights = rep(1, length(Y)),
-  effect = c("direct", "indirect"),
+  effect = c("direct", "indirect", "pm"),
   contrast = NULL,
   g_learners = sl3::Lrnr_glm_fast$new(),
   h_learners = sl3::Lrnr_glm_fast$new(),
@@ -47,8 +47,8 @@ the intervention A and the outcome Y).}
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
 \item{R}{A \code{logical} vector indicating whether a sampled observation's
-mediator was measured via a two-phase sampling design. Defaults to a
-vector of ones, implying that two-phase sampling was not performed.}
+mediator was measured via a two-phase sampling design. Defaults to a vector
+of ones, implying that two-phase sampling was not performed.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights. The
 default is to give all observations equal weighting.}
@@ -62,9 +62,10 @@ weights corresponding to the inverse probability of the mediator being
 measured. Defaults to a vector of ones.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct or
-the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
-This is ignored when the argument \code{contrast} is provided. By default,
-the direct effect is estimated.}
+the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>. The
+proportion mediated, as discussed in <https://arxiv.org/abs/2103.02643>, is
+estimated when set to \code{"pm"}. This is ignored when the argument
+\code{contrast} is provided. By default, the direct effect is estimated.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
 intervention \code{A} to be compared. The default value of \code{NULL} has

@@ -1,6 +1,6 @@
 Package: medoutcon
 Title: Efficient Natural and Interventional Causal Mediation Analysis
-Version: 0.2.1
+Version: 0.2.0
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),

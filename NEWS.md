@@ -1,8 +1,3 @@
-# medoutcon 0.2.1
-
-* Added support for proportion mediated estimation through the `effect`
-  argument.
-
 # medoutcon 0.2.0
 
 * Added support for a semiparametric correction for outcome-dependent two-phase

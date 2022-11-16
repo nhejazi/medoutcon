@@ -14,7 +14,7 @@ medoutcon(
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
   two_phase_weights = rep(1, length(Y)),
-  effect = c("direct", "indirect"),
+  effect = c("direct", "indirect", "pm"),
   contrast = NULL,
   g_learners = sl3::Lrnr_glm_fast$new(),
   h_learners = sl3::Lrnr_glm_fast$new(),
@@ -25,7 +25,8 @@ medoutcon(
   v_learners = sl3::Lrnr_hal9001$new(),
   d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
-  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5)
+  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5),
+  g_bounds = c(0.001, 0.999)
 )
 }
 \arguments{
@@ -47,8 +48,8 @@ the intervention A and the outcome Y).}
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
 \item{R}{A \code{logical} vector indicating whether a sampled observation's
-mediator was measured via a two-phase sampling design. Defaults to a
-vector of ones, implying that two-phase sampling was not performed.}
+mediator was measured via a two-phase sampling design. Defaults to a vector
+of ones, implying that two-phase sampling was not performed.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights. The
 default is to give all observations equal weighting.}
@@ -124,6 +125,11 @@ is chosen so as to allow the number of folds used in computing the one-step
 or TML estimators to be easily adjusted. In the case of the TML estimator,
 the number of update (fluctuation) iterations is limited, and a tolerance
 is included for the updates introduced by the tilting (fluctuation) models.}
+
+\item{g_bounds}{A \code{numeric} vector containing two values, the
+first being the minimum allowable estimated propensity score value and the
+second being the maximum allowable for estimated propensity score value.
+Defaults to \code{c(0.001, 0.999)}.}
 }
 \description{
 Efficient estimation of natural and interventional (in)direct effects

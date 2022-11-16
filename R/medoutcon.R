@@ -9,8 +9,8 @@
 #'   mediators M, and outcome Y, but unaffected itself by the mediators). When
 #'   set to \code{NULL}, the natural (in)direct effects are estimated.
 #' @param R A \code{logical} vector indicating whether a sampled observation's
-#'   mediator was measured via a two-phase sampling design. Defaults to a
-#'   vector of ones, implying that two-phase sampling was not performed.
+#'   mediator was measured via a two-phase sampling design. Defaults to a vector
+#'   of ones, implying that two-phase sampling was not performed.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'   similar corresponding to a set of mediators (on the causal pathway between
 #'   the intervention A and the outcome Y).
@@ -75,6 +75,10 @@
 #'   or TML estimators to be easily adjusted. In the case of the TML estimator,
 #'   the number of update (fluctuation) iterations is limited, and a tolerance
 #'   is included for the updates introduced by the tilting (fluctuation) models.
+#' @param g_bounds A \code{numeric} vector containing two values, the
+#'   first being the minimum allowable estimated propensity score value and the
+#'   second being the maximum allowable for estimated propensity score value.
+#'   Defaults to \code{c(0.001, 0.999)}.
 #'
 #' @importFrom data.table as.data.table setnames set
 #' @importFrom sl3 Lrnr_glm_fast Lrnr_hal9001
@@ -137,7 +141,8 @@ medoutcon <- function(W,
                       estimator_args = list(
                         cv_folds = 5L, max_iter = 5L,
                         tiltmod_tol = 5
-                      )) {
+                      ),
+                      g_bounds = c(0.001, 0.999)) {
   # set defaults
   estimator <- match.arg(estimator)
   estimator_args <- unlist(estimator_args, recursive = FALSE)
@@ -215,7 +220,8 @@ medoutcon <- function(W,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
-        svy_weights = svy_weights
+        svy_weights = svy_weights,
+        g_bounds = g_bounds
       )
       onestep_est_args <- unlist(list(onestep_est_args, est_args_os),
         recursive = FALSE
@@ -238,7 +244,8 @@ medoutcon <- function(W,
         m_names = m_names,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
-        svy_weights = svy_weights
+        svy_weights = svy_weights,
+        g_bounds = g_bounds
       )
       tmle_est_args <- unlist(list(tmle_est_args, est_args_tmle),
         recursive = FALSE

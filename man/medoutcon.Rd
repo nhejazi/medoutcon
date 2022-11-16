@@ -26,7 +26,7 @@ medoutcon(
   d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
   estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5),
-  prop_score_bounds = c(0.001, 0.999)
+  g_bounds = c(0.001, 0.999)
 )
 }
 \arguments{
@@ -126,7 +126,7 @@ or TML estimators to be easily adjusted. In the case of the TML estimator,
 the number of update (fluctuation) iterations is limited, and a tolerance
 is included for the updates introduced by the tilting (fluctuation) models.}
 
-\item{prop_score_bounds}{A \code{numeric} vector containing two values, the
+\item{g_bounds}{A \code{numeric} vector containing two values, the
 first being the minimum allowable estimated propensity score value and the
 second being the maximum allowable for estimated propensity score value.
 Defaults to \code{c(0.001, 0.999)}.}

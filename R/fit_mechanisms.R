@@ -55,6 +55,10 @@ fit_treat_mech <- function(train_data,
     #       not necessary under two-phase sampling of the mediators
     train_data[, obs_weights := R * two_phase_weights * obs_weights]
     valid_data[, obs_weights := R * two_phase_weights * obs_weights]
+
+    # remove observations that were not sampled in second stage
+    train_data <- train_data[R == 1, ]
+    valid_data <- valid_data[R == 1, ]
   }
 
   ## construct task for treatment mechanism fit
@@ -183,6 +187,10 @@ fit_out_mech <- function(train_data,
   # update observation weights with two-phase sampling weights, if necessary
   train_data[, obs_weights := R * two_phase_weights * obs_weights]
   valid_data[, obs_weights := R * two_phase_weights * obs_weights]
+
+  # remove observations that were not sampled in second stage
+  train_data <- train_data[R == 1, ]
+  valid_data <- valid_data[R == 1, ]
 
   ##  construct task for propensity score fit
   b_natural_task <- sl3::sl3_Task$new(
@@ -369,6 +377,10 @@ fit_moc_mech <- function(train_data,
     cov_names <- w_names
   } else if (type == "r") {
     cov_names <- c(m_names, w_names)
+
+    # remove observations that were not sampled in second stage
+    train_data <- train_data[R == 1, ]
+    valid_data <- valid_data[R == 1, ]
   }
 
   moc_task <- sl3::sl3_Task$new(
@@ -569,11 +581,15 @@ fit_nuisance_u <- function(train_data,
   ## extract nuisance estimates necessary for constructing pseudo-outcome
   b_prime <- b_out$b_est_train$b_pred_A_prime
   h_star <- h_out$treat_est_train$treat_pred_A_star
-  g_star <- g_out$treat_est_train$treat_pred_A_star
+  g_star <- g_out$treat_est_train$treat_pred_A_star[train_data$R == 1]
   h_prime <- h_out$treat_est_train$treat_pred_A_prime
-  g_prime <- g_out$treat_est_train$treat_pred_A_prime
-  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime
+  g_prime <- g_out$treat_est_train$treat_pred_A_prime[train_data$R == 1]
+  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
   r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
+
+  # remove observations that were not sampled in second stage
+  train_data <- train_data[R == 1, ]
+  valid_data <- valid_data[R == 1, ]
 
   ## create multiplier for pseudo-outcome and then pseudo-outcome
   c_star <- (g_prime / g_star) * (q_prime_Z_natural / r_prime_Z_natural) *
@@ -687,8 +703,12 @@ fit_nuisance_v <- function(train_data,
   valid_data[, obs_weights := R * two_phase_weights * obs_weights]
 
   ## extract nuisance estimates necessary for this routrine
-  q_train_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime
-  q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime
+  q_train_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
+  q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
+
+  # remove observations that were not sampled in second stage
+  train_data <- train_data[R == 1, ]
+  valid_data <- valid_data[R == 1, ]
 
   ## first, compute components of integral over mediator-outcome confounder
   ## assuming Z in {0,1} for interventional effects. NOTE: other cases (e.g.,
@@ -811,6 +831,7 @@ fit_nuisance_v <- function(train_data,
     v_pred = as.numeric(v_valid_pred),
     v_train_pred = as.numeric(v_train_pred),
     v_pseudo = as.numeric(v_pseudo_valid),
+    v_pseudo_train = as.numeric(v_pseudo_train),
     b_A_prime_Z_zero = as.numeric(b_pred_A_prime_Z_zero),
     b_A_prime_Z_one = as.numeric(b_pred_A_prime_Z_one)
   ))
@@ -885,19 +906,19 @@ fit_nuisance_d <- function(train_data,
   ## extract nuisance estimates necessary for constructing pseudo-outcome
   b_prime <- b_out$b_est_train$b_pred_A_prime
   h_star <- h_out$treat_est_train$treat_pred_A_star
-  g_star <- g_out$treat_est_train$treat_pred_A_star
+  g_star <- g_out$treat_est_train$treat_pred_A_star[train_data$R == 1]
   h_prime <- h_out$treat_est_train$treat_pred_A_prime
-  g_prime <- g_out$treat_est_train$treat_pred_A_prime
+  g_prime <- g_out$treat_est_train$treat_pred_A_prime[train_data$R == 1]
   u_prime <- u_out$u_train_pred
   v_star <- v_out$v_train_pred
-  q_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime
-  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime
+  q_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
+  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
   r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
 
   # NOTE: assuming Z in {0,1}; other cases not supported yet
   u_int_eif <- lapply(c(1, 0), function(z_val) {
     # intervene on training and validation data sets
-    train_data_z_interv <- data.table::copy(train_data)
+    train_data_z_interv <- data.table::copy(train_data[R == 1, ])
     train_data_z_interv[, `:=`(
       Z = z_val,
       A = contrast[1],
@@ -920,9 +941,8 @@ fit_nuisance_d <- function(train_data,
   u_int_eif <- do.call(`-`, u_int_eif)
 
   # create inverse probability weights
-  ipw_a_prime <- as.numeric(train_data$A == contrast[1]) / g_prime
-  ipw_a_star <- as.numeric(train_data$A == contrast[2]) / g_star
-
+  ipw_a_prime <- as.numeric(train_data[R == 1, A] == contrast[1]) / g_prime
+  ipw_a_star <- as.numeric(train_data[R == 1, A] == contrast[2]) / g_star
 
   # residual term for outcome component of EIF
   c_star <- (g_prime / g_star) * (q_prime_Z_natural / r_prime_Z_natural) *
@@ -930,10 +950,10 @@ fit_nuisance_d <- function(train_data,
 
   # compute uncentered efficient influence function components
   eif_y <- ipw_a_prime * c_star / mean(ipw_a_prime * c_star) *
-    (valid_data$Y - b_prime)
+    (train_data[R == 1, Y] - b_prime)
   eif_u <- ipw_a_prime / mean(ipw_a_prime) * u_int_eif *
-    (valid_data$Z - q_prime_Z_one)
-  eif_v <- ipw_a_star / mean(ipw_a_star) * (v_out$v_pseudo - v_star)
+    (train_data[R == 1, Z] - q_prime_Z_one)
+  eif_v <- ipw_a_star / mean(ipw_a_star) * (v_out$v_pseudo_train - v_star)
 
   # compute the centered eif
   plugin_est <- est_plugin(v_pred = v_star)
@@ -941,8 +961,8 @@ fit_nuisance_d <- function(train_data,
 
   # create a dataset to for the estimation task
   eif_data_train <- data.table::copy(train_data)
-  eif_data_train[, eif := centered_eif]
   eif_data_train <- eif_data_train[R == 1, ]
+  eif_data_train[, eif := centered_eif]
 
   # generate the sl3 task
   d_task_train <- sl3::sl3_Task$new(

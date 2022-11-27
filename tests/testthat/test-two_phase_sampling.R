@@ -8,12 +8,13 @@ test_that("two_phase_eif returns an uncentered EIF", {
   # generate fake inputs
   R <- c(1, 0, 0, 0, 1, 1)
   two_phase_weights <- c(rep(1 / 2, 3), rep(2, 3))
-  eif <- c(rep(1 / 2, 3), rep(-1 / 2, 3))
+  partial_eif <- c(1 / 2, rep(-1 / 2, 2))
   eif_predictions <- c(rep(1 / 3, 3), rep(-1 / 3, 3))
   plugin_est <- 1
 
   # independently compute the adjusted EIF
-  uncentered_eif <- R * two_phase_weights * eif +
+  uncentered_eif <- R * two_phase_weights *
+    c(partial_eif[1], 0, 0, 0, partial_eif[2], partial_eif[3]) +
     (1 - R * two_phase_weights) * eif_predictions + plugin_est
 
   # assert that result is identical to two_phase_eif's
@@ -21,7 +22,7 @@ test_that("two_phase_eif returns an uncentered EIF", {
     two_phase_eif(
       R = R,
       two_phase_weights = two_phase_weights,
-      eif = eif,
+      eif = partial_eif,
       eif_predictions = eif_predictions,
       plugin_est = plugin_est
     ),

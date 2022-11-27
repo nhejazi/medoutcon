@@ -1,4 +1,4 @@
-utils::globalVariables(c("..w_names", "A", "Z"))
+utils::globalVariables(c("..w_names", "A", "Z", "Y"))
 
 #' EIF for natural and interventional (in)direct effects
 #'
@@ -270,13 +270,15 @@ cv_eif <- function(fold,
     centered_eif_pred <- d_out$d_pred
 
     # compute the two-phase sampling un-centered EIF
-    eif <- two_phase_eif(
+    full_eif <- two_phase_eif(
       R = valid_data$R,
       two_phase_weights = valid_data$two_phase_weights,
       eif = centered_eif,
       eif_predictions = centered_eif_pred,
       plugin_est = plugin_est
     )
+  } else {
+    full_eif <- eif
   }
 
   # output list
@@ -290,9 +292,9 @@ cv_eif <- function(fold,
       b_prime = b_prime, b_prime_Z_zero = v_out$b_A_prime_Z_zero,
       b_prime_Z_one = v_out$b_A_prime_Z_one,
       # fold IDs
-      D_star = centered_eif, fold = origami::fold_index()
+      D_star = eif, fold = origami::fold_index()
     ),
-    D_star = eif
+    D_star = full_eif
   )
   return(out)
 }

@@ -125,7 +125,7 @@ test_that("MSE of outcome regression estimates is sufficiently low", {
     (b_out$b_est_train$b_pred_A_prime -
      my(m[data$R == 1], z[data$R == 1], aprime, w[data$R == 1, ])
   )^2)
-  expect_lt(b_mse, 0.01)
+  expect_lt(b_mse, 0.02)
 })
 
 ## fit mediator-outcome confounder regression, excluding mediator(s)
@@ -186,7 +186,7 @@ test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
      u(z[data$R == 1], w[data$R == 1, ], aprime, astar)
     )^2
   )
-  expect_lt(u_mse, 0.01)
+  expect_lt(u_mse, 0.02)
 })
 
 ## fit v

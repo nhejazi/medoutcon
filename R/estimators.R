@@ -681,6 +681,9 @@ est_tml <- function(data,
   b_prime_Z_zero <- cv_eif_est$b_prime_Z_zero
   b_prime_Z_natural <- cv_eif_est$b_prime
 
+  # update observation weights with two-phase sampling weights, if necessary
+  data[, obs_weights := R * two_phase_weights * obs_weights]
+
   # generate inverse weights and multiplier for auxiliary covariates
   ipw_prime <- as.numeric(data[R == 1, A] == contrast[1]) / g_prime
   ipw_star <- as.numeric(data[R == 1, A] == contrast[2]) / g_star

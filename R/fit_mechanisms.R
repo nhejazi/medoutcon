@@ -368,15 +368,17 @@ fit_moc_mech <- function(train_data,
                          m_names,
                          w_names,
                          type = c("q", "r")) {
-  # update observation weights with two-phase sampling weights, if necessary
-  train_data[, obs_weights := R * two_phase_weights * obs_weights]
-  valid_data[, obs_weights := R * two_phase_weights * obs_weights]
 
   ## construct task for nuisance parameter fit
   if (type == "q") {
     cov_names <- w_names
   } else if (type == "r") {
     cov_names <- c(m_names, w_names)
+
+    # update observation weights with two-phase sampling weights, if necessary
+    # NOTE: Should this be applied to q as well? Probably.
+    train_data[, obs_weights := R * two_phase_weights * obs_weights]
+    valid_data[, obs_weights := R * two_phase_weights * obs_weights]
 
     # remove observations that were not sampled in second stage
     train_data <- train_data[R == 1, ]
@@ -965,6 +967,7 @@ fit_nuisance_d <- function(train_data,
   eif_data_train[, eif := centered_eif]
 
   # generate the sl3 task
+  # NOTE: Purposefully not adding two-phase sampling weights
   d_task_train <- sl3::sl3_Task$new(
     data = eif_data_train,
     weights = "obs_weights",

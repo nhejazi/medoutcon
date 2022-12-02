@@ -499,8 +499,6 @@ est_onestep <- function(data,
 
   # get estimated efficient influence function
   cv_eif_est <- unlist(cv_eif_results$D_star)
-  obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
-  cv_eif_est <- cv_eif_est[order(obs_valid_idx)]
 
   # re-scale efficient influence function
   eif_est_rescaled <- cv_eif_est %>%
@@ -512,6 +510,8 @@ est_onestep <- function(data,
     eif_est_out <- eif_est_rescaled
   } else {
     # compute a re-weighted one-step, with re-weighted influence function
+    obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
+    eif_est_rescaled <- eif_est_rescaled[order(obs_valid_idx)]
     os_est <- stats::weighted.mean(eif_est_rescaled, svy_weights)
     eif_est_out <- eif_est_rescaled * svy_weights
   }

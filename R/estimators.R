@@ -661,11 +661,12 @@ est_tml <- function(data,
     .combine = FALSE
   )
 
-  # concatenate nuisance function and influence function estimates
+  # concatenate nuisance function function estimates
+  # make sure that data is in the same order as the concatenated validations
+  # sets
   cv_eif_est <- do.call(rbind, cv_eif_results[[1]])
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
-  sampled_obs_valid_idx <- obs_valid_idx[data[obs_valid_idx]$R == 1]
-  cv_eif_est <- cv_eif_est[order(sampled_obs_valid_idx), ]
+  data <- data[obs_valid_idx]
 
   # extract nuisance function estimates and auxiliary quantities
   g_prime <- cv_eif_est$g_prime
@@ -691,7 +692,7 @@ est_tml <- function(data,
   # prepare for iterative targeting
   eif_stop_crit <- FALSE
   n_iter <- 0
-  n_obs <- nrow(data)
+  n_obs <- nrow(data[R == 1, ])
   se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
   tilt_stop_crit <- se_eif / log(n_obs)
 
@@ -845,6 +846,7 @@ est_tml <- function(data,
   v_star_tmle <- unname(stats::predict(v_tilt_fit, type = "response"))
 
   # compute influence function with centering at the TML estimate
+  # make sure that it's in the same order as the original data
   eif_est <- unlist(cv_eif_results$D_star)[order(obs_valid_idx)]
 
   # re-scale efficient influence function
@@ -859,6 +861,9 @@ est_tml <- function(data,
     eif_est_out <- eif_est_rescaled
   } else {
     # compute a re-weighted TMLE, with re-weighted influence function
+    # make sure that survey weights are ordered like the concatenated validation
+    # sets
+    svy_weights <- svy_weights[obs_valid_idx]
     tml_est <- stats::weighted.mean(v_star_tmle_rescaled, svy_weights)
     eif_est_out <- eif_est_rescaled * svy_weights
   }

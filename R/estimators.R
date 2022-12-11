@@ -279,6 +279,7 @@ cv_eif <- function(fold,
     )
   } else {
     full_eif <- eif
+    centered_eif_pred <- NA
   }
 
   # output list
@@ -290,11 +291,12 @@ cv_eif <- function(fold,
       r_prime_Z_natural = r_prime_Z_natural, r_prime_Z_one = r_prime_Z_one,
       v_star = v_star, u_int_diff = u_int_eif,
       b_prime = b_prime, b_prime_Z_zero = v_out$b_A_prime_Z_zero,
-      b_prime_Z_one = v_out$b_A_prime_Z_one,
+      b_prime_Z_one = v_out$b_A_prime_Z_one, D_star = eif,
       # fold IDs
-      D_star = eif, fold = origami::fold_index()
+      fold = origami::fold_index()
     ),
-    D_star = full_eif
+    D_star = full_eif,
+    D_pred = centered_eif_pred
   )
   return(out)
 }
@@ -680,6 +682,51 @@ est_tml <- function(data,
   b_prime_Z_one <- cv_eif_est$b_prime_Z_one
   b_prime_Z_zero <- cv_eif_est$b_prime_Z_zero
   b_prime_Z_natural <- cv_eif_est$b_prime
+
+  # tilt the two-phase sampling weights if necessary
+  if (sum(data$R) != nrow(data)) {
+
+    # compute predicted influence function with centering at the TML estimate
+    # make sure that it's in the same order as the original data
+    d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
+
+    # tilting model for known weights
+    two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
+      bound_precision() %>%
+      stats::qlogis()
+    weighted_d_pred <- d_pred * data$two_phase_weights
+    suppressWarnings(
+      tilted_two_phase_fit <- stats::glm(
+        stats::as.formula(
+          "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
+        ),
+        data = data.table::data.table(list(
+          R = data$R,
+          two_phase_prob_logit = two_phase_prob_logit,
+          weighted_d_pred = weighted_d_pred
+        )),
+        family = "binomial",
+        start = 0
+      )
+    )
+    # extract the tilting coefficient
+    if (is.na(stats::coef(tilted_two_phase_fit))) {
+      tilted_two_phase_fit$coefficients <- 0
+    } else if (!tilted_two_phase_fit$converged ||
+                 abs(max(stats::coef(tilted_two_phase_fit))) > tiltmod_tol) {
+      tilted_two_phase_fit$coefficients <- 0
+    }
+    two_phase_tilt_coef <- unname(stats::coef(tilted_two_phase_fit))
+
+    # tilt the two-phase sampling probs
+    tilted_two_phase_prob <- stats::plogis(
+      two_phase_prob_logit + two_phase_tilt_coef * weighted_d_pred
+    )
+
+    # update the two-phase sampling weights
+    data$two_phase_weights <- 1 / tilted_two_phase_prob
+
+  }
 
   # update observation weights with two-phase sampling weights, if necessary
   data[, obs_weights := R * two_phase_weights * obs_weights]

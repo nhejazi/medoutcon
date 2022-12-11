@@ -240,9 +240,13 @@ n_obs <- 500
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
+R <- rbinom(n_obs, 1, 0.9)
+R[data$Y > 5] <- 1
+two_phase_weights <- rep(1 / 0.9, nrow(data))
+two_phase_weights[data$Y > 5] <- 1
 data[, `:=`(
-  R = rbinom(n_obs, 1, 0.9),
-  two_phase_weights = 1,
+  R = R,
+  two_phase_weights = two_phase_weights,
   obs_weights = 1
 )]
 w_names <- str_subset(colnames(data), "W")
@@ -293,6 +297,7 @@ d_learners <- u_learners <- v_learners <- b_learners <- rf_lrnr
 nde_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -310,6 +315,7 @@ summary(nde_os)
 nie_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -327,6 +333,7 @@ summary(nie_os)
 nde_tmle <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -344,6 +351,7 @@ summary(nde_tmle)
 nie_tmle <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,

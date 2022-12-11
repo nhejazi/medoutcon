@@ -700,11 +700,11 @@ est_tml <- function(data,
         stats::as.formula(
           "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
         ),
-        data = data.table::data.table(list(
+        data = data.table::data.table(
           R = data$R,
           two_phase_prob_logit = two_phase_prob_logit,
           weighted_d_pred = weighted_d_pred
-        )),
+        ),
         family = "binomial",
         start = 0
       )

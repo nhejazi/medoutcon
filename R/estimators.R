@@ -683,51 +683,6 @@ est_tml <- function(data,
   b_prime_Z_zero <- cv_eif_est$b_prime_Z_zero
   b_prime_Z_natural <- cv_eif_est$b_prime
 
-  # tilt the two-phase sampling weights if necessary
-  if (sum(data$R) != nrow(data)) {
-
-    # compute predicted influence function with centering at the TML estimate
-    # make sure that it's in the same order as the original data
-    d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
-
-    # tilting model for known weights
-    two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
-      bound_precision() %>%
-      stats::qlogis()
-    weighted_d_pred <- d_pred * data$two_phase_weights
-    suppressWarnings(
-      tilted_two_phase_fit <- stats::glm(
-        stats::as.formula(
-          "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
-        ),
-        data = data.table::data.table(
-          R = data$R,
-          two_phase_prob_logit = two_phase_prob_logit,
-          weighted_d_pred = weighted_d_pred
-        ),
-        family = "binomial",
-        start = 0
-      )
-    )
-    # extract the tilting coefficient
-    if (is.na(stats::coef(tilted_two_phase_fit))) {
-      tilted_two_phase_fit$coefficients <- 0
-    } else if (!tilted_two_phase_fit$converged ||
-                 abs(max(stats::coef(tilted_two_phase_fit))) > tiltmod_tol) {
-      tilted_two_phase_fit$coefficients <- 0
-    }
-    two_phase_tilt_coef <- unname(stats::coef(tilted_two_phase_fit))
-
-    # tilt the two-phase sampling probs
-    tilted_two_phase_prob <- stats::plogis(
-      two_phase_prob_logit + two_phase_tilt_coef * weighted_d_pred
-    )
-
-    # update the two-phase sampling weights
-    data$two_phase_weights <- 1 / tilted_two_phase_prob
-
-  }
-
   # update observation weights with two-phase sampling weights, if necessary
   data[, obs_weights := R * two_phase_weights * obs_weights]
 
@@ -742,9 +697,64 @@ est_tml <- function(data,
   n_obs <- nrow(data[R == 1, ])
   se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
   tilt_stop_crit <- se_eif / log(n_obs)
+  tilt_two_phase_weights <- sum(data$R) != nrow(data)
+  d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
+
 
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
+
+    # tilt the two-phase sampling weights if necessary
+    if (tilt_two_phase_weights) {
+
+      # tilting model for known weights
+      two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
+        bound_precision() %>%
+        stats::qlogis()
+      weighted_d_pred <- d_pred * data$two_phase_weights
+      suppressWarnings(
+        tilted_two_phase_fit <- stats::glm(
+          stats::as.formula(
+            "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
+          ),
+          data = data.table::data.table(
+            R = data$R,
+            two_phase_prob_logit = two_phase_prob_logit,
+            weighted_d_pred = weighted_d_pred
+          ),
+          family = "binomial",
+          start = 0
+        )
+      )
+
+      # housekeeping for the tilting coefficient
+      if (is.na(stats::coef(tilted_two_phase_fit))) {
+        tilted_two_phase_fit$coefficients <- 0
+      } else if (!tilted_two_phase_fit$converged ||
+                 abs(max(stats::coef(tilted_two_phase_fit))) > tiltmod_tol) {
+        tilted_two_phase_fit$coefficients <- 0
+      }
+
+      # tilt the two-phase sampling probs
+      tilted_two_phase_prob <- predict(tilted_two_phase_fit, type = "response")
+
+      # update the two-phase sampling weights
+      data$two_phase_weights <- 1 / tilted_two_phase_prob
+      data[, obs_weights := R * two_phase_weights * obs_weights]
+
+      # record the two-phase sampling score
+      r_score <- d_pred * data$two_phase_weights *
+        (data$R - 1 / data$two_phase_weights)
+
+      # truncate weights to avoid numerical issues in other tilting procedures
+      # NOTE: we could consider doing this once all of the nuisance parameter
+      # estimators have been tilted
+      data$obs_weights[data$obs_weights > 100] <- 100
+
+    } else {
+      r_score <- 0
+    }
+
     # compute auxiliary covariates from updated estimates
     c_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * c_star_mult
     c_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
@@ -853,7 +863,9 @@ est_tml <- function(data,
       (data[R == 1, Z] - q_prime_Z_one)
 
     # check convergence and iterate the iterator
-    eif_stop_crit <- all(abs(c(mean(b_score), mean(q_score))) < tilt_stop_crit)
+    eif_stop_crit <- all(
+      abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
+    )
     n_iter <- n_iter + 1
   }
 

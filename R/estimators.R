@@ -746,6 +746,10 @@ est_tml <- function(data,
       r_score <- d_pred * data$two_phase_weights *
         (data$R - 1 / data$two_phase_weights)
 
+      # hajek weights for improved stability
+      sum_weights <- sum(data$obs_weights)
+      data[, obs_weights := obs_weights / sum_weights]
+
     } else {
       r_score <- 0
     }
@@ -864,12 +868,9 @@ est_tml <- function(data,
     n_iter <- n_iter + 1
   }
 
-  # stabilize weights using Hajek estimator
-  # NOTE: This is quivalent to a Hajek estimator since only observations in the
-  # two-phase sample have non-zero weights
+  # truncate the two-phase sampling weights
   if (tilt_two_phase_weights) {
-    sum_selected <- sum(data$obs_weights)
-    data[, obs_weights := obs_weights / sum_selected]
+    data$obs_weights[data$obs_weights > 100] <- 100
   }
 
   # update auxiliary covariates after completion of iterative targeting

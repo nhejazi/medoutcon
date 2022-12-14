@@ -296,9 +296,9 @@ medoutcon <- function(W,
     return(ie_est_out)
   } else if (is.null(contrast) && (effect == "pm")) {
     # compute parameter estimate, influence function, and variances
-    ie_theta_est <-  1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
+    pm_theta_est <-  1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
       log(est_params[[1]]$theta / est_params[[2]]$theta)
-    ie_eif_est <- -est_params[[3]]$eif /
+    pm_eif_est <- -est_params[[3]]$eif /
       (est_params[[3]]$theta * log(est_params[[1]]$theta /
                                    est_params[[2]]$theta)) +
       est_params[[2]]$eif * (
@@ -310,19 +310,19 @@ medoutcon <- function(W,
                                 est_params[[2]]$theta) /
       (est_params[[1]]$theta * (log(est_params[[1]]$theta /
                                    est_params[[2]]$theta))^2)
-    ie_var_est <- stats::var(ie_eif_est) / nrow(data)
+    pm_var_est <- stats::var(pm_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter
-    ie_est_out <- list(
-      theta = ie_theta_est,
-      var = ie_var_est,
-      eif = ie_eif_est,
+    pm_est_out <- list(
+      theta = pm_theta_est,
+      var = pm_var_est,
+      eif = pm_eif_est,
       type = estimator,
       param = paste("pm", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
-    class(ie_est_out) <- "medoutcon"
-    return(ie_est_out)
+    class(pm_est_out) <- "medoutcon"
+    return(pm_est_out)
   } else {
     est_out <- unlist(est_params, recursive = FALSE)
     est_out$param <- paste0(

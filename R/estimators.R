@@ -746,9 +746,8 @@ est_tml <- function(data,
       r_score <- d_pred * data$two_phase_weights *
         (data$R - 1 / data$two_phase_weights)
 
-      # hajek weights for improved stability
-      sum_weights <- sum(data$obs_weights)
-      data[, obs_weights := obs_weights / sum_weights]
+      # truncate weights for improved stability
+      data$obs_weights[data$obs_weights > 100] <- 100
 
     } else {
       r_score <- 0
@@ -866,11 +865,6 @@ est_tml <- function(data,
       abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
     )
     n_iter <- n_iter + 1
-  }
-
-  # truncate the two-phase sampling weights
-  if (tilt_two_phase_weights) {
-    data$obs_weights[data$obs_weights > 100] <- 100
   }
 
   # update auxiliary covariates after completion of iterative targeting

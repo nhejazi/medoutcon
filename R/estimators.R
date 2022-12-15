@@ -747,7 +747,7 @@ est_tml <- function(data,
         (data$R - 1 / data$two_phase_weights)
 
       # truncate weights for improved stability
-      data$obs_weights[data$obs_weights > 100] <- 100
+      data$obs_weights[data$obs_weights > 10] <- 10
 
     } else {
       r_score <- 0

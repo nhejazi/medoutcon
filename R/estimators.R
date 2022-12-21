@@ -707,7 +707,7 @@ est_tml <- function(data,
     # tilt the two-phase sampling weights if necessary
     if (tilt_two_phase_weights) {
 
-      # tilting model for known weights
+      # tilting model for known weights using weighting approah
       two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
         bound_precision() %>%
         stats::qlogis()
@@ -715,13 +715,14 @@ est_tml <- function(data,
       suppressWarnings(
         tilted_two_phase_fit <- stats::glm(
           stats::as.formula(
-            "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
+            "R ~ offset(two_phase_prob_logit)"
           ),
           data = data.table::data.table(
             R = data$R,
             two_phase_prob_logit = two_phase_prob_logit,
             weighted_d_pred = weighted_d_pred
           ),
+          weights = as.numeric(abs(weighted_d_pred)),
           family = "binomial",
           start = 0
         )
@@ -730,8 +731,7 @@ est_tml <- function(data,
       # housekeeping for the tilting coefficient
       if (is.na(stats::coef(tilted_two_phase_fit))) {
         tilted_two_phase_fit$coefficients <- 0
-      } else if (!tilted_two_phase_fit$converged ||
-                 abs(max(stats::coef(tilted_two_phase_fit))) > tiltmod_tol) {
+      } else if (abs(max(stats::coef(tilted_two_phase_fit))) > tiltmod_tol) {
         tilted_two_phase_fit$coefficients <- 0
       }
 
@@ -747,7 +747,7 @@ est_tml <- function(data,
         (data$R - 1 / data$two_phase_weights)
 
       # truncate weights for improved stability
-      data$obs_weights[data$obs_weights > 10] <- 10
+      data$obs_weights[data$obs_weights > 100] <- 100
 
     } else {
       r_score <- 0

@@ -319,7 +319,15 @@ medoutcon <- function(W,
       eif = pm_eif_est,
       type = estimator,
       param = paste("pm", effect_type, sep = "_"),
-      outcome = as.numeric(Y)
+      outcome = as.numeric(Y),
+      contrast_results = list(
+        contrast_1_1_mean = est_params[[1]]$theta,
+        contrast_1_1_eif = est_params[[1]]$eif,
+        contrast_0_0_mean = est_params[[2]]$theta,
+        contrast_0_0_eif = est_params[[2]]$eif,
+        contrast_1_0_mean = est_params[[3]]$theta,
+        contrast_1_0_eif = est_params[[3]]$eif
+      )
     )
     class(pm_est_out) <- "medoutcon"
     return(pm_est_out)

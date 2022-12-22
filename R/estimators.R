@@ -684,6 +684,7 @@ est_tml <- function(data,
   b_prime_Z_natural <- cv_eif_est$b_prime
 
   # update observation weights with two-phase sampling weights, if necessary
+  original_obs_weights <- data$obs_weights
   data[, obs_weights := R * two_phase_weights * obs_weights]
 
   # generate inverse weights and multiplier for auxiliary covariates
@@ -715,14 +716,13 @@ est_tml <- function(data,
       suppressWarnings(
         tilted_two_phase_fit <- stats::glm(
           stats::as.formula(
-            "R ~ offset(two_phase_prob_logit)"
+            "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
           ),
           data = data.table::data.table(
             R = data$R,
             two_phase_prob_logit = two_phase_prob_logit,
             weighted_d_pred = weighted_d_pred
           ),
-          weights = as.numeric(abs(weighted_d_pred)),
           family = "binomial",
           start = 0
         )
@@ -740,14 +740,11 @@ est_tml <- function(data,
 
       # update the two-phase sampling weights
       data$two_phase_weights <- 1 / tilted_two_phase_prob
-      data[, obs_weights := R * two_phase_weights * obs_weights]
+      data$obs_weights <- data$R * data$two_phase_weights * original_obs_weights
 
       # record the two-phase sampling score
       r_score <- d_pred * data$two_phase_weights *
         (data$R - 1 / data$two_phase_weights)
-
-      # truncate weights for improved stability
-      data$obs_weights[data$obs_weights > 100] <- 100
 
     } else {
       r_score <- 0

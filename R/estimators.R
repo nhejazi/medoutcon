@@ -899,18 +899,18 @@ est_tml <- function(data,
     stats::qlogis()
 
   # fit tilting model for substitution estimator
+  if (tilt_two_phase_weights) {
+    v_tilt_formula <- "v_pseudo ~ -1 + offset(v_star_logit) + h"
+  } else {
+    v_tilt_formula <- "v_pseudo ~ offset(v_star_logit)"
+  }
   suppressWarnings(
     v_tilt_fit <- stats::glm(
-      stats::as.formula("v_pseudo ~ offset(v_star_logit)"),
+      stats::as.formula(v_tilt_formula),
       data = data.table::as.data.table(list(
         v_pseudo = v_pseudo,
-        v_star_logit = (
-          if (tilt_two_phase_weights)
-            v_star_logit *
-              (as.numeric(data[R == 1, A]) == contrast[2]) / g_star
-          else
-            v_star_logit
-        )
+        v_star_logit = v_star_logit,
+        h = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star
       )),
       weights = (
         if (tilt_two_phase_weights)

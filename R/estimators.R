@@ -683,10 +683,6 @@ est_tml <- function(data,
   b_prime_Z_zero <- cv_eif_est$b_prime_Z_zero
   b_prime_Z_natural <- cv_eif_est$b_prime
 
-  # update observation weights with two-phase sampling weights, if necessary
-  original_obs_weights <- data$obs_weights
-  data[, obs_weights := R * two_phase_weights * obs_weights]
-
   # generate inverse weights and multiplier for auxiliary covariates
   ipw_prime <- as.numeric(data[R == 1, A] == contrast[1]) / g_prime
   ipw_star <- as.numeric(data[R == 1, A] == contrast[2]) / g_star
@@ -701,7 +697,6 @@ est_tml <- function(data,
   tilt_two_phase_weights <- sum(data$R) != nrow(data)
   d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
 
-
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
 
@@ -712,17 +707,17 @@ est_tml <- function(data,
       two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
         bound_precision() %>%
         stats::qlogis()
-      weighted_d_pred <- d_pred * data$two_phase_weights
       suppressWarnings(
         tilted_two_phase_fit <- stats::glm(
           stats::as.formula(
-            "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
+            "R ~ -1 + offset(two_phase_prob_logit) + d_pred"
           ),
           data = data.table::data.table(
             R = data$R,
             two_phase_prob_logit = two_phase_prob_logit,
-            weighted_d_pred = weighted_d_pred
+            d_pred = d_pred
           ),
+          weights = data$two_phase_weights,
           family = "binomial",
           start = 0
         )
@@ -740,11 +735,10 @@ est_tml <- function(data,
 
       # update the two-phase sampling weights
       data$two_phase_weights <- 1 / tilted_two_phase_prob
-      data$obs_weights <- data$R * data$two_phase_weights * original_obs_weights
 
       # record the two-phase sampling score
       r_score <- d_pred * data$two_phase_weights *
-        (data$R - 1 / data$two_phase_weights)
+        (data$R - tilted_two_phase_prob)
 
     } else {
       r_score <- 0
@@ -780,10 +774,20 @@ est_tml <- function(data,
         data = data.table::as.data.table(list(
           y_scaled = data[R == 1, Y],
           b_prime_logit = b_prime_Z_natural_logit,
-          c_star = c_star_Z_natural
+          c_star = (
+            if (tilt_two_phase_weights)
+              c_star_Z_natural * as.numeric(data[R == 1, A] == contrast[1]) /
+                g_prime
+            else
+              c_star_Z_natural
+          )
         )),
-        weights = data[R == 1, obs_weights] *
-          (as.numeric(data[R == 1, A] == contrast[1]) / g_prime),
+        weights = (
+          if (tilt_two_phase_weights)
+            data[R == 1, two_phase_weights]
+         else
+           (data$A == contrast[1]) / g_prime
+        ),
         family = "binomial",
         start = 0
       )
@@ -805,7 +809,8 @@ est_tml <- function(data,
       b_tilt_coef * c_star_Z_zero)
 
     # compute efficient score for outcome regression component
-    b_score <- ipw_prime * c_star_Z_natural * (data[R == 1, Y] - b_prime_Z_natural)
+    b_score <- ipw_prime * c_star_Z_natural *
+      (data[R == 1, Y] - b_prime_Z_natural)
 
     # perform iterative targeting for intermediate confounding mechanism
     q_prime_Z_one_logit <- q_prime_Z_one %>%
@@ -818,11 +823,21 @@ est_tml <- function(data,
         stats::as.formula("Z ~ -1 + offset(q_prime_logit) + u_prime_diff"),
         data = data.table::as.data.table(list(
           Z = data[R == 1, Z],
-          u_prime_diff = cv_eif_est$u_int_diff,
-          q_prime_logit = q_prime_Z_one_logit
+          q_prime_logit = q_prime_Z_one_logit,
+          u_prime_diff = (
+            if (tilt_two_phase_weights)
+              cv_eif_est$u_int_diff *
+                as.numeric(data[R == 1, A] == contrast[1]) / g_prime
+            else
+              cv_eif_est$u_int_diff
+          )
         )),
-        weights = data[R == 1, obs_weights] *
-          (as.numeric(data[R == 1, A] == contrast[1]) / g_prime),
+        weights = (
+          if (tilt_two_phase_weights)
+            data[R == 1, two_phase_weights]
+          else
+            (data$A == contrast[1]) / g_prime
+        ),
         family = "binomial",
         start = 0
       )
@@ -889,10 +904,20 @@ est_tml <- function(data,
       stats::as.formula("v_pseudo ~ offset(v_star_logit)"),
       data = data.table::as.data.table(list(
         v_pseudo = v_pseudo,
-        v_star_logit = v_star_logit
+        v_star_logit = (
+          if (tilt_two_phase_weights)
+            v_star_logit *
+              (as.numeric(data[R == 1, A]) == contrast[2]) / g_star
+          else
+            v_star_logit
+        )
       )),
-      weights = data[R == 1, obs_weights] *
-        ((data[R == 1, A] == contrast[2]) / g_star),
+      weights = (
+        if (tilt_two_phase_weights)
+          data[R == 1, two_phase_weights]
+        else
+          (data$A == contrast[2]) / g_star
+      ),
       family = "binomial",
       start = 0
     )

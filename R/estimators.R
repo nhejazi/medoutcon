@@ -710,14 +710,13 @@ est_tml <- function(data,
       suppressWarnings(
         tilted_two_phase_fit <- stats::glm(
           stats::as.formula(
-            "R ~ -1 + offset(two_phase_prob_logit) + d_pred"
+            "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
           ),
           data = data.table::data.table(
             R = data$R,
             two_phase_prob_logit = two_phase_prob_logit,
-            d_pred = d_pred
+            weighted_d_pred = d_pred * data$two_phase_weights
           ),
-          weights = data$two_phase_weights,
           family = "binomial",
           start = 0
         )

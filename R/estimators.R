@@ -696,6 +696,7 @@ est_tml <- function(data,
   tilt_stop_crit <- se_eif / log(n_obs)
   tilt_two_phase_weights <- sum(data$R) != nrow(data)
   d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
+  b_tilt_coef <- 1
 
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
@@ -767,26 +768,24 @@ est_tml <- function(data,
       stats::qlogis()
 
     # fit tilting model for the outcome mechanism
+    if (tilt_two_phase_weights) {
+      c_star_b_tilt <- c_star_Z_natural *
+        as.numeric(data[R == 1, A] == contrast[1]) / g_prime
+      weights_b_tilt <- as.numeric(data[R == 1, two_phase_weights])
+    } else {
+      c_star_b_tilt <- c_star_Z_natural * (data$A == contrast[1]) / g_prime
+      weights_b_tilt <- (data$A == contrast[1]) / g_prime
+    }
+
     suppressWarnings(
       b_tilt_fit <- stats::glm(
         stats::as.formula("y_scaled ~ -1 + offset(b_prime_logit) + c_star"),
         data = data.table::as.data.table(list(
           y_scaled = data[R == 1, Y],
           b_prime_logit = b_prime_Z_natural_logit,
-          c_star = (
-            if (tilt_two_phase_weights)
-              c_star_Z_natural * as.numeric(data[R == 1, A] == contrast[1]) /
-                g_prime
-            else
-              c_star_Z_natural
-          )
+          c_star = c_star_b_tilt
         )),
-        weights = (
-          if (tilt_two_phase_weights)
-            data[R == 1, two_phase_weights]
-         else
-           (data$A == contrast[1]) / g_prime
-        ),
+        weights = weights_b_tilt,
         family = "binomial",
         start = 0
       )
@@ -794,10 +793,14 @@ est_tml <- function(data,
     if (is.na(stats::coef(b_tilt_fit))) {
       b_tilt_fit$coefficients <- 0
     } else if (!b_tilt_fit$converged || abs(max(stats::coef(b_tilt_fit))) >
-      tiltmod_tol) {
+                 tiltmod_tol) {
       b_tilt_fit$coefficients <- 0
     }
+    b_tilt_coef_prev <- b_tilt_coef
     b_tilt_coef <- unname(stats::coef(b_tilt_fit))
+    if (n_iter > 1 && b_tilt_coef < 0.001) {
+      b_tilt_coef <- 0.001
+    }
 
     # update nuisance estimates via tilting models for outcome
     b_prime_Z_natural <- stats::plogis(b_prime_Z_natural_logit +
@@ -817,26 +820,23 @@ est_tml <- function(data,
       stats::qlogis()
 
     # fit tilting model for the intermediate confounding mechanism
+    if (tilt_two_phase_weights) {
+      u_prime_diff_q_tilt <- cv_eif_est$u_int_diff *
+        as.numeric(data[R == 1, A] == contrast[1]) / g_prime
+      weights_q_tilt <- as.numeric(data[R == 1, two_phase_weights])
+    } else {
+      u_prime_diff_q_tilt <- cv_eif_est$u_int_diff
+      weights_q_tilt <- (data$A == contrast[1]) / g_prime
+    }
     suppressWarnings(
       q_tilt_fit <- stats::glm(
         stats::as.formula("Z ~ -1 + offset(q_prime_logit) + u_prime_diff"),
         data = data.table::as.data.table(list(
           Z = data[R == 1, Z],
           q_prime_logit = q_prime_Z_one_logit,
-          u_prime_diff = (
-            if (tilt_two_phase_weights)
-              cv_eif_est$u_int_diff *
-                as.numeric(data[R == 1, A] == contrast[1]) / g_prime
-            else
-              cv_eif_est$u_int_diff
-          )
+          u_prime_diff =  u_prime_diff_q_tilt
         )),
-        weights = (
-          if (tilt_two_phase_weights)
-            data[R == 1, two_phase_weights]
-          else
-            (data$A == contrast[1]) / g_prime
-        ),
+        weights = weights_q_tilt,
         family = "binomial",
         start = 0
       )
@@ -871,6 +871,13 @@ est_tml <- function(data,
     q_score <- ipw_prime * cv_eif_est$u_int_diff *
       (data[R == 1, Z] - q_prime_Z_one)
 
+    ## print the scores
+    ## print(paste("Iternation number: ", n_iter))
+    ## print(paste("b_tilt_coef:", b_tilt_coef))
+    ## print(paste("b_score: ", mean(b_score)))
+    ## print(paste("q_score: ", mean(q_score)))
+    ## print(paste("r_score: ", mean(r_score)))
+
     # check convergence and iterate the iterator
     eif_stop_crit <- all(
       abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
@@ -900,8 +907,10 @@ est_tml <- function(data,
   # fit tilting model for substitution estimator
   if (tilt_two_phase_weights) {
     v_tilt_formula <- "v_pseudo ~ -1 + offset(v_star_logit) + h"
+    weights_v_tilt <- as.numeric(data[R == 1, two_phase_weights])
   } else {
     v_tilt_formula <- "v_pseudo ~ offset(v_star_logit)"
+    weights_v_tilt <- (data$A == contrast[2]) / g_star
   }
   suppressWarnings(
     v_tilt_fit <- stats::glm(
@@ -911,12 +920,7 @@ est_tml <- function(data,
         v_star_logit = v_star_logit,
         h = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star
       )),
-      weights = (
-        if (tilt_two_phase_weights)
-          data[R == 1, two_phase_weights]
-        else
-          (data$A == contrast[2]) / g_star
-      ),
+      weights = weights_v_tilt,
       family = "binomial",
       start = 0
     )

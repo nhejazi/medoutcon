@@ -880,7 +880,7 @@ est_tml <- function(data,
 
     # check convergence and iterate the iterator
     eif_stop_crit <- all(
-      abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
+      abs(c(mean(b_score), mean(q_score), mean(r_score))) < 0.001
     )
     n_iter <- n_iter + 1
   }

@@ -696,7 +696,6 @@ est_tml <- function(data,
   tilt_stop_crit <- se_eif / log(n_obs)
   tilt_two_phase_weights <- sum(data$R) != nrow(data)
   d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
-  b_tilt_coef <- 1
 
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
@@ -773,7 +772,7 @@ est_tml <- function(data,
         as.numeric(data[R == 1, A] == contrast[1]) / g_prime
       weights_b_tilt <- as.numeric(data[R == 1, two_phase_weights])
     } else {
-      c_star_b_tilt <- c_star_Z_natural * (data$A == contrast[1]) / g_prime
+      c_star_b_tilt <- c_star_Z_natural
       weights_b_tilt <- (data$A == contrast[1]) / g_prime
     }
 
@@ -796,11 +795,7 @@ est_tml <- function(data,
                  tiltmod_tol) {
       b_tilt_fit$coefficients <- 0
     }
-    b_tilt_coef_prev <- b_tilt_coef
     b_tilt_coef <- unname(stats::coef(b_tilt_fit))
-    if (n_iter > 1 && b_tilt_coef < 0.001) {
-      b_tilt_coef <- 0.001
-    }
 
     # update nuisance estimates via tilting models for outcome
     b_prime_Z_natural <- stats::plogis(b_prime_Z_natural_logit +
@@ -811,8 +806,8 @@ est_tml <- function(data,
       b_tilt_coef * c_star_Z_zero)
 
     # compute efficient score for outcome regression component
-    b_score <- ipw_prime * c_star_Z_natural *
-      (data[R == 1, Y] - b_prime_Z_natural)
+    b_score <- data[R == 1, two_phase_weights] *
+      ipw_prime * c_star_Z_natural * (data[R == 1, Y] - b_prime_Z_natural)
 
     # perform iterative targeting for intermediate confounding mechanism
     q_prime_Z_one_logit <- q_prime_Z_one %>%
@@ -872,15 +867,15 @@ est_tml <- function(data,
       (data[R == 1, Z] - q_prime_Z_one)
 
     ## print the scores
-    ## print(paste("Iternation number: ", n_iter))
-    ## print(paste("b_tilt_coef:", b_tilt_coef))
-    ## print(paste("b_score: ", mean(b_score)))
-    ## print(paste("q_score: ", mean(q_score)))
-    ## print(paste("r_score: ", mean(r_score)))
+    print(paste("Iternation number: ", n_iter))
+    print(paste("b_tilt_coef:", b_tilt_coef))
+    print(paste("b_score: ", mean(b_score)))
+    print(paste("q_score: ", mean(q_score)))
+    print(paste("r_score: ", mean(r_score)))
 
     # check convergence and iterate the iterator
     eif_stop_crit <- all(
-      abs(c(mean(b_score), mean(q_score), mean(r_score))) < 0.001
+      abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
     )
     n_iter <- n_iter + 1
   }

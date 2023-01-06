@@ -866,13 +866,6 @@ est_tml <- function(data,
     q_score <- ipw_prime * cv_eif_est$u_int_diff *
       (data[R == 1, Z] - q_prime_Z_one)
 
-    ## print the scores
-    print(paste("Iternation number: ", n_iter))
-    print(paste("b_tilt_coef:", b_tilt_coef))
-    print(paste("b_score: ", mean(b_score)))
-    print(paste("q_score: ", mean(q_score)))
-    print(paste("r_score: ", mean(r_score)))
-
     # check convergence and iterate the iterator
     eif_stop_crit <- all(
       abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit

@@ -691,7 +691,7 @@ est_tml <- function(data,
   # prepare for iterative targeting
   eif_stop_crit <- FALSE
   n_iter <- 0
-  n_obs <- nrow(data[R == 1, ])
+  n_obs <- nrow(data)
   se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
   tilt_stop_crit <- se_eif / log(n_obs)
   tilt_two_phase_weights <- sum(data$R) != nrow(data)
@@ -866,7 +866,14 @@ est_tml <- function(data,
 
     # compute efficient score for intermediate confounding component
     q_score <- ipw_prime * cv_eif_est$u_int_diff *
-      (data[R == 1, Z] - q_prime_Z_one)
+      (data[R == 1, Z] - q_prime_Z_one) *
+      (data[R == 1, two_phase_weights])
+
+    ## diagnostics
+    print(paste("n_iter:", n_iter))
+    print(paste("r_score:", mean(r_score)))
+    print(paste("b_score:", mean(b_score)))
+    print(paste("q_score:", mean(q_score)))
 
     # check convergence and iterate the iterator
     eif_stop_crit <- all(
@@ -895,23 +902,14 @@ est_tml <- function(data,
     stats::qlogis()
 
   # fit tilting model for substitution estimator
-  if (tilt_two_phase_weights) {
-    v_tilt_formula <- "v_pseudo ~ -1 + offset(v_star_logit) + h"
-    weights_v_tilt <- as.numeric(data[R == 1, R])
-  } else {
-    v_tilt_formula <- "v_pseudo ~ offset(v_star_logit)"
-    weights_v_tilt <- (data$A == contrast[2]) / g_star
-  }
   suppressWarnings(
     v_tilt_fit <- stats::glm(
-      stats::as.formula(v_tilt_formula),
+      stats::as.formula("v_pseudo ~ offset(v_star_logit)"),
       data = data.table::as.data.table(list(
         v_pseudo = v_pseudo,
-        v_star_logit = v_star_logit,
-        h = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
-          as.numeric(data[R == 1, two_phase_weights])
+        v_star_logit = v_star_logit
       )),
-      weights = weights_v_tilt,
+      weights = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star,
       family = "binomial",
       start = 0
     )

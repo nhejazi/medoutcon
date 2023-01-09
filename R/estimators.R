@@ -869,12 +869,6 @@ est_tml <- function(data,
       (data[R == 1, Z] - q_prime_Z_one) *
       (data[R == 1, two_phase_weights])
 
-    ## diagnostics
-    print(paste("n_iter:", n_iter))
-    print(paste("r_score:", mean(r_score)))
-    print(paste("b_score:", mean(b_score)))
-    print(paste("q_score:", mean(q_score)))
-
     # check convergence and iterate the iterator
     eif_stop_crit <- all(
       abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
@@ -909,7 +903,8 @@ est_tml <- function(data,
         v_pseudo = v_pseudo,
         v_star_logit = v_star_logit
       )),
-      weights = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star,
+      weights = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
+        (as.numeric(data[R == 1, two_phase_weights])),
       family = "binomial",
       start = 0
     )

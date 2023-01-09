@@ -1,4 +1,4 @@
-utils::globalVariables(c("..w_names", "A", "Z", "Y"))
+utils::globalVariables(c("..w_names", "A", "Z", "Y", "R"))
 
 #' EIF for natural and interventional (in)direct effects
 #'
@@ -769,8 +769,9 @@ est_tml <- function(data,
     # fit tilting model for the outcome mechanism
     if (tilt_two_phase_weights) {
       c_star_b_tilt <- c_star_Z_natural *
-        as.numeric(data[R == 1, A] == contrast[1]) / g_prime
-      weights_b_tilt <- as.numeric(data[R == 1, two_phase_weights])
+        as.numeric(data[R == 1, A] == contrast[1]) / g_prime *
+        as.numeric(data[R == 1, two_phase_weights])
+      weights_b_tilt <- as.numeric(data[R == 1, R])
     } else {
       c_star_b_tilt <- c_star_Z_natural
       weights_b_tilt <- (data$A == contrast[1]) / g_prime
@@ -817,8 +818,9 @@ est_tml <- function(data,
     # fit tilting model for the intermediate confounding mechanism
     if (tilt_two_phase_weights) {
       u_prime_diff_q_tilt <- cv_eif_est$u_int_diff *
-        as.numeric(data[R == 1, A] == contrast[1]) / g_prime
-      weights_q_tilt <- as.numeric(data[R == 1, two_phase_weights])
+        as.numeric(data[R == 1, A] == contrast[1]) / g_prime *
+        as.numeric(data[R == 1, two_phase_weights])
+      weights_q_tilt <- as.numeric(data[R == 1, R])
     } else {
       u_prime_diff_q_tilt <- cv_eif_est$u_int_diff
       weights_q_tilt <- (data$A == contrast[1]) / g_prime
@@ -895,7 +897,7 @@ est_tml <- function(data,
   # fit tilting model for substitution estimator
   if (tilt_two_phase_weights) {
     v_tilt_formula <- "v_pseudo ~ -1 + offset(v_star_logit) + h"
-    weights_v_tilt <- as.numeric(data[R == 1, two_phase_weights])
+    weights_v_tilt <- as.numeric(data[R == 1, R])
   } else {
     v_tilt_formula <- "v_pseudo ~ offset(v_star_logit)"
     weights_v_tilt <- (data$A == contrast[2]) / g_star
@@ -906,7 +908,8 @@ est_tml <- function(data,
       data = data.table::as.data.table(list(
         v_pseudo = v_pseudo,
         v_star_logit = v_star_logit,
-        h = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star
+        h = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
+          as.numeric(data[R == 1, two_phase_weights])
       )),
       weights = weights_v_tilt,
       family = "binomial",

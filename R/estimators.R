@@ -694,6 +694,7 @@ est_tml <- function(data,
   n_obs <- nrow(data)
   se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
   tilt_stop_crit <- se_eif / log(n_obs)
+  r_score <- b_score <- q_score <- 1
   tilt_two_phase_weights <- sum(data$R) != nrow(data)
   d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
 
@@ -701,7 +702,7 @@ est_tml <- function(data,
   while (!eif_stop_crit && n_iter <= max_iter) {
 
     # tilt the two-phase sampling weights if necessary
-    if (tilt_two_phase_weights) {
+    if (tilt_two_phase_weights && r_score > tilt_stop_crit) {
 
       # tilting model for known weights using weighting approah
       two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
@@ -870,6 +871,10 @@ est_tml <- function(data,
       (data[R == 1, two_phase_weights])
 
     # check convergence and iterate the iterator
+    ## print(paste("n_iter:", n_iter))
+    ## print(paste("r_score:", mean(r_score)))
+    ## print(paste("b_score:", mean(b_score)))
+    ## print(paste("q_score:", mean(q_score)))
     eif_stop_crit <- all(
       abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
     )
@@ -910,6 +915,16 @@ est_tml <- function(data,
     )
   )
   v_star_tmle <- unname(stats::predict(v_tilt_fit, type = "response"))
+  ## print(
+  ##   paste(
+  ##     "v_score:",
+  ##     mean(
+  ##     (((b_prime_Z_one * q_prime_Z_one) + (b_prime_Z_zero * (1 - q_prime_Z_one))) -
+  ##       v_star_tmle) * (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
+  ##       (as.numeric(data[R == 1, two_phase_weights]))
+  ##     )
+  ##   )
+  ## )
 
   # compute influence function with centering at the TML estimate
   # make sure that it's in the same order as the original data

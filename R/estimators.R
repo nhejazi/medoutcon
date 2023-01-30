@@ -208,6 +208,7 @@ cv_eif <- function(fold,
     )]
 
     # predict u(z, a', w) using intervened data with treatment set A = a'
+    # NOTE: here, obs_weights should not include two_phase_weights (?)
     u_task_valid_z_interv <- sl3::sl3_Task$new(
       data = valid_data_z_interv,
       weights = "obs_weights",
@@ -284,7 +285,7 @@ cv_eif <- function(fold,
 
   # output list
   out <- list(
-    tlme_components = data.table::data.table(
+    tmle_components = data.table::data.table(
       # components necessary for fluctuation step of TMLE
       g_prime = g_prime, g_star = g_star, h_prime = h_prime, h_star = h_star,
       q_prime_Z_natural = q_prime_Z_natural, q_prime_Z_one = q_prime_Z_one,

@@ -770,13 +770,11 @@ est_tml <- function(data,
         stats::qlogis()
 
       # fit tilting model for the outcome mechanism
+      c_star_b_tilt <- c_star_Z_natural
       if (tilt_two_phase_weights) {
-        c_star_b_tilt <- c_star_Z_natural *
-          as.numeric(data[R == 1, A] == contrast[1]) / g_prime *
+        weights_b_tilt <- as.numeric(data[R == 1, A] == contrast[1]) / g_prime *
           as.numeric(data[R == 1, two_phase_weights])
-        weights_b_tilt <- as.numeric(data[R == 1, R])
       } else {
-        c_star_b_tilt <- c_star_Z_natural
         weights_b_tilt <- (data$A == contrast[1]) / g_prime
       }
 
@@ -825,13 +823,11 @@ est_tml <- function(data,
         stats::qlogis()
 
       # fit tilting model for the intermediate confounding mechanism
+      u_prime_diff_q_tilt <- cv_eif_est$u_int_diff
       if (tilt_two_phase_weights) {
-        u_prime_diff_q_tilt <- cv_eif_est$u_int_diff *
-          as.numeric(data[R == 1, A] == contrast[1]) / g_prime *
-          as.numeric(data[R == 1, two_phase_weights])
-        weights_q_tilt <- as.numeric(data[R == 1, R])
+         weights_q_tilt <- as.numeric(data[R == 1, A] == contrast[1]) /
+           g_prime * as.numeric(data[R == 1, two_phase_weights])
       } else {
-        u_prime_diff_q_tilt <- cv_eif_est$u_int_diff
         weights_q_tilt <- (data$A == contrast[1]) / g_prime
       }
       suppressWarnings(

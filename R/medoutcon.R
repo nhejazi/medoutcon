@@ -8,13 +8,14 @@
 #'   affected by treatment (on the causal pathway between the intervention A,
 #'   mediators M, and outcome Y, but unaffected itself by the mediators). When
 #'   set to \code{NULL}, the natural (in)direct effects are estimated.
-#' @param R A \code{logical} vector indicating whether a sampled observation's
-#'   mediator was measured via a two-phase sampling design. Defaults to a vector
-#'   of ones, implying that two-phase sampling was not performed.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'   similar corresponding to a set of mediators (on the causal pathway between
 #'   the intervention A and the outcome Y).
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
+#' @param R A \code{logical} vector indicating whether a sampled observation's
+#'   mediator was measured via a two-phase sampling design. Default is to use a
+#'   vector of ones, implying that two-phase sampling was not performed.
+#' @param ids ...
 #' @param obs_weights A \code{numeric} vector of observation-level weights. The
 #'   default is to give all observations equal weighting.
 #' @param svy_weights A \code{numeric} vector of observation-level weights that
@@ -65,16 +66,18 @@
 #'   learners from \pkg{sl3}; used to fit an initial efficient influence
 #'   function regression when computing the efficient influence function in a
 #'   two-phase sampling design.
+#' @param g_adjust ...
+#' @param b_adjust ...
 #' @param estimator The desired estimator of the direct or indirect effect (or
 #'   contrast-specific parameter) to be computed. Both an efficient one-step
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
 #'   estimator (TMLE) are available. The default is the TML estimator.
 #' @param estimator_args A \code{list} of extra arguments to be passed (via
 #'   \code{...}) to the function call for the specified estimator. The default
-#'   is chosen so as to allow the number of folds used in computing the one-step
-#'   or TML estimators to be easily adjusted. In the case of the TML estimator,
+#'   is chosen to allow the number of folds used in computing the one-step or
+#'   TML estimators to be easily adjusted. In the case of the TML estimator,
 #'   the number of update (fluctuation) iterations is limited, and a tolerance
-#'   is included for the updates introduced by the tilting (fluctuation) models.
+#'   is included for updates introduced by the tilting (fluctuation) models.
 #' @param g_bounds A \code{numeric} vector containing two values, the
 #'   first being the minimum allowable estimated propensity score value and the
 #'   second being the maximum allowable for estimated propensity score value.
@@ -124,6 +127,7 @@ medoutcon <- function(W,
                       M,
                       Y,
                       R = rep(1, length(Y)),
+                      ids = seq_along(R),
                       obs_weights = rep(1, length(Y)),
                       svy_weights = NULL,
                       two_phase_weights = rep(1, length(Y)),
@@ -137,6 +141,8 @@ medoutcon <- function(W,
                       u_learners = sl3::Lrnr_hal9001$new(),
                       v_learners = sl3::Lrnr_hal9001$new(),
                       d_learners = sl3::Lrnr_glm_fast$new(),
+                      g_adjust = NULL,
+                      b_adjust = NULL,
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5L, max_iter = 5L,
@@ -158,10 +164,11 @@ medoutcon <- function(W,
   } else {
     effect_type <- "interventional"
   }
+
   # construct input data structure
   data <- data.table::as.data.table(cbind(
-    Y, M, R, Z, A, W, obs_weights,
-    two_phase_weights
+    Y, M, R, Z, A, W, ids,
+    obs_weights, two_phase_weights
   ))
   w_names <- paste("W", seq_len(dim(data.table::as.data.table(W))[2]),
     sep = "_"
@@ -170,7 +177,7 @@ medoutcon <- function(W,
     sep = "_"
   )
   data.table::setnames(data, c(
-    "Y", m_names, "R", "Z", "A", w_names,
+    "Y", m_names, "R", "Z", "A", w_names, "id",
     "obs_weights", "two_phase_weights"
   ))
 
@@ -179,9 +186,22 @@ medoutcon <- function(W,
   max_y <- max(data[["Y"]])
   data.table::set(data, j = "Y", value = scale_to_unit(data[["Y"]]))
 
+  # keep track of adjustment set indices when not explicitly provided
+  if (is.null(g_adjust)) {
+    # restrict baseline adjustment set for propensity score
+    g_adjust <- seq_along(w_names)
+  }
+  if (is.null(b_adjust)) {
+    # restrict baseline and mediator adjustment sets for outcome regression
+    b_adjust <- list(
+      W = seq_along(w_names),
+      M = seq_along(m_names)
+    )
+  }
+
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {
-
+    # if estimating direct/indirect effects or proportion mediated
     if (effect != "pm") {
       # select appropriate component for direct vs indirect effects
       is_effect_direct <- (effect == "direct")
@@ -192,6 +212,7 @@ medoutcon <- function(W,
       # term needed in the decomposition for both effects
       contrast_grid[[2]] <- c(1, 0)
     } else {
+      # for estimating the proportion mediated (PM)
       contrast_grid <- list(
         c(1, 1), c(0, 0), c(1, 0)
       )
@@ -218,6 +239,8 @@ medoutcon <- function(W,
         d_learners = d_learners,
         w_names = w_names,
         m_names = m_names,
+        g_adjust = g_adjust,
+        b_adjust = b_adjust,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
         svy_weights = svy_weights,
@@ -242,6 +265,8 @@ medoutcon <- function(W,
         d_learners = d_learners,
         w_names = w_names,
         m_names = m_names,
+        g_adjust = g_adjust,
+        b_adjust = b_adjust,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
         svy_weights = svy_weights,

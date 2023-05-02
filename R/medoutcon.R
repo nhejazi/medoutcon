@@ -67,7 +67,6 @@
 #'   function regression when computing the efficient influence function in a
 #'   two-phase sampling design.
 #' @param g_adjust ...
-#' @param b_adjust ...
 #' @param estimator The desired estimator of the direct or indirect effect (or
 #'   contrast-specific parameter) to be computed. Both an efficient one-step
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
@@ -142,7 +141,6 @@ medoutcon <- function(W,
                       v_learners = sl3::Lrnr_hal9001$new(),
                       d_learners = sl3::Lrnr_glm_fast$new(),
                       g_adjust = NULL,
-                      b_adjust = NULL,
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5L, max_iter = 5L,
@@ -156,6 +154,9 @@ medoutcon <- function(W,
     names(formals(est_onestep))]
   est_args_tmle <- estimator_args[names(estimator_args) %in%
     names(formals(est_tml))]
+
+  # Check that g_adjust is a subset of W
+  assertthat::assert_that(all(g_adjust %in% names(W)))
 
   # set constant Z for estimation of the natural (in)direct effects
   if (is.null(Z)) {
@@ -185,19 +186,6 @@ medoutcon <- function(W,
   min_y <- min(data[["Y"]])
   max_y <- max(data[["Y"]])
   data.table::set(data, j = "Y", value = scale_to_unit(data[["Y"]]))
-
-  # keep track of adjustment set indices when not explicitly provided
-  if (is.null(g_adjust)) {
-    # restrict baseline adjustment set for propensity score
-    g_adjust <- seq_along(w_names)
-  }
-  if (is.null(b_adjust)) {
-    # restrict baseline and mediator adjustment sets for outcome regression
-    b_adjust <- list(
-      W = seq_along(w_names),
-      M = seq_along(m_names)
-    )
-  }
 
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {
@@ -240,7 +228,6 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         g_adjust = g_adjust,
-        b_adjust = b_adjust,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
         svy_weights = svy_weights,
@@ -266,7 +253,6 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         g_adjust = g_adjust,
-        b_adjust = b_adjust,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
         svy_weights = svy_weights,

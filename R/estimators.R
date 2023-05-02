@@ -458,9 +458,11 @@ est_onestep <- function(data,
 
   browser()
   # create cross-validation folds
-  folds <- origami::make_folds(data,
+  folds <- origami::make_folds(
+    n = data,
     fold_fun = origami::folds_vfold,
-    V = cv_folds
+    V = cv_folds,
+    cluster_ids = data$id
   )
 
   # estimate the EIF on a per-fold basis
@@ -480,6 +482,8 @@ est_onestep <- function(data,
     effect_type = effect_type,
     w_names = w_names,
     m_names = m_names,
+    g_adjust = g_adjust,
+    b_adjust = b_adjust,
     g_bounds = g_bounds,
     use_future = FALSE,
     .combine = FALSE
@@ -503,7 +507,17 @@ est_onestep <- function(data,
     os_est <- stats::weighted.mean(eif_est_rescaled, svy_weights)
     eif_est_out <- eif_est_rescaled * svy_weights
   }
-  os_var <- stats::var(eif_est_out) / length(eif_est_out)
+
+  if (data[unique(id), .N] == data[, .N]) {
+    # no repeated measures: scaled empirical variance is fine
+    os_var <- stats::var(eif_est_out) / length(eif_est_out)
+  } else {
+    # TODO: summarize EIF across repeated measures
+    #eif_est_out
+
+    # scaled empirical variance after summarized over IID units
+    os_var <- stats::var(eif_est_out) / length(eif_est_out)
+  }
 
   # output
   os_est_out <- list(
@@ -625,9 +639,11 @@ est_tml <- function(data,
   assertthat::assert_that(cv_folds > 1L)
 
   # create cross-validation folds
-  folds <- origami::make_folds(data,
+  folds <- origami::make_folds(
+    n = data,
     fold_fun = origami::folds_vfold,
-    V = cv_folds
+    V = cv_folds,
+    cluster_ids = data$id
   )
 
   # perform the cv_eif procedure on a per-fold basis
@@ -647,6 +663,8 @@ est_tml <- function(data,
     effect_type = effect_type,
     w_names = w_names,
     m_names = m_names,
+    g_adjust = g_adjust,
+    b_adjust = b_adjust,
     g_bounds = g_bounds,
     use_future = FALSE,
     .combine = FALSE
@@ -678,8 +696,18 @@ est_tml <- function(data,
   # prepare for iterative targeting
   eif_stop_crit <- FALSE
   n_iter <- 0
-  n_obs <- nrow(data)
-  se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
+
+  # find number of unique observations and compute variance based on that
+  if (data[unique(id), .N] == data[, .N]) {
+    # no repeated measures -- easy case
+    n_obs <- data[, .N]
+    se_eif <- sqrt(stats::var(cv_eif_est$D_star) / n_obs)
+  } else {
+    # repeated measures: find number of unique units and use to summarize EIF
+
+  }
+
+  # set stopping criterion for iterative targeting
   tilt_stop_crit <- se_eif / log(n_obs)
 
   # perform iterative targeting
@@ -859,7 +887,17 @@ est_tml <- function(data,
     tml_est <- stats::weighted.mean(v_star_tmle_rescaled, svy_weights)
     eif_est_out <- eif_est_rescaled * svy_weights
   }
-  tmle_var <- stats::var(eif_est_out) / length(eif_est_out)
+
+  if (data[unique(id), .N] == data[, .N]) {
+    # no repeated measures: scaled empirical variance is fine
+    tmle_var <- stats::var(eif_est_out) / length(eif_est_out)
+  } else {
+    # TODO: summarize EIF across repeated measures
+    #eif_est_out
+
+    # scaled empirical variance after summarized over IID units
+    tmle_var <- stats::var(eif_est_out) / length(eif_est_out)
+  }
 
   # output
   tmle_out <- list(

@@ -505,16 +505,8 @@ est_onestep <- function(data,
     eif_est_out <- eif_est_rescaled * svy_weights
   }
 
-  if (data[unique(id), .N] == data[, .N]) {
-    # no repeated measures: scaled empirical variance is fine
-    os_var <- stats::var(eif_est_out) / length(eif_est_out)
-  } else {
-    # TODO: summarize EIF across repeated measures
-    #eif_est_out
-
-    # scaled empirical variance after summarized over IID units
-    os_var <- stats::var(eif_est_out) / length(eif_est_out)
-  }
+  eif_est_out_within_id <- split(eif_est_out, data$id)
+  os_var <- stats::var(vapply(eif_est_out_within_id, function(x) mean(x), 1)) / length(eif_est_out_within_id)
 
   # output
   os_est_out <- list(
@@ -883,16 +875,8 @@ est_tml <- function(data,
     eif_est_out <- eif_est_rescaled * svy_weights
   }
 
-  if (data[unique(id), .N] == data[, .N]) {
-    # no repeated measures: scaled empirical variance is fine
-    tmle_var <- stats::var(eif_est_out) / length(eif_est_out)
-  } else {
-    # TODO: summarize EIF across repeated measures
-    #eif_est_out
-
-    # scaled empirical variance after summarized over IID units
-    tmle_var <- stats::var(eif_est_out) / length(eif_est_out)
-  }
+  eif_est_out_within_id <- split(eif_est_out, data$id)
+  tmle_var <- stats::var(vapply(eif_est_out_within_id, function(x) mean(x), 1)) / length(eif_est_out_within_id)
 
   # output
   tmle_out <- list(

@@ -17,6 +17,7 @@ est_onestep(
   d_learners,
   w_names,
   m_names,
+  g_adjust,
   y_bounds,
   g_bounds = c(0.001, 0.999),
   effect_type = c("interventional", "natural"),

@@ -505,8 +505,8 @@ est_onestep <- function(data,
     eif_est_out <- eif_est_rescaled * svy_weights
   }
 
-  eif_est_out_within_id <- split(eif_est_out, data$id)
-  os_var <- stats::var(vapply(eif_est_out_within_id, function(x) mean(x), 1)) / length(eif_est_out_within_id)
+  eif_est_out_within_id <- vapply(split(eif_est_out, data$id), function(x) mean(x), 1)
+  os_var <- stats::var(eif_est_out_within_id) / length(eif_est_out_within_id)
 
   # output
   os_est_out <- list(
@@ -684,18 +684,13 @@ est_tml <- function(data,
   eif_stop_crit <- FALSE
   n_iter <- 0
 
-  # find number of unique observations and compute variance based on that
-  if (data[unique(id), .N] == data[, .N]) {
-    # no repeated measures -- easy case
-    n_obs <- data[, .N]
-    se_eif <- sqrt(stats::var(cv_eif_est$D_star) / n_obs)
-  } else {
-    # repeated measures: find number of unique units and use to summarize EIF
-
-  }
+  se_eif <- stats::var(vapply(split(cv_eif_est$D_star, data$id),
+                              function(x) mean(x), 1)) /
+    length(split(cv_eif_est$D_star, data$id))
 
   # set stopping criterion for iterative targeting
-  tilt_stop_crit <- se_eif / log(n_obs)
+  # tilt_stop_crit <- se_eif / log(n_obs)
+  tilt_stop_crit <- se_eif / log(length(unique(data$id)))
 
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
@@ -755,6 +750,8 @@ est_tml <- function(data,
 
     # compute efficient score for outcome regression component
     b_score <- ipw_prime * c_star_Z_natural * (data$Y - b_prime_Z_natural)
+    # Recalculate on the cluster level, same as standard error/tilt_stop_crit?
+    b_score <- vapply(split(b_score, data$id), function(x) mean(x), 1)
 
     # perform iterative targeting for intermediate confounding mechanism
     q_prime_Z_one_logit <- q_prime_Z_one %>%
@@ -804,6 +801,8 @@ est_tml <- function(data,
 
     # compute efficient score for intermediate confounding component
     q_score <- ipw_prime * cv_eif_est$u_int_diff * (data$Z - q_prime_Z_one)
+    # Recalculate on the cluster level, same as standard error/tilt_stop_crit?
+    q_score <- vapply(split(q_score, data$id), function(x) mean(x), 1)
 
     # check convergence and iterate the iterator
     eif_stop_crit <- all(abs(c(mean(b_score), mean(q_score))) < tilt_stop_crit)
@@ -875,8 +874,8 @@ est_tml <- function(data,
     eif_est_out <- eif_est_rescaled * svy_weights
   }
 
-  eif_est_out_within_id <- split(eif_est_out, data$id)
-  tmle_var <- stats::var(vapply(eif_est_out_within_id, function(x) mean(x), 1)) / length(eif_est_out_within_id)
+  eif_est_out_within_id <- vapply(split(eif_est_out, data$id), function(x) mean(x), 1)
+  tmle_var <- stats::var(eif_est_out_within_id) / length(eif_est_out_within_id)
 
   # output
   tmle_out <- list(

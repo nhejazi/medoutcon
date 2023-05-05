@@ -11,6 +11,7 @@ medoutcon(
   M,
   Y,
   R = rep(1, length(Y)),
+  ids = seq_along(R),
   obs_weights = rep(1, length(Y)),
   svy_weights = NULL,
   two_phase_weights = rep(1, length(Y)),
@@ -24,6 +25,7 @@ medoutcon(
   u_learners = sl3::Lrnr_hal9001$new(),
   v_learners = sl3::Lrnr_hal9001$new(),
   d_learners = sl3::Lrnr_glm_fast$new(),
+  g_adjust = NULL,
   estimator = c("tmle", "onestep"),
   estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5),
   g_bounds = c(0.001, 0.999)
@@ -48,8 +50,11 @@ the intervention A and the outcome Y).}
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
 \item{R}{A \code{logical} vector indicating whether a sampled observation's
-mediator was measured via a two-phase sampling design. Defaults to a vector
-of ones, implying that two-phase sampling was not performed.}
+mediator was measured via a two-phase sampling design. Default is to use a
+vector of ones, implying that two-phase sampling was not performed.}
+
+\item{ids}{An optional \code{numeric} vector indicating whether an
+observation belongs to a given cluster.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights. The
 default is to give all observations equal weighting.}
@@ -114,6 +119,10 @@ learners from \pkg{sl3}; used to fit an initial efficient influence
 function regression when computing the efficient influence function in a
 two-phase sampling design.}
 
+\item{g_adjust}{A \code{character} vector corresponding to a subset of
+baseline covariates in \code{W} to be used for fitting the propensity
+score.}
+
 \item{estimator}{The desired estimator of the direct or indirect effect (or
 contrast-specific parameter) to be computed. Both an efficient one-step
 estimator using cross-fitting and a cross-validated targeted minimum loss
@@ -121,10 +130,10 @@ estimator (TMLE) are available. The default is the TML estimator.}
 
 \item{estimator_args}{A \code{list} of extra arguments to be passed (via
 \code{...}) to the function call for the specified estimator. The default
-is chosen so as to allow the number of folds used in computing the one-step
-or TML estimators to be easily adjusted. In the case of the TML estimator,
+is chosen to allow the number of folds used in computing the one-step or
+TML estimators to be easily adjusted. In the case of the TML estimator,
 the number of update (fluctuation) iterations is limited, and a tolerance
-is included for the updates introduced by the tilting (fluctuation) models.}
+is included for updates introduced by the tilting (fluctuation) models.}
 
 \item{g_bounds}{A \code{numeric} vector containing two values, the
 first being the minimum allowable estimated propensity score value and the

@@ -9,8 +9,8 @@
 #'   mediators M, and outcome Y, but unaffected itself by the mediators). When
 #'   set to \code{NULL}, the natural (in)direct effects are estimated.
 #' @param R A \code{logical} vector indicating whether a sampled observation's
-#'   mediator was measured via a two-phase sampling design. Defaults to a vector
-#'   of ones, implying that two-phase sampling was not performed.
+#'   mediator was measured via a two-phase sampling design. Defaults to a
+#'   vector of ones, indicating that two-phase sampling was not performed.
 #' @param M A \code{numeric} vector, \code{matrix}, \code{data.frame}, or
 #'   similar corresponding to a set of mediators (on the causal pathway between
 #'   the intervention A and the outcome Y).
@@ -71,13 +71,13 @@
 #'   estimator (TMLE) are available. The default is the TML estimator.
 #' @param estimator_args A \code{list} of extra arguments to be passed (via
 #'   \code{...}) to the function call for the specified estimator. The default
-#'   is chosen so as to allow the number of folds used in computing the one-step
+#'   is chosen so as to allow the number of folds used to compute the one-step
 #'   or TML estimators to be easily adjusted. In the case of the TML estimator,
 #'   the number of update (fluctuation) iterations is limited, and a tolerance
-#'   is included for the updates introduced by the tilting (fluctuation) models.
-#' @param g_bounds A \code{numeric} vector containing two values, the
-#'   first being the minimum allowable estimated propensity score value and the
-#'   second being the maximum allowable for estimated propensity score value.
+#'   is included for the updates introduced by tilting (fluctuation) models.
+#' @param g_bounds A \code{numeric} vector containing two values, the first
+#'   being the minimum allowable estimated propensity score value and the
+#'   second being the maximum allowable for estimated propensity scores.
 #'   Defaults to \code{c(0.001, 0.999)}.
 #'
 #' @importFrom data.table as.data.table setnames set
@@ -296,9 +296,9 @@ medoutcon <- function(W,
     return(ie_est_out)
   } else if (is.null(contrast) && (effect == "pm")) {
     # compute parameter estimate, influence function, and variances
-    ie_theta_est <-  1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
+    pm_theta_est <-  1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
       log(est_params[[1]]$theta / est_params[[2]]$theta)
-    ie_eif_est <- -est_params[[3]]$eif /
+    pm_eif_est <- -est_params[[3]]$eif /
       (est_params[[3]]$theta * log(est_params[[1]]$theta /
                                    est_params[[2]]$theta)) +
       est_params[[2]]$eif * (
@@ -310,19 +310,27 @@ medoutcon <- function(W,
                                 est_params[[2]]$theta) /
       (est_params[[1]]$theta * (log(est_params[[1]]$theta /
                                    est_params[[2]]$theta))^2)
-    ie_var_est <- stats::var(ie_eif_est) / nrow(data)
+    pm_var_est <- stats::var(pm_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter
-    ie_est_out <- list(
-      theta = ie_theta_est,
-      var = ie_var_est,
-      eif = ie_eif_est,
+    pm_est_out <- list(
+      theta = pm_theta_est,
+      var = pm_var_est,
+      eif = pm_eif_est,
       type = estimator,
       param = paste("pm", effect_type, sep = "_"),
-      outcome = as.numeric(Y)
+      outcome = as.numeric(Y),
+      contrast_results = list(
+        contrast_1_1_mean = est_params[[1]]$theta,
+        contrast_1_1_eif = est_params[[1]]$eif,
+        contrast_0_0_mean = est_params[[2]]$theta,
+        contrast_0_0_eif = est_params[[2]]$eif,
+        contrast_1_0_mean = est_params[[3]]$theta,
+        contrast_1_0_eif = est_params[[3]]$eif
+      )
     )
-    class(ie_est_out) <- "medoutcon"
-    return(ie_est_out)
+    class(pm_est_out) <- "medoutcon"
+    return(pm_est_out)
   } else {
     est_out <- unlist(est_params, recursive = FALSE)
     est_out$param <- paste0(

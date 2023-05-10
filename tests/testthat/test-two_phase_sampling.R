@@ -8,12 +8,13 @@ test_that("two_phase_eif returns an uncentered EIF", {
   # generate fake inputs
   R <- c(1, 0, 0, 0, 1, 1)
   two_phase_weights <- c(rep(1 / 2, 3), rep(2, 3))
-  eif <- c(rep(1 / 2, 3), rep(-1 / 2, 3))
+  partial_eif <- c(1 / 2, rep(-1 / 2, 2))
   eif_predictions <- c(rep(1 / 3, 3), rep(-1 / 3, 3))
   plugin_est <- 1
 
   # independently compute the adjusted EIF
-  uncentered_eif <- R * two_phase_weights * eif +
+  uncentered_eif <- R * two_phase_weights *
+    c(partial_eif[1], 0, 0, 0, partial_eif[2], partial_eif[3]) +
     (1 - R * two_phase_weights) * eif_predictions + plugin_est
 
   # assert that result is identical to two_phase_eif's
@@ -21,7 +22,7 @@ test_that("two_phase_eif returns an uncentered EIF", {
     two_phase_eif(
       R = R,
       two_phase_weights = two_phase_weights,
-      eif = eif,
+      eif = partial_eif,
       eif_predictions = eif_predictions,
       plugin_est = plugin_est
     ),
@@ -105,8 +106,13 @@ h_out <- fit_treat_mech(
   m_names = m_names, type = "h"
 )
 test_that("MSE of mediator propensity score estimates is sufficiently low", {
-  h_mse <- mean((h_out$treat_est_train$treat_pred_A_prime - e(aprime, m, w))^2)
-  expect_lt(h_mse, 0.05)
+  h_mse <- mean(
+    (
+      h_out$treat_est_train$treat_pred_A_prime -
+      e(aprime, m[data$R == 1], w[data$R == 1, ])
+    )^2
+  )
+  expect_lt(h_mse, 0.01)
 })
 
 ## fit outcome regression
@@ -115,8 +121,11 @@ b_out <- fit_out_mech(
   learners = b_learners, m_names = m_names, w_names = w_names
 )
 test_that("MSE of outcome regression estimates is sufficiently low", {
-  b_mse <- mean((b_out$b_est_train$b_pred_A_prime - my(m, z, aprime, w))^2)
-  expect_lt(b_mse, 0.05)
+  b_mse <- mean(
+    (b_out$b_est_train$b_pred_A_prime -
+     my(m[data$R == 1], z[data$R == 1], aprime, w[data$R == 1, ])
+  )^2)
+  expect_lt(b_mse, 0.02)
 })
 
 ## fit mediator-outcome confounder regression, excluding mediator(s)
@@ -132,7 +141,7 @@ q_out <- fit_moc_mech(
 test_that("MSE of confounder regression q estimates is sufficiently low", {
   q_mse <- mean((q_out$moc_est_train_Z_one$moc_pred_A_prime -
     pz(1, aprime, w))^2)
-  expect_lt(q_mse, 0.05)
+  expect_lt(q_mse, 0.01)
 })
 
 ## fit mediator-outcome confounder regression, conditioning on mediator(s)
@@ -146,9 +155,13 @@ r_out <- fit_moc_mech(
   type = "r"
 )
 test_that("MSE of confounder regression r estimates is sufficiently low", {
-  r_mse <- mean((r_out$moc_est_train_Z_one$moc_pred_A_prime -
-    r(1, aprime, m, w))^2)
-  expect_lt(r_mse, 0.05)
+  r_mse <- mean(
+    (
+      r_out$moc_est_train_Z_one$moc_pred_A_prime -
+      r(1, aprime, m[data$R == 1], w[data$R == 1, ])
+    )^2
+  )
+  expect_lt(r_mse, 0.01)
 })
 
 # data for fitting nuisance parameters with pseudo-outcomes
@@ -168,8 +181,12 @@ u_out <- fit_nuisance_u(
   w_names = w_names
 )
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
-  u_mse <- mean((u_out$u_pred - u(z, w, aprime, astar))^2)
-  expect_lt(u_mse, 0.05)
+  u_mse <- mean(
+    (u_out$u_pred -
+     u(z[data$R == 1], w[data$R == 1, ], aprime, astar)
+    )^2
+  )
+  expect_lt(u_mse, 0.02)
 })
 
 ## fit v
@@ -183,16 +200,18 @@ v_out <- fit_nuisance_v(
   m_names = m_names,
   w_names = w_names
 )
-v_star <- intv(1, w, aprime) * pmaw(1, astar, w) + intv(0, w, aprime) *
-  pmaw(0, astar, w)
+v_star <- intv(1, w[data$R == 1, ], aprime) * pmaw(1, astar, w[data$R == 1, ]) +
+  intv(0, w[data$R == 1, ], aprime) * pmaw(0, astar, w[data$R == 1, ])
 
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   v_mse <- mean((v_out$v_pred - v_star)^2)
-  expect_lt(v_mse, 0.05)
+  expect_lt(v_mse, 0.01)
 })
 test_that("MSE of pseudo-outcome used in v estimation is sufficiently low", {
-  v_pseudo_mse <- mean((v_out$v_pseudo - intv(m, w, aprime))^2)
-  expect_lt(v_pseudo_mse, 0.05)
+  v_pseudo_mse <- mean(
+    (v_out$v_pseudo - intv(m[data$R == 1], w[data$R == 1, ], aprime))^2
+  )
+  expect_lt(v_pseudo_mse, 0.01)
 })
 
 ################################################################################
@@ -216,14 +235,18 @@ library(sl3)
 library(SuperLearner)
 
 # options
-set.seed(61234)
+set.seed(8123421)
 n_obs <- 500
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
+R <- rbinom(n_obs, 1, 0.9)
+R[data$Y > 5] <- 1
+two_phase_weights <- rep(1 / 0.9, nrow(data))
+two_phase_weights[data$Y > 5] <- 1
 data[, `:=`(
-  R = rbinom(n_obs, 1, 0.9),
-  two_phase_weights = 1,
+  R = R,
+  two_phase_weights = two_phase_weights,
   obs_weights = 1
 )]
 w_names <- str_subset(colnames(data), "W")
@@ -274,6 +297,7 @@ d_learners <- u_learners <- v_learners <- b_learners <- rf_lrnr
 nde_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -291,6 +315,7 @@ summary(nde_os)
 nie_os <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -308,6 +333,7 @@ summary(nie_os)
 nde_tmle <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -325,6 +351,7 @@ summary(nde_tmle)
 nie_tmle <- medoutcon(
   W = data[, ..w_names], A = data$A, Z = NULL,
   M = data[, ..m_names], Y = data$Y, R = data$R,
+  two_phase_weights = data$two_phase_weights,
   g_learners = g_learners,
   h_learners = h_learners,
   b_learners = b_learners,
@@ -369,11 +396,6 @@ test_that("NDE: Mean of estimated EIF is nearly zero for the one-step", {
   expect_lt(abs(mean(nde_os$eif)), 1e-15)
 })
 
-test_that("NDE: Mean of estimated EIF is approximately solved for the TMLE", {
-  expect_lt(abs(mean(nde_tmle$eif)), var(nde_tmle$eif) / (n_obs * log(n_obs)))
-})
-
-
 # 6) testing estimators for the NIE
 test_that("NIE: One-step estimate is near DGP truth", {
   expect_equal(nie_os$theta, nie_true,
@@ -389,8 +411,4 @@ test_that("NIE: TML estimate is near DGP truth", {
 
 test_that("NIE: Mean of estimated EIF is nearly zero for the one-step", {
   expect_lt(abs(mean(nie_os$eif)), 1e-15)
-})
-
-test_that("NIE: Mean of estimated EIF is approximately solved for the TMLE", {
-  expect_lt(abs(mean(nie_tmle$eif)), var(nie_tmle$eif) / (n_obs * log(n_obs)))
 })

@@ -48,8 +48,8 @@ the intervention A and the outcome Y).}
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
 \item{R}{A \code{logical} vector indicating whether a sampled observation's
-mediator was measured via a two-phase sampling design. Defaults to a vector
-of ones, implying that two-phase sampling was not performed.}
+mediator was measured via a two-phase sampling design. Defaults to a
+vector of ones, indicating that two-phase sampling was not performed.}
 
 \item{obs_weights}{A \code{numeric} vector of observation-level weights. The
 default is to give all observations equal weighting.}
@@ -121,14 +121,14 @@ estimator (TMLE) are available. The default is the TML estimator.}
 
 \item{estimator_args}{A \code{list} of extra arguments to be passed (via
 \code{...}) to the function call for the specified estimator. The default
-is chosen so as to allow the number of folds used in computing the one-step
+is chosen so as to allow the number of folds used to compute the one-step
 or TML estimators to be easily adjusted. In the case of the TML estimator,
 the number of update (fluctuation) iterations is limited, and a tolerance
-is included for the updates introduced by the tilting (fluctuation) models.}
+is included for the updates introduced by tilting (fluctuation) models.}
 
-\item{g_bounds}{A \code{numeric} vector containing two values, the
-first being the minimum allowable estimated propensity score value and the
-second being the maximum allowable for estimated propensity score value.
+\item{g_bounds}{A \code{numeric} vector containing two values, the first
+being the minimum allowable estimated propensity score value and the
+second being the maximum allowable for estimated propensity scores.
 Defaults to \code{c(0.001, 0.999)}.}
 }
 \description{

@@ -750,8 +750,6 @@ est_tml <- function(data,
 
     # compute efficient score for outcome regression component
     b_score <- ipw_prime * c_star_Z_natural * (data$Y - b_prime_Z_natural)
-    # Recalculate on the cluster level, same as standard error/tilt_stop_crit?
-    b_score <- vapply(split(b_score, data$id), function(x) mean(x), 1)
 
     # perform iterative targeting for intermediate confounding mechanism
     q_prime_Z_one_logit <- q_prime_Z_one %>%
@@ -801,8 +799,6 @@ est_tml <- function(data,
 
     # compute efficient score for intermediate confounding component
     q_score <- ipw_prime * cv_eif_est$u_int_diff * (data$Z - q_prime_Z_one)
-    # Recalculate on the cluster level, same as standard error/tilt_stop_crit?
-    q_score <- vapply(split(q_score, data$id), function(x) mean(x), 1)
 
     # check convergence and iterate the iterator
     eif_stop_crit <- all(abs(c(mean(b_score), mean(q_score))) < tilt_stop_crit)

@@ -63,7 +63,8 @@ fit_treat_mech <- function(train_data,
     weights = "obs_weights",
     covariates = cov_names,
     outcome = "A",
-    outcome_type = "binomial"
+    outcome_type = "binomial",
+    id = "id"
   )
 
   ## fit and predict treatment mechanism
@@ -108,7 +109,8 @@ fit_treat_mech <- function(train_data,
           weights = "obs_weights",
           covariates = cov_names,
           outcome = "A",
-          outcome_type = "binomial"
+          outcome_type = "binomial",
+          id = "id"
         )
 
         ## predictions for training data
@@ -189,7 +191,8 @@ fit_out_mech <- function(train_data,
     data = train_data,
     weights = "obs_weights",
     covariates = c(m_names, "Z", "A", w_names),
-    outcome = "Y"
+    outcome = "Y",
+    id = "id"
   )
 
   ## fit and predict
@@ -210,7 +213,8 @@ fit_out_mech <- function(train_data,
       data = train_data_intervene,
       weights = "obs_weights",
       covariates = c(m_names, "Z", "A", w_names),
-      outcome = "Y"
+      outcome = "Y",
+      id = "id"
     )
 
     ## predict from trained model on counterfactual data
@@ -222,7 +226,8 @@ fit_out_mech <- function(train_data,
       data = train_data_intervene,
       weights = "obs_weights",
       covariates = c(m_names, "Z", "A", w_names),
-      outcome = "Y"
+      outcome = "Y",
+      id = "id"
     )
 
     ## predict from trained model on counterfactual data
@@ -256,7 +261,8 @@ fit_out_mech <- function(train_data,
       data = valid_data,
       weights = "obs_weights",
       covariates = c(m_names, "Z", "A", w_names),
-      outcome = "Y"
+      outcome = "Y",
+      id = "id"
     )
     b_natural_pred_valid <- b_natural_fit$predict(b_natural_task_valid)
 
@@ -270,7 +276,8 @@ fit_out_mech <- function(train_data,
           data = data_intervene,
           weights = "obs_weights",
           covariates = c(m_names, "Z", "A", w_names),
-          outcome = "Y"
+          outcome = "Y",
+          id = "id"
         )
 
         ## predict from trained model on counterfactual data
@@ -283,7 +290,8 @@ fit_out_mech <- function(train_data,
           data = data_intervene,
           weights = "obs_weights",
           covariates = c(m_names, "Z", "A", w_names),
-          outcome = "Y"
+          outcome = "Y",
+          id = "id"
         )
 
         ## predict from trained model on counterfactual data
@@ -376,7 +384,8 @@ fit_moc_mech <- function(train_data,
     weights = "obs_weights",
     covariates = c("A", cov_names),
     outcome = "Z",
-    outcome_type = "binomial"
+    outcome_type = "binomial",
+    id = "id"
   )
 
   ## fit model on observed data
@@ -397,7 +406,8 @@ fit_moc_mech <- function(train_data,
       weights = "obs_weights",
       covariates = c("A", cov_names),
       outcome = "Z",
-      outcome_type = "binomial"
+      outcome_type = "binomial",
+      id = "id"
     )
 
     ## predict from trained model on counterfactual data
@@ -410,7 +420,8 @@ fit_moc_mech <- function(train_data,
       weights = "obs_weights",
       covariates = c("A", cov_names),
       outcome = "Z",
-      outcome_type = "binomial"
+      outcome_type = "binomial",
+      id = "id"
     )
 
     ## predict from trained model on counterfactual data
@@ -447,7 +458,8 @@ fit_moc_mech <- function(train_data,
       weights = "obs_weights",
       covariates = c("A", cov_names),
       outcome = "Z",
-      outcome_type = "binomial"
+      outcome_type = "binomial",
+      id = "id"
     )
 
     ## prediction on observed data, in validation set
@@ -466,7 +478,8 @@ fit_moc_mech <- function(train_data,
           weights = "obs_weights",
           covariates = c("A", cov_names),
           outcome = "Z",
-          outcome_type = "binomial"
+          outcome_type = "binomial",
+          id = "id"
         )
 
         ## predict from trained model on counterfactual data
@@ -479,7 +492,8 @@ fit_moc_mech <- function(train_data,
           weights = "obs_weights",
           covariates = c("A", cov_names),
           outcome = "Z",
-          outcome_type = "binomial"
+          outcome_type = "binomial",
+          id = "id"
         )
 
         ## predict from trained model on counterfactual data
@@ -591,18 +605,20 @@ fit_nuisance_u <- function(train_data,
     train_data[, ..w_names],
     train_data$A, train_data$Z,
     u_pseudo_train,
-    train_data$obs_weights
+    train_data$obs_weights,
+    train_data$id
   ))
   data.table::setnames(u_data_train, c(
     w_names, "A", "Z", "U_pseudo",
-    "obs_weights"
+    "obs_weights", "id"
   ))
   u_task_train <- sl3::sl3_Task$new(
     data = u_data_train,
     weights = "obs_weights",
     covariates = c("Z", "A", w_names),
     outcome = "U_pseudo",
-    outcome_type = "continuous"
+    outcome_type = "continuous",
+    id = "id"
   )
 
   ## fit model for nuisance parameter regression on training data
@@ -613,18 +629,20 @@ fit_nuisance_u <- function(train_data,
     valid_data[, ..w_names],
     valid_data$A, valid_data$Z,
     rep(0, nrow(valid_data)),
-    valid_data$obs_weights
+    valid_data$obs_weights,
+    valid_data$id
   ))
   data.table::setnames(u_data_valid, c(
     w_names, "A", "Z", "U_pseudo",
-    "obs_weights"
+    "obs_weights", "id"
   ))
   u_task_valid <- sl3::sl3_Task$new(
     data = u_data_valid,
     weights = "obs_weights",
     covariates = c("Z", "A", w_names),
     outcome = "U_pseudo",
-    outcome_type = "continuous"
+    outcome_type = "continuous",
+    id = "id"
   )
 
   ## predict from nuisance parameter regression model on validation and training
@@ -707,7 +725,8 @@ fit_nuisance_v <- function(train_data,
       data = train_data_z_interv,
       weights = "obs_weights",
       covariates = c(m_names, "Z", "A", w_names),
-      outcome = "Y"
+      outcome = "Y",
+      id = "id"
     )
 
     ## outcome regression after intervening on mediator-outcome confounder
@@ -727,7 +746,8 @@ fit_nuisance_v <- function(train_data,
       data = valid_data_z_interv,
       weights = "obs_weights",
       covariates = c(m_names, "Z", "A", w_names),
-      outcome = "Y"
+      outcome = "Y",
+      id = "id"
     )
 
     ## outcome regression after intervening on mediator-outcome confounder
@@ -783,7 +803,8 @@ fit_nuisance_v <- function(train_data,
     weights = "obs_weights",
     covariates = c("A", w_names),
     outcome = "V_pseudo",
-    outcome_type = "continuous"
+    outcome_type = "continuous",
+    id = "id"
   )
   # NOTE: independent implementation from ID sets A to a* as done below
   valid_data[, `:=`(
@@ -795,7 +816,8 @@ fit_nuisance_v <- function(train_data,
     weights = "obs_weights",
     covariates = c("A", w_names),
     outcome = "V_pseudo",
-    outcome_type = "continuous"
+    outcome_type = "continuous",
+    id = "id"
   )
 
   ## fit regression model for v on training task, get predictions on validation
@@ -910,7 +932,8 @@ fit_nuisance_d <- function(train_data,
       weights = "obs_weights",
       covariates = c("Z", "A", w_names),
       outcome = "U_pseudo",
-      outcome_type = "continuous"
+      outcome_type = "continuous",
+      id = "id"
     )
 
     # return partial pseudo-outcome for v nuisance regression
@@ -950,7 +973,8 @@ fit_nuisance_d <- function(train_data,
     weights = "obs_weights",
     covariates = c(w_names, "A", "Z", "Y"),
     outcome = "eif",
-    outcome_type = "continuous"
+    outcome_type = "continuous",
+    id = "id"
   )
 
   ## fit model for nuisance parameter regression on training data
@@ -960,7 +984,8 @@ fit_nuisance_d <- function(train_data,
   d_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
     weights = "obs_weights",
-    covariates = c(w_names, "A", "Z", "Y")
+    covariates = c(w_names, "A", "Z", "Y"),
+    id = "id"
   )
 
   ## predict from nuisance parameter regression model on validation

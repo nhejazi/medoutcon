@@ -15,7 +15,8 @@
 #' @param R A \code{logical} vector indicating whether a sampled observation's
 #'   mediator was measured via a two-phase sampling design. Default is to use a
 #'   vector of ones, implying that two-phase sampling was not performed.
-#' @param ids ...
+#' @param ids An optional \code{numeric} vector indicating whether an
+#'   observation belongs to a given cluster.
 #' @param obs_weights A \code{numeric} vector of observation-level weights. The
 #'   default is to give all observations equal weighting.
 #' @param svy_weights A \code{numeric} vector of observation-level weights that
@@ -66,8 +67,9 @@
 #'   learners from \pkg{sl3}; used to fit an initial efficient influence
 #'   function regression when computing the efficient influence function in a
 #'   two-phase sampling design.
-#' @param g_adjust ...
-#' @param b_adjust ...
+#' @param g_adjust A \code{character} vector corresponding to a subset of
+#'   baseline covariates in \code{W} to be used for fitting the propensity
+#'   score.
 #' @param estimator The desired estimator of the direct or indirect effect (or
 #'   contrast-specific parameter) to be computed. Both an efficient one-step
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
@@ -142,7 +144,6 @@ medoutcon <- function(W,
                       v_learners = sl3::Lrnr_hal9001$new(),
                       d_learners = sl3::Lrnr_glm_fast$new(),
                       g_adjust = NULL,
-                      b_adjust = NULL,
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 5L, max_iter = 5L,
@@ -156,6 +157,9 @@ medoutcon <- function(W,
     names(formals(est_onestep))]
   est_args_tmle <- estimator_args[names(estimator_args) %in%
     names(formals(est_tml))]
+
+  # Check that g_adjust is a subset of W
+  assertthat::assert_that(all(g_adjust %in% names(W)))
 
   # set constant Z for estimation of the natural (in)direct effects
   if (is.null(Z)) {
@@ -186,25 +190,12 @@ medoutcon <- function(W,
   max_y <- max(data[["Y"]])
   data.table::set(data, j = "Y", value = scale_to_unit(data[["Y"]]))
 
-  # keep track of adjustment set indices when not explicitly provided
-  if (is.null(g_adjust)) {
-    # restrict baseline adjustment set for propensity score
-    g_adjust <- seq_along(w_names)
-  }
-  if (is.null(b_adjust)) {
-    # restrict baseline and mediator adjustment sets for outcome regression
-    b_adjust <- list(
-      W = seq_along(w_names),
-      M = seq_along(m_names)
-    )
-  }
-
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {
     # if estimating direct/indirect effects or proportion mediated
-    if (effect != "pm") {
+    if (match.arg(effect) != "pm") {
       # select appropriate component for direct vs indirect effects
-      is_effect_direct <- (effect == "direct")
+      is_effect_direct <- (match.arg(effect) == "direct")
       contrast_grid <- list(switch(2 - is_effect_direct,
         c(0, 0),
         c(1, 1)
@@ -240,7 +231,6 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         g_adjust = g_adjust,
-        b_adjust = b_adjust,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
         svy_weights = svy_weights,
@@ -266,7 +256,6 @@ medoutcon <- function(W,
         w_names = w_names,
         m_names = m_names,
         g_adjust = g_adjust,
-        b_adjust = b_adjust,
         y_bounds = c(min_y, max_y),
         effect_type = effect_type,
         svy_weights = svy_weights,
@@ -285,11 +274,14 @@ medoutcon <- function(W,
   })
 
   # put effects together
-  if (is.null(contrast) && (effect == "direct")) {
+  if (is.null(contrast) && (match.arg(effect) == "direct")) {
     # compute parameter estimate, influence function, and variances
     de_theta_est <- est_params[[2]]$theta - est_params[[1]]$theta
     de_eif_est <- est_params[[2]]$eif - est_params[[1]]$eif
-    de_var_est <- stats::var(de_eif_est) / nrow(data)
+
+    de_eif_est_within_id <- vapply(split(de_eif_est, data$id), function(x) mean(x), 1)
+    de_var_est <- stats::var(de_eif_est_within_id) / length(de_eif_est_within_id)
+    # de_var_est <- stats::var(de_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter
     de_est_out <- list(
@@ -306,7 +298,10 @@ medoutcon <- function(W,
     # compute parameter estimate, influence function, and variances
     ie_theta_est <- est_params[[1]]$theta - est_params[[2]]$theta
     ie_eif_est <- est_params[[1]]$eif - est_params[[2]]$eif
-    ie_var_est <- stats::var(ie_eif_est) / nrow(data)
+
+    ie_eif_est_within_id <- vapply(split(ie_eif_est, data$id), function(x) mean(x), 1)
+    ie_var_est <- stats::var(ie_eif_est_within_id) / length(ie_eif_est_within_id)
+    # ie_var_est <- stats::var(ie_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter
     ie_est_out <- list(
@@ -335,7 +330,10 @@ medoutcon <- function(W,
                                 est_params[[2]]$theta) /
       (est_params[[1]]$theta * (log(est_params[[1]]$theta /
                                    est_params[[2]]$theta))^2)
-    ie_var_est <- stats::var(ie_eif_est) / nrow(data)
+
+    ie_eif_est_within_id <- vapply(split(ie_eif_est, data$id), function(x) mean(x), 1)
+    ie_var_est <- stats::var(ie_eif_est_within_id) / length(ie_eif_est_within_id)
+    # ie_var_est <- stats::var(ie_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter
     ie_est_out <- list(

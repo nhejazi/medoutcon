@@ -290,8 +290,10 @@ bound_lrnr <- Lrnr_bound$new(bound = 1e-6)
 hal_bounded_lrnr <- Pipeline$new(hal_gaussian_lrnr, bound_lrnr)
 
 # create learner library and instantiate super learner ensemble
-lrnr_lib <- Stack$new(mean_lrnr, fglm_lrnr, enet_lrnr, lasso_lrnr,
-                      rf_lrnr, hal_bounded_lrnr)
+lrnr_lib <- Stack$new(
+  mean_lrnr, fglm_lrnr, enet_lrnr, lasso_lrnr,
+  rf_lrnr, hal_bounded_lrnr
+)
 sl_lrnr <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 ```
 
@@ -343,19 +345,21 @@ method to each of the one-step estimators (and EIFs) for these contrasts.
 
 ```{r de_os, message=FALSE, warning=FALSE}
 # compute one-step estimate of the interventional direct effect
-os_de <- medoutcon(W = example_data[, ..w_names],
-                   A = example_data$A,
-                   Z = example_data$Z,
-                   M = example_data[, ..m_names],
-                   Y = example_data$Y,
-                   g_learners = sl_lrnr,
-                   h_learners = sl_lrnr,
-                   b_learners = sl_lrnr,
-                   q_learners = sl_lrnr,
-                   r_learners = sl_lrnr,
-                   effect = "direct",
-                   estimator = "onestep",
-                   estimator_args = list(cv_folds = 2))
+os_de <- medoutcon(
+  W = example_data[, ..w_names],
+  A = example_data$A,
+  Z = example_data$Z,
+  M = example_data[, ..m_names],
+  Y = example_data$Y,
+  g_learners = sl_lrnr,
+  h_learners = sl_lrnr,
+  b_learners = sl_lrnr,
+  q_learners = sl_lrnr,
+  r_learners = sl_lrnr,
+  effect = "direct",
+  estimator = "onestep",
+  estimator_args = list(cv_folds = 2)
+)
 summary(os_de)
 ```
 
@@ -371,19 +375,21 @@ call to the `medoutcon` function:
 
 ```{r de_tmle, message=FALSE, warning=FALSE}
 # compute targeted minimum loss estimate of the interventional direct effect
-tmle_de <- medoutcon(W = example_data[, ..w_names],
-                     A = example_data$A,
-                     Z = example_data$Z,
-                     M = example_data[, ..m_names],
-                     Y = example_data$Y,
-                     g_learners = sl_lrnr,
-                     h_learners = sl_lrnr,
-                     b_learners = sl_lrnr,
-                     q_learners = sl_lrnr,
-                     r_learners = sl_lrnr,
-                     effect = "direct",
-                     estimator = "tmle",
-                     estimator_args = list(cv_folds = 2, max_iter = 5))
+tmle_de <- medoutcon(
+  W = example_data[, ..w_names],
+  A = example_data$A,
+  Z = example_data$Z,
+  M = example_data[, ..m_names],
+  Y = example_data$Y,
+  g_learners = sl_lrnr,
+  h_learners = sl_lrnr,
+  b_learners = sl_lrnr,
+  q_learners = sl_lrnr,
+  r_learners = sl_lrnr,
+  effect = "direct",
+  estimator = "tmle",
+  estimator_args = list(cv_folds = 2, max_iter = 5)
+)
 summary(tmle_de)
 ```
 
@@ -421,18 +427,20 @@ method to each of the one-step estimators (and EIFs) for the contrasts.
 
 ```{r ie_os, message=FALSE, warning=FALSE}
 # compute one-step estimate of the interventional indirect effect
-os_ie <- medoutcon(W = example_data[, ..w_names],
-                   A = example_data$A,
-                   Z = example_data$Z,
-                   M = example_data[, ..m_names],
-                   Y = example_data$Y,
-                   g_learners = sl_lrnr,
-                   h_learners = sl_lrnr,
-                   b_learners = sl_lrnr,
-                   q_learners = sl_lrnr,
-                   r_learners = sl_lrnr,
-                   effect = "indirect",
-                   estimator = "onestep")
+os_ie <- medoutcon(
+  W = example_data[, ..w_names],
+  A = example_data$A,
+  Z = example_data$Z,
+  M = example_data[, ..m_names],
+  Y = example_data$Y,
+  g_learners = sl_lrnr,
+  h_learners = sl_lrnr,
+  b_learners = sl_lrnr,
+  q_learners = sl_lrnr,
+  r_learners = sl_lrnr,
+  effect = "indirect",
+  estimator = "onestep"
+)
 summary(os_ie)
 ```
 
@@ -448,18 +456,20 @@ single call to the `medoutcon` function, as demonstrated below
 
 ```{r ie_tmle, message=FALSE, warning=FALSE}
 # compute targeted minimum loss estimate of the interventional indirect effect
-tmle_ie <- medoutcon(W = example_data[, ..w_names],
-                     A = example_data$A,
-                     Z = example_data$Z,
-                     M = example_data[, ..m_names],
-                     Y = example_data$Y,
-                     g_learners = sl_lrnr,
-                     h_learners = sl_lrnr,
-                     b_learners = sl_lrnr,
-                     q_learners = sl_lrnr,
-                     r_learners = sl_lrnr,
-                     effect = "indirect",
-                     estimator = "tmle")
+tmle_ie <- medoutcon(
+  W = example_data[, ..w_names],
+  A = example_data$A,
+  Z = example_data$Z,
+  M = example_data[, ..m_names],
+  Y = example_data$Y,
+  g_learners = sl_lrnr,
+  h_learners = sl_lrnr,
+  b_learners = sl_lrnr,
+  q_learners = sl_lrnr,
+  r_learners = sl_lrnr,
+  effect = "indirect",
+  estimator = "tmle"
+)
 summary(tmle_ie)
 ```
 

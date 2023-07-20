@@ -342,7 +342,6 @@ two_phase_eif <- function(R,
                           eif,
                           eif_predictions,
                           plugin_est) {
-
   # compute the weights for the EIF update
   ipw_two_phase <- R * two_phase_weights
 
@@ -451,7 +450,6 @@ est_onestep <- function(data,
                         effect_type = c("interventional", "natural"),
                         svy_weights = NULL,
                         cv_folds = 5L) {
-
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
@@ -624,7 +622,6 @@ est_tml <- function(data,
                     cv_folds = 5L,
                     max_iter = 5L,
                     tiltmod_tol = 10) {
-
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
@@ -686,8 +683,10 @@ est_tml <- function(data,
   eif_stop_crit <- FALSE
   n_iter <- 0
 
-  se_eif <- stats::var(vapply(split(cv_eif_est$D_star, data$id),
-                              function(x) mean(x), 1)) /
+  se_eif <- stats::var(vapply(
+    split(cv_eif_est$D_star, data$id),
+    function(x) mean(x), 1
+  )) /
     length(split(cv_eif_est$D_star, data$id))
 
   # set stopping criterion for iterative targeting

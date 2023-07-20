@@ -4,7 +4,6 @@
 context("Two-phase sampling EIF convenience function")
 
 test_that("two_phase_eif returns an uncentered EIF", {
-
   # generate fake inputs
   R <- c(1, 0, 0, 0, 1, 1)
   two_phase_weights <- c(rep(1 / 2, 3), rep(2, 3))

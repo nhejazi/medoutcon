@@ -698,7 +698,6 @@ fit_nuisance_v <- function(train_data,
                            q_out,
                            m_names,
                            w_names) {
-
   # update observation weights with two-phase sampling weights, if necessary
   train_data[, obs_weights := R * two_phase_weights * obs_weights]
   valid_data[, obs_weights := R * two_phase_weights * obs_weights]
@@ -902,7 +901,6 @@ fit_nuisance_d <- function(train_data,
                            v_out,
                            m_names,
                            w_names) {
-
   ## extract nuisance estimates necessary for constructing pseudo-outcome
   b_prime <- b_out$b_est_train$b_pred_A_prime
   h_star <- h_out$treat_est_train$treat_pred_A_star

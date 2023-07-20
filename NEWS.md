@@ -1,3 +1,13 @@
+# medoutcon 0.2.1
+
+* Added support for using different adjustment sets for treatment mechanism
+  (propensity score) estimation and outcome regression via `g_adjust` argument;
+  default of `g_adjust = NULL` keeps all adjustment sets in sync.
+* Added support for working with repeated measures data via the `ids` argument;
+  changes include respecting specification of `ids` in setting cross-validation
+  folds and in summarizing the EIF prior to computing its empirical variance.
+* Contributions made by by Nick Williams.
+
 # medoutcon 0.2.0
 
 * Added support for a semiparametric correction for outcome-dependent two-phase
@@ -9,6 +19,7 @@
   models for the TMLE step from updating the intermediate confounder nuisance
   components (i.e., `q_prime_Z_one`, `q_prime_Z_natural`) and causing numerical
   issues that violate the above internal checks.
+* Contributions made by by Phil Boileau.
 
 # medoutcon 0.1.5
 

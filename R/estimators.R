@@ -505,7 +505,9 @@ est_onestep <- function(data,
     eif_est_out <- eif_est_rescaled * svy_weights
   }
 
-  eif_est_out_within_id <- vapply(split(eif_est_out, data$id), function(x) mean(x), 1)
+  eif_est_out_within_id <- vapply(
+    split(eif_est_out, data$id), function(x) mean(x), 1
+  )
   os_var <- stats::var(eif_est_out_within_id) / length(eif_est_out_within_id)
 
   # output
@@ -870,7 +872,9 @@ est_tml <- function(data,
     eif_est_out <- eif_est_rescaled * svy_weights
   }
 
-  eif_est_out_within_id <- vapply(split(eif_est_out, data$id), function(x) mean(x), 1)
+  eif_est_out_within_id <- vapply(
+    split(eif_est_out, data$id), function(x) mean(x), 1
+  )
   tmle_var <- stats::var(eif_est_out_within_id) / length(eif_est_out_within_id)
 
   # output

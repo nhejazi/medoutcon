@@ -2,20 +2,29 @@ Package: medoutcon
 Title: Efficient Natural and Interventional Causal Mediation Analysis
 Version: 0.2.1
 Authors@R: c(
-    person("Nima", "Hejazi", email = "nh@nimahejazi.org",
+    person("Nima", "Hejazi",
            role = c("aut", "cre", "cph"),
+           email = "nh@nimahejazi.org",
            comment = c(ORCID = "0000-0002-7127-2789")),
-    person("Iván", "Díaz", email = "ild2005@med.cornell.edu",
+    person("Iván", "Díaz",
            role = "aut",
+           email = "ild2005@med.cornell.edu",
            comment = c(ORCID = "0000-0001-9056-2047")),
-    person("Kara", "Rudolph", email = "kr2854@cumc.columbia.edu",
+    person("Kara", "Rudolph",
            role = "aut",
+           email = "kr2854@cumc.columbia.edu",
            comment = c(ORCID = "0000-0002-9417-7960")),
-    person("Philippe", "Boileau", email = "philippe_boileau@berkeley.edu",
+    person("Philippe", "Boileau",
            role = "ctb",
+           email = "philippe_boileau@berkeley.edu",
            comment = c(ORCID = "0000-0002-4850-2507")),
-    person("Mark", "van der Laan", email = "laan@berkeley.edu",
+    person(given = "Nicholas", family = "Williams",
+           role = "ctb",
+           email = "ntwilliams.personal@gmail.com",
+           comment = c(ORCID = "0000-0002-1378-4831")),
+    person("Mark", "van der Laan",
            role = c("ctb", "ths"),
+           email = "laan@berkeley.edu",
            comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
@@ -66,4 +75,4 @@ BugReports: https://github.com/nhejazi/medoutcon/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

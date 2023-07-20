@@ -1,9 +1,8 @@
-context("Variance estimate is larger when specifying level of independence using 'ids'")
-
+context("Variance estimate larger when specifying independence using 'ids'")
 set.seed(4353645)
 
-n <- 1000
-j <- 20
+n <- 2000
+j <- 500
 k <- n / j
 re <- rep(rnorm(j, sd = 2), each = k)
 
@@ -12,13 +11,16 @@ W1 <- rbinom(n, 1, 0.5)
 W2 <- rbinom(n, 1, 0.33)
 
 # treatment on the group level
-A <- rep(rbinom(j, 1, plogis(-1 + log(2)*mean(W1) + log(1.5)*mean(W2))), each = k)
-M <- rbinom(n, 1, plogis(2 - log(3)*A + log(1.5)*W1 - log(2)*W2))
-
-tmp <- data.frame(re, W1, W2, A, M)
+A <- rep(
+  rbinom(j, 1, plogis(-1 + log(2) * mean(W1) + log(1.5) * mean(W2))), each = k
+)
+M <- rbinom(n, 1, plogis(2 - log(3) * A + log(1.5) * W1 - log(2) * W2))
+tmp_df <- data.frame(re, W1, W2, A, M)
 # Y is drawn with random effects
-Y <- unlist(lapply(split(tmp, id),
-                   function(x) with(x, rbinom(k, 1, plogis(re - log(0.5)*A - log(2)*M + log(1.5)*W1 + log(1.2)*W2)))))
+Y <- lapply(split(tmp_df, id), function(x) {
+  with(x, rbinom(k, 1, plogis(re - log(0.5) * A - log(2) * M + log(1.5) * W1 +
+                              log(1.2) * W2)))
+}) %>% unlist() %>% unname()
 
 tml_direct_no_id <- medoutcon(W = data.frame(W1, W2),
                               A = A,

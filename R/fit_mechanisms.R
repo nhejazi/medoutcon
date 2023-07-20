@@ -645,8 +645,7 @@ fit_nuisance_u <- function(train_data,
     id = "id"
   )
 
-  ## predict from nuisance parameter regression model on validation and training
-  ## data
+  ## predict from nuisance regression model on validation and training data
   u_valid_pred <- u_param_fit$predict(u_task_valid)
   u_train_pred <- u_param_fit$predict(u_task_train)
 

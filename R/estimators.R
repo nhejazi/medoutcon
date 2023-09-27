@@ -522,7 +522,7 @@ est_onestep <- function(data,
   # output
   os_est_out <- list(
     theta = os_est,
-    theta_plugin = est_plugin(cv_eif_results$tmle_components$v_star),
+    theta_plugin = est_plugin(cv_eif_est$v_star),
     var = os_var,
     eif = (eif_est_out - os_est),
     type = "onestep"
@@ -909,7 +909,7 @@ est_tml <- function(data,
   # output
   tmle_out <- list(
     theta = tml_est,
-    theta_plugin = est_plugin(cv_eif_results$tmle_components$v_star),
+    theta_plugin = est_plugin(cv_eif_est$v_star),
     var = tmle_var,
     eif = (eif_est_out - tml_est),
     n_iter = n_iter,

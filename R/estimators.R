@@ -502,6 +502,7 @@ est_onestep <- function(data,
 
   # get estimated efficient influence function
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
+  v_star <- cv_eif_results$tmle_components[["v_star"]]
   cv_eif_est <- unlist(cv_eif_results$D_star)[order(obs_valid_idx)]
 
   # re-scale efficient influence function
@@ -522,7 +523,7 @@ est_onestep <- function(data,
   # output
   os_est_out <- list(
     theta = os_est,
-    theta_plugin = est_plugin(cv_eif_est$v_star),
+    theta_plugin = est_plugin(v_star),
     var = os_var,
     eif = (eif_est_out - os_est),
     type = "onestep"

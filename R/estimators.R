@@ -1,4 +1,4 @@
-utils::globalVariables(c("..w_names", "A", "Z", "Y", "R"))
+utils::globalVariables(c("..w_names", "A", "Z", "Y", "R", "v_star"))
 
 #' EIF for natural and interventional (in)direct effects
 #'
@@ -501,8 +501,8 @@ est_onestep <- function(data,
   )
 
   # get estimated efficient influence function
+  v_star <- do.call(rbind, cv_eif_results[[1]])$v_star
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
-  v_star <- cv_eif_results$tmle_components[["v_star"]]
   cv_eif_est <- unlist(cv_eif_results$D_star)[order(obs_valid_idx)]
 
   # re-scale efficient influence function

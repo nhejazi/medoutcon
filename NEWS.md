@@ -1,8 +1,11 @@
-# medoutcon 0.2.1
+# medoutcon 0.2.2
 
 * Change iterative targeting procedures in `est_tml()` to use `glm2::glm2`
   instead of `stats::glm` to avoid issues with erratic  IRLS in the latter;
   see <https://journal.r-project.org/archive/2011/RJ-2011-012/> for details.
+* Changed default propensity score truncation bounds specified in `g_bounds` by
+  an order of magnitude, from `c(0.001, 0.999)` to `c(0.01, 0.99)`, to mitigate
+  potential stability issues.
 
 # medoutcon 0.2.1
 

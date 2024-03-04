@@ -12,7 +12,7 @@ fit_treat_mech(
   m_names,
   w_names,
   type = c("g", "h"),
-  bounds = c(0.001, 0.999)
+  bounds = c(0.01, 0.99)
 )
 }
 \arguments{

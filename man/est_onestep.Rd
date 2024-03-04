@@ -18,7 +18,7 @@ est_onestep(
   w_names,
   m_names,
   y_bounds,
-  g_bounds = c(0.001, 0.999),
+  g_bounds = c(0.01, 0.99),
   effect_type = c("interventional", "natural"),
   svy_weights = NULL,
   cv_folds = 5L

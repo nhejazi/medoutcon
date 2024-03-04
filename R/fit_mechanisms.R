@@ -42,7 +42,7 @@ fit_treat_mech <- function(train_data,
                            m_names,
                            w_names,
                            type = c("g", "h"),
-                           bounds = c(0.001, 0.999)) {
+                           bounds = c(0.01, 0.99)) {
   if (type == "g") {
     # NOTE: estimation of treatment propensity does not require two-phase
     #       sampling weights
@@ -368,7 +368,6 @@ fit_moc_mech <- function(train_data,
                          m_names,
                          w_names,
                          type = c("q", "r")) {
-
   ## construct task for nuisance parameter fit
   if (type == "q") {
     cov_names <- w_names
@@ -377,7 +376,6 @@ fit_moc_mech <- function(train_data,
     # NOTE: Might not be necessary, check with Nima
     train_data[, obs_weights := two_phase_weights * obs_weights]
     valid_data[, obs_weights := two_phase_weights * obs_weights]
-
   } else if (type == "r") {
     cov_names <- c(m_names, w_names)
 
@@ -703,7 +701,6 @@ fit_nuisance_v <- function(train_data,
                            q_out,
                            m_names,
                            w_names) {
-
   ## extract nuisance estimates necessary for this routrine
   q_train_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
   q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
@@ -804,7 +801,7 @@ fit_nuisance_v <- function(train_data,
   train_data[, V_pseudo := v_pseudo_train]
   v_task_train <- sl3::sl3_Task$new(
     data = train_data,
-    weights = "obs_weights",  # NOTE: should not include two_phase_weights
+    weights = "obs_weights", # NOTE: should not include two_phase_weights
     covariates = c("A", w_names),
     outcome = "V_pseudo",
     outcome_type = "continuous"
@@ -816,7 +813,7 @@ fit_nuisance_v <- function(train_data,
   )]
   v_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
-    weights = "obs_weights",  # NOTE: should not include two_phase_weights
+    weights = "obs_weights", # NOTE: should not include two_phase_weights
     covariates = c("A", w_names),
     outcome = "V_pseudo",
     outcome_type = "continuous"
@@ -906,7 +903,6 @@ fit_nuisance_d <- function(train_data,
                            v_out,
                            m_names,
                            w_names) {
-
   ## extract nuisance estimates necessary for constructing pseudo-outcome
   b_prime <- b_out$b_est_train$b_pred_A_prime
   h_star <- h_out$treat_est_train$treat_pred_A_star
@@ -932,7 +928,7 @@ fit_nuisance_d <- function(train_data,
     # predict u(z, a', w) using intervened data with treatment set A = a'
     u_task_train_z_interv <- sl3::sl3_Task$new(
       data = train_data_z_interv,
-      weights = "obs_weights",  # NOTE: should not include two_phase_weights
+      weights = "obs_weights", # NOTE: should not include two_phase_weights
       covariates = c("Z", "A", w_names),
       outcome = "U_pseudo",
       outcome_type = "continuous"
@@ -972,7 +968,7 @@ fit_nuisance_d <- function(train_data,
   # NOTE: Purposefully not adding two-phase sampling weights
   d_task_train <- sl3::sl3_Task$new(
     data = eif_data_train,
-    weights = "obs_weights",  # NOTE: should not include two_phase_weights
+    weights = "obs_weights", # NOTE: should not include two_phase_weights
     covariates = c(w_names, "A", "Z", "Y"),
     outcome = "eif",
     outcome_type = "continuous"

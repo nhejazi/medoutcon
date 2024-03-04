@@ -142,7 +142,7 @@ medoutcon <- function(W,
                         cv_folds = 5L, max_iter = 5L,
                         tiltmod_tol = 5
                       ),
-                      g_bounds = c(0.001, 0.999)) {
+                      g_bounds = c(0.01, 0.99)) {
   # set defaults
   estimator <- match.arg(estimator)
   estimator_args <- unlist(estimator_args, recursive = FALSE)
@@ -181,7 +181,6 @@ medoutcon <- function(W,
 
   # need to loop over different contrasts to construct direct/indirect effects
   if (is.null(contrast)) {
-
     if (effect != "pm") {
       # select appropriate component for direct vs indirect effects
       is_effect_direct <- (effect == "direct")
@@ -296,21 +295,21 @@ medoutcon <- function(W,
     return(ie_est_out)
   } else if (is.null(contrast) && (effect == "pm")) {
     # compute parameter estimate, influence function, and variances
-    pm_theta_est <-  1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
+    pm_theta_est <- 1 - log(est_params[[3]]$theta / est_params[[2]]$theta) /
       log(est_params[[1]]$theta / est_params[[2]]$theta)
     pm_eif_est <- -est_params[[3]]$eif /
       (est_params[[3]]$theta_plugin * log(est_params[[1]]$theta_plugin /
-                                   est_params[[2]]$theta_plugin)) +
+        est_params[[2]]$theta_plugin)) +
       est_params[[2]]$eif * (
         (log(est_params[[1]]$theta_plugin / est_params[[2]]$theta_plugin) -
-         log(est_params[[3]]$theta_plugin / est_params[[2]]$theta_plugin)) /
+          log(est_params[[3]]$theta_plugin / est_params[[2]]$theta_plugin)) /
           (est_params[[2]]$theta_plugin *
-           (log(est_params[[1]]$theta_plugin /
-                  est_params[[2]]$theta_plugin))^2)) +
+            (log(est_params[[1]]$theta_plugin /
+              est_params[[2]]$theta_plugin))^2)) +
       est_params[[1]]$eif * log(est_params[[3]]$theta_plugin /
-                                est_params[[2]]$theta_plugin) /
-      (est_params[[1]]$theta_plugin * (log(est_params[[1]]$theta_plugin /
-                                   est_params[[2]]$theta_plugin))^2)
+        est_params[[2]]$theta_plugin) /
+        (est_params[[1]]$theta_plugin * (log(est_params[[1]]$theta_plugin /
+          est_params[[2]]$theta_plugin))^2)
     pm_var_est <- stats::var(pm_eif_est) / nrow(data)
 
     # construct output in same style as for contrast-specific parameter

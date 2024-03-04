@@ -1,7 +1,12 @@
 # medoutcon 0.2.1
 
-* Fixes issue affecting weighted TMLEs that introduced itself during
-  previous update to `est_tml()`.
+* Change iterative targeting procedures in `est_tml()` to use `glm2::glm2`
+  instead of `stats::glm` to avoid issues with erratic  IRLS in the latter;
+  see <https://journal.r-project.org/archive/2011/RJ-2011-012/> for details.
+
+# medoutcon 0.2.1
+
+* Fixes bug in weighted TMLEs introduced during prior update to `est_tml()`.
 
 # medoutcon 0.2.0
 

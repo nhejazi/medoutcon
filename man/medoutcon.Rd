@@ -26,7 +26,7 @@ medoutcon(
   d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
   estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5),
-  g_bounds = c(0.001, 0.999)
+  g_bounds = c(0.01, 0.99)
 )
 }
 \arguments{

@@ -81,8 +81,7 @@ cv_eif <- function(fold,
                    effect_type = c("interventional", "natural"),
                    w_names,
                    m_names,
-                   g_bounds = c(0.001, 0.999)) {
-
+                   g_bounds = c(0.01, 0.99)) {
   # make training and validation data
   train_data <- origami::training(data_in)
   valid_data <- origami::validation(data_in)
@@ -347,7 +346,6 @@ two_phase_eif <- function(R,
                           eif,
                           eif_predictions,
                           plugin_est) {
-
   # compute the weights for the EIF update
   ipw_two_phase <- R * two_phase_weights
 
@@ -464,11 +462,10 @@ est_onestep <- function(data,
                         w_names,
                         m_names,
                         y_bounds,
-                        g_bounds = c(0.001, 0.999),
+                        g_bounds = c(0.01, 0.99),
                         effect_type = c("interventional", "natural"),
                         svy_weights = NULL,
                         cv_folds = 5L) {
-
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
@@ -608,9 +605,10 @@ est_onestep <- function(data,
 #'
 #' @importFrom dplyr "%>%"
 #' @importFrom assertthat assert_that
-#' @importFrom stats var glm as.formula qlogis plogis coef predict
-#'  weighted.mean
 #' @importFrom origami make_folds cross_validate folds_vfold
+#' @importFrom stats var as.formula plogis qlogis coef predict weighted.mean
+#'   binomial
+#' @importFrom glm2 glm2
 #'
 #' @keywords internal
 est_tml <- function(data,
@@ -626,13 +624,12 @@ est_tml <- function(data,
                     w_names,
                     m_names,
                     y_bounds,
-                    g_bounds = c(0.001, 0.999),
+                    g_bounds = c(0.01, 0.99),
                     effect_type = c("interventional", "natural"),
                     svy_weights = NULL,
                     cv_folds = 5L,
                     max_iter = 5L,
-                    tiltmod_tol = 10) {
-
+                    tiltmod_tol = 5) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
@@ -701,16 +698,14 @@ est_tml <- function(data,
 
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
-
     # tilt the two-phase sampling weights if necessary
     if (tilt_two_phase_weights && mean(r_score) > tilt_stop_crit) {
-
-      # tilting model for known weights using weighting approah
+      # tilting regression for known weights using weighting approach
       two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
         bound_precision() %>%
         stats::qlogis()
       suppressWarnings(
-        tilted_two_phase_fit <- stats::glm(
+        tilted_two_phase_fit <- glm2::glm2(
           stats::as.formula(
             "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
           ),
@@ -719,7 +714,7 @@ est_tml <- function(data,
             two_phase_prob_logit = two_phase_prob_logit,
             weighted_d_pred = d_pred * data$two_phase_weights
           ),
-          family = "binomial",
+          family = stats::binomial(),
           start = 0
         )
       )
@@ -740,13 +735,12 @@ est_tml <- function(data,
       # record the two-phase sampling score
       r_score <- d_pred * data$two_phase_weights *
         (data$R - tilted_two_phase_prob)
-
     } else {
       r_score <- 0
     }
 
+    # NOTE: check convergence condition for outcome regression
     if (mean(b_score) > tilt_stop_crit) {
-
       # compute auxiliary covariates from updated estimates
       c_star_Z_natural <- (q_prime_Z_natural / r_prime_Z_natural) * c_star_mult
       c_star_Z_one <- (q_prime_Z_one / r_prime_Z_one) * c_star_mult
@@ -759,7 +753,7 @@ est_tml <- function(data,
           c_star_mult
       }
 
-      # bound and transform nuisance estimates for tilting models
+      # bound and transform nuisance estimates for tilting regressions
       b_prime_Z_natural_logit <- b_prime_Z_natural %>%
         bound_precision() %>%
         stats::qlogis()
@@ -773,14 +767,14 @@ est_tml <- function(data,
       # fit tilting model for the outcome mechanism
       c_star_b_tilt <- c_star_Z_natural
       if (tilt_two_phase_weights) {
-        weights_b_tilt <- as.numeric(data[R == 1, A] == contrast[1]) / g_prime *
-          as.numeric(data[R == 1, two_phase_weights])
+        weights_b_tilt <- as.numeric(data[R == 1, A] == contrast[1]) /
+          g_prime * as.numeric(data[R == 1, two_phase_weights])
       } else {
         weights_b_tilt <- data$obs_weights * (data$A == contrast[1]) / g_prime
       }
 
       suppressWarnings(
-        b_tilt_fit <- stats::glm(
+        b_tilt_fit <- glm2::glm2(
           stats::as.formula("y_scaled ~ -1 + offset(b_prime_logit) + c_star"),
           data = data.table::as.data.table(list(
             y_scaled = data[R == 1, Y],
@@ -788,84 +782,83 @@ est_tml <- function(data,
             c_star = c_star_b_tilt
           )),
           weights = weights_b_tilt,
-          family = "binomial",
+          family = stats::binomial(),
           start = 0
         )
       )
       if (is.na(stats::coef(b_tilt_fit))) {
         b_tilt_fit$coefficients <- 0
       } else if (!b_tilt_fit$converged || abs(max(stats::coef(b_tilt_fit))) >
-                   tiltmod_tol) {
+        tiltmod_tol) {
         b_tilt_fit$coefficients <- 0
       }
       b_tilt_coef <- unname(stats::coef(b_tilt_fit))
 
-      # update nuisance estimates via tilting models for outcome
+      # update nuisance estimates via tilting regressions for outcome
       b_prime_Z_natural <- stats::plogis(b_prime_Z_natural_logit +
-                                           b_tilt_coef * c_star_Z_natural)
+        b_tilt_coef * c_star_Z_natural)
       b_prime_Z_one <- stats::plogis(b_prime_Z_one_logit +
-                                       b_tilt_coef * c_star_Z_one)
+        b_tilt_coef * c_star_Z_one)
       b_prime_Z_zero <- stats::plogis(b_prime_Z_zero_logit +
-                                        b_tilt_coef * c_star_Z_zero)
+        b_tilt_coef * c_star_Z_zero)
 
       # compute efficient score for outcome regression component
       b_score <- data[R == 1, two_phase_weights] *
         ipw_prime * c_star_Z_natural * (data[R == 1, Y] - b_prime_Z_natural)
-
     } else {
       b_score <- 0
     }
 
+    # NOTE: check convergence condition for intermediate confounding
     if (mean(q_score) > tilt_stop_crit) {
-
-      # perform iterative targeting for intermediate confounding mechanism
+      # perform iterative targeting for intermediate confounding
       q_prime_Z_one_logit <- q_prime_Z_one %>%
         bound_precision() %>%
         stats::qlogis()
 
-      # fit tilting model for the intermediate confounding mechanism
+      # fit tilting regressions for intermediate confounding
       u_prime_diff_q_tilt <- cv_eif_est$u_int_diff
       if (tilt_two_phase_weights) {
-         weights_q_tilt <- as.numeric(data[R == 1, A] == contrast[1]) /
-           g_prime * as.numeric(data[R == 1, two_phase_weights])
+        weights_q_tilt <- as.numeric(data[R == 1, A] == contrast[1]) /
+          g_prime * as.numeric(data[R == 1, two_phase_weights])
       } else {
         weights_q_tilt <- data$obs_weights * (data$A == contrast[1]) / g_prime
       }
       suppressWarnings(
-        q_tilt_fit <- stats::glm(
+        q_tilt_fit <- glm2::glm2(
           stats::as.formula("Z ~ -1 + offset(q_prime_logit) + u_prime_diff"),
           data = data.table::as.data.table(list(
             Z = data[R == 1, Z],
             q_prime_logit = q_prime_Z_one_logit,
-            u_prime_diff =  u_prime_diff_q_tilt
+            u_prime_diff = u_prime_diff_q_tilt
           )),
           weights = weights_q_tilt,
-          family = "binomial",
+          family = stats::binomial(),
           start = 0
         )
       )
 
-      # NOTE: for the natural (in)direct effects, the regressor on the RHS is
-      #       uniquely ~ZERO~ so the estimated parameter should always be NaN
+      # NOTE: for the natural (in)direct effects, the regressor on the RHS
+      #       is uniquely ZERO so estimated parameter should always be NaN
       if (effect_type == "natural") {
         q_tilt_fit$coefficients <- NA
       }
       if (is.na(stats::coef(q_tilt_fit))) {
         q_tilt_fit$coefficients <- 0
       } else if (!q_tilt_fit$converged || abs(max(stats::coef(q_tilt_fit))) >
-                   tiltmod_tol) {
+        tiltmod_tol) {
         q_tilt_fit$coefficients <- 0
       }
       q_tilt_coef <- unname(stats::coef(q_tilt_fit))
 
-      # update nuisance estimates via tilting model for intermediate confounder
+      # update nuisance estimates via tilting of intermediate confounder
       if (effect_type == "natural") {
         # for the natural (in)direct effects, no updates necessary
         q_prime_Z_one <- data[R == 1, Z]
         q_prime_Z_natural <- data[R == 1, Z]
       } else {
         q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
-                                         cv_eif_est$u_int_diff)
+          cv_eif_est$u_int_diff)
         q_prime_Z_natural <- (data[R == 1, Z] * q_prime_Z_one) +
           ((1 - data[R == 1, Z]) * (1 - q_prime_Z_one))
       }
@@ -874,12 +867,11 @@ est_tml <- function(data,
       q_score <- ipw_prime * cv_eif_est$u_int_diff *
         (data[R == 1, Z] - q_prime_Z_one) *
         (data[R == 1, two_phase_weights])
-
     } else {
       q_score <- 0
     }
 
-    # check convergence and iterate the iterator
+    # check convergence and iterate the counter
     eif_stop_crit <- all(
       abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
     )
@@ -905,22 +897,22 @@ est_tml <- function(data,
     bound_precision() %>%
     stats::qlogis()
 
-  # fit tilting model for substitution estimator
+  # fit tilting regression for substitution estimator
   if (tilt_two_phase_weights) {
     weights_v_tilt <- (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
-        (as.numeric(data[R == 1, two_phase_weights]))
+      (as.numeric(data[R == 1, two_phase_weights]))
   } else {
     weights_v_tilt <- data$obs_weights * (data$A == contrast[2]) / g_star
   }
   suppressWarnings(
-    v_tilt_fit <- stats::glm(
+    v_tilt_fit <- glm2::glm2(
       stats::as.formula("v_pseudo ~ offset(v_star_logit)"),
       data = data.table::as.data.table(list(
         v_pseudo = v_pseudo,
         v_star_logit = v_star_logit
       )),
       weights = weights_v_tilt,
-      family = "binomial",
+      family = stats::binomial(),
       start = 0
     )
   )
@@ -942,8 +934,8 @@ est_tml <- function(data,
     eif_est_out <- eif_est_rescaled
   } else {
     # compute a re-weighted TMLE, with re-weighted influence function
-    # make sure that survey weights are ordered like the concatenated validation
-    # sets
+    # NOTE: make sure that survey weights are ordered like the concatenated
+    #       validation sets
     svy_weights <- svy_weights[obs_valid_idx]
     tml_est <- stats::weighted.mean(v_star_tmle_rescaled, svy_weights)
     eif_est_out <- eif_est_rescaled * svy_weights

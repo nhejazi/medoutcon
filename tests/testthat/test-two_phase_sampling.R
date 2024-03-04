@@ -4,7 +4,6 @@
 context("Two-phase sampling EIF convenience function")
 
 test_that("two_phase_eif returns an uncentered EIF", {
-
   # generate fake inputs
   R <- c(1, 0, 0, 0, 1, 1)
   two_phase_weights <- c(rep(1 / 2, 3), rep(2, 3))
@@ -109,7 +108,7 @@ test_that("MSE of mediator propensity score estimates is sufficiently low", {
   h_mse <- mean(
     (
       h_out$treat_est_train$treat_pred_A_prime -
-      e(aprime, m[data$R == 1], w[data$R == 1, ])
+        e(aprime, m[data$R == 1], w[data$R == 1, ])
     )^2
   )
   expect_lt(h_mse, 0.01)
@@ -123,8 +122,9 @@ b_out <- fit_out_mech(
 test_that("MSE of outcome regression estimates is sufficiently low", {
   b_mse <- mean(
     (b_out$b_est_train$b_pred_A_prime -
-     my(m[data$R == 1], z[data$R == 1], aprime, w[data$R == 1, ])
-  )^2)
+      my(m[data$R == 1], z[data$R == 1], aprime, w[data$R == 1, ])
+    )^2
+  )
   expect_lt(b_mse, 0.02)
 })
 
@@ -158,7 +158,7 @@ test_that("MSE of confounder regression r estimates is sufficiently low", {
   r_mse <- mean(
     (
       r_out$moc_est_train_Z_one$moc_pred_A_prime -
-      r(1, aprime, m[data$R == 1], w[data$R == 1, ])
+        r(1, aprime, m[data$R == 1], w[data$R == 1, ])
     )^2
   )
   expect_lt(r_mse, 0.01)
@@ -183,7 +183,7 @@ u_out <- fit_nuisance_u(
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   u_mse <- mean(
     (u_out$u_pred -
-     u(z[data$R == 1], w[data$R == 1, ], aprime, astar)
+      u(z[data$R == 1], w[data$R == 1, ], aprime, astar)
     )^2
   )
   expect_lt(u_mse, 0.02)

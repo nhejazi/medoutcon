@@ -1,4 +1,4 @@
-utils::globalVariables(c("..w_names", "A", "Z", "Y", "R"))
+utils::globalVariables(c("..w_names", "A", "Z", "Y", "R", "v_star"))
 
 #' EIF for natural and interventional (in)direct effects
 #'
@@ -501,6 +501,7 @@ est_onestep <- function(data,
   )
 
   # get estimated efficient influence function
+  v_star <- do.call(rbind, cv_eif_results[[1]])$v_star
   obs_valid_idx <- do.call(c, lapply(folds, `[[`, "validation_set"))
   cv_eif_est <- unlist(cv_eif_results$D_star)[order(obs_valid_idx)]
 
@@ -522,6 +523,7 @@ est_onestep <- function(data,
   # output
   os_est_out <- list(
     theta = os_est,
+    theta_plugin = est_plugin(v_star),
     var = os_var,
     eif = (eif_est_out - os_est),
     type = "onestep"
@@ -695,55 +697,12 @@ est_tml <- function(data,
   n_obs <- nrow(data)
   se_eif <- sqrt(var(cv_eif_est$D_star) / n_obs)
   tilt_stop_crit <- se_eif / log(n_obs)
-  r_score <- b_score <- q_score <- Inf
+  b_score <- q_score <- Inf
   tilt_two_phase_weights <- sum(data$R) != nrow(data)
   d_pred <- unlist(cv_eif_results$D_pred)[order(obs_valid_idx)]
 
   # perform iterative targeting
   while (!eif_stop_crit && n_iter <= max_iter) {
-
-    # tilt the two-phase sampling weights if necessary
-    if (tilt_two_phase_weights && mean(r_score) > tilt_stop_crit) {
-
-      # tilting model for known weights using weighting approah
-      two_phase_prob_logit <- (1 / data$two_phase_weights) %>%
-        bound_precision() %>%
-        stats::qlogis()
-      suppressWarnings(
-        tilted_two_phase_fit <- stats::glm(
-          stats::as.formula(
-            "R ~ -1 + offset(two_phase_prob_logit) + weighted_d_pred"
-          ),
-          data = data.table::data.table(
-            R = data$R,
-            two_phase_prob_logit = two_phase_prob_logit,
-            weighted_d_pred = d_pred * data$two_phase_weights
-          ),
-          family = "binomial",
-          start = 0
-        )
-      )
-
-      # housekeeping for the tilting coefficient
-      if (is.na(stats::coef(tilted_two_phase_fit))) {
-        tilted_two_phase_fit$coefficients <- 0
-      } else if (abs(max(stats::coef(tilted_two_phase_fit))) > tiltmod_tol) {
-        tilted_two_phase_fit$coefficients <- 0
-      }
-
-      # tilt the two-phase sampling probs
-      tilted_two_phase_prob <- predict(tilted_two_phase_fit, type = "response")
-
-      # update the two-phase sampling weights
-      data$two_phase_weights <- 1 / tilted_two_phase_prob
-
-      # record the two-phase sampling score
-      r_score <- d_pred * data$two_phase_weights *
-        (data$R - tilted_two_phase_prob)
-
-    } else {
-      r_score <- 0
-    }
 
     if (mean(b_score) > tilt_stop_crit) {
 
@@ -880,9 +839,7 @@ est_tml <- function(data,
     }
 
     # check convergence and iterate the iterator
-    eif_stop_crit <- all(
-      abs(c(mean(b_score), mean(q_score), mean(r_score))) < tilt_stop_crit
-    )
+    eif_stop_crit <- all(abs(c(mean(b_score), mean(q_score))) < tilt_stop_crit)
     n_iter <- n_iter + 1
   }
 
@@ -953,6 +910,7 @@ est_tml <- function(data,
   # output
   tmle_out <- list(
     theta = tml_est,
+    theta_plugin = est_plugin(cv_eif_est$v_star),
     var = tmle_var,
     eif = (eif_est_out - tml_est),
     n_iter = n_iter,

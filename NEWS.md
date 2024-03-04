@@ -1,3 +1,8 @@
+# medoutcon 0.2.1
+
+* Fixes issue affecting weighted TMLEs that introduced itself during
+  previous update to `est_tml()`.
+
 # medoutcon 0.2.0
 
 * Added support for a semiparametric correction for outcome-dependent two-phase

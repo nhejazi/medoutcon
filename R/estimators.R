@@ -776,7 +776,7 @@ est_tml <- function(data,
         weights_b_tilt <- as.numeric(data[R == 1, A] == contrast[1]) / g_prime *
           as.numeric(data[R == 1, two_phase_weights])
       } else {
-        weights_b_tilt <- (data$A == contrast[1]) / g_prime
+        weights_b_tilt <- data$obs_weights * (data$A == contrast[1]) / g_prime
       }
 
       suppressWarnings(
@@ -829,7 +829,7 @@ est_tml <- function(data,
          weights_q_tilt <- as.numeric(data[R == 1, A] == contrast[1]) /
            g_prime * as.numeric(data[R == 1, two_phase_weights])
       } else {
-        weights_q_tilt <- (data$A == contrast[1]) / g_prime
+        weights_q_tilt <- data$obs_weights * (data$A == contrast[1]) / g_prime
       }
       suppressWarnings(
         q_tilt_fit <- stats::glm(
@@ -906,6 +906,12 @@ est_tml <- function(data,
     stats::qlogis()
 
   # fit tilting model for substitution estimator
+  if (tilt_two_phase_weights) {
+    weights_v_tilt <- (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
+        (as.numeric(data[R == 1, two_phase_weights]))
+  } else {
+    weights_v_tilt <- data$obs_weights * (data$A == contrast[2]) / g_star
+  }
   suppressWarnings(
     v_tilt_fit <- stats::glm(
       stats::as.formula("v_pseudo ~ offset(v_star_logit)"),
@@ -913,8 +919,7 @@ est_tml <- function(data,
         v_pseudo = v_pseudo,
         v_star_logit = v_star_logit
       )),
-      weights = (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
-        (as.numeric(data[R == 1, two_phase_weights])),
+      weights = weights_v_tilt,
       family = "binomial",
       start = 0
     )

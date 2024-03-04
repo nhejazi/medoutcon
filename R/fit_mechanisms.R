@@ -53,8 +53,8 @@ fit_treat_mech <- function(train_data,
     # update observation weights with two-phase sampling weights, if necessary
     # NOTE: importantly, re-weighting the propensity score (g) estimator is
     #       not necessary under two-phase sampling of the mediators
-    train_data[, obs_weights := R * two_phase_weights * obs_weights]
-    valid_data[, obs_weights := R * two_phase_weights * obs_weights]
+    train_data[, obs_weights := two_phase_weights * obs_weights]
+    valid_data[, obs_weights := two_phase_weights * obs_weights]
 
     # remove observations that were not sampled in second stage
     train_data <- train_data[R == 1, ]
@@ -185,8 +185,8 @@ fit_out_mech <- function(train_data,
                          m_names,
                          w_names) {
   # update observation weights with two-phase sampling weights, if necessary
-  train_data[, obs_weights := R * two_phase_weights * obs_weights]
-  valid_data[, obs_weights := R * two_phase_weights * obs_weights]
+  train_data[, obs_weights := two_phase_weights * obs_weights]
+  valid_data[, obs_weights := two_phase_weights * obs_weights]
 
   # remove observations that were not sampled in second stage
   train_data <- train_data[R == 1, ]
@@ -371,13 +371,17 @@ fit_moc_mech <- function(train_data,
   ## construct task for nuisance parameter fit
   if (type == "q") {
     cov_names <- w_names
+
+    # update observation weights with two-phase sampling weights, if necessary
+    # NOTE: Might not be necessary, check with Nima
+    train_data[, obs_weights := two_phase_weights * obs_weights]
+    valid_data[, obs_weights := two_phase_weights * obs_weights]
   } else if (type == "r") {
     cov_names <- c(m_names, w_names)
 
     # update observation weights with two-phase sampling weights, if necessary
-    # NOTE: Should this be applied to q as well? Probably.
-    train_data[, obs_weights := R * two_phase_weights * obs_weights]
-    valid_data[, obs_weights := R * two_phase_weights * obs_weights]
+    train_data[, obs_weights := two_phase_weights * obs_weights]
+    valid_data[, obs_weights := two_phase_weights * obs_weights]
 
     # remove observations that were not sampled in second stage
     train_data <- train_data[R == 1, ]
@@ -576,8 +580,8 @@ fit_nuisance_u <- function(train_data,
                            h_out,
                            w_names) {
   # update observation weights with two-phase sampling weights, if necessary
-  train_data[, obs_weights := R * obs_weights]
-  valid_data[, obs_weights := R * obs_weights]
+  train_data[, obs_weights := two_phase_weights * obs_weights]
+  valid_data[, obs_weights := two_phase_weights * obs_weights]
 
   ## extract nuisance estimates necessary for constructing pseudo-outcome
   b_prime <- b_out$b_est_train$b_pred_A_prime

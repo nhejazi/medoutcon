@@ -115,7 +115,7 @@ cross-validation should stratify the folds based on the outcome variable.
 If \code{TRUE}, the folds are stratified by passing the outcome variable to
 the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
 the default is \code{FALSE}, an override is triggered when the incidence of
-the binary outcome variable falls below 10%.}
+the binary outcome variable falls below 0.1.}
 }
 \description{
 One-step estimator for natural and interventional (in)direct effects

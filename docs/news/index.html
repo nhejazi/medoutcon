@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -58,6 +58,22 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.3" id="medoutcon-023">medoutcon 0.2.3<a class="anchor" aria-label="anchor" href="#medoutcon-023"></a></h2>
+<ul><li>Added a new named argument <code>cv_stratify</code> to <code><a href="../reference/est_onestep.html">est_onestep()</a></code> and <code><a href="../reference/est_tml.html">est_tml()</a></code> and to the <code>estimator_args</code> list-argument in <code><a href="../reference/medoutcon.html">medoutcon()</a></code>, which allows for stratified folds to be generated for cross-fitting (by passing these to the <code>strata_ids</code> argument of <code>make_folds()</code> from the <code>origami</code> package). This is also triggered by an override in <code><a href="../reference/est_onestep.html">est_onestep()</a></code> and <code><a href="../reference/est_tml.html">est_tml()</a></code> when the proportion of detected cases is less than 0.1, a heuristic for rare outcomes.</li>
+<li>Increased the default number of folds for cross-fitting from 5 to 10, setting <code>cv_folds = 10L</code> in named arguments to <code><a href="../reference/est_onestep.html">est_onestep()</a></code> and <code><a href="../reference/est_tml.html">est_tml()</a></code> and to the <code>estimator_args</code> list-argument in <code><a href="../reference/medoutcon.html">medoutcon()</a></code>.</li>
+<li>Changed default propensity score truncation bounds specified in <code>g_bounds</code> to <code>c(0.005, 0.995)</code> from <code>c(0.01, 0.99)</code> (in v0.22), based on sanity checks and manual experimentation.</li>
+<li>Wrapped instances of <code><a href="https://tlverse.org/sl3/reference/sl3_Task.html" class="external-link">sl3_Task()</a></code> in which <code>outcome_type = "continuous"</code> is specified in <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings()</a></code> to sink warnings when the outcome variable for a given nuisance estimation task fails <code>sl3</code>’s check for continuous-ness.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.2" id="medoutcon-022">medoutcon 0.2.2<a class="anchor" aria-label="anchor" href="#medoutcon-022"></a></h2>
+<ul><li>Change iterative targeting procedures in <code><a href="../reference/est_tml.html">est_tml()</a></code> to use <code><a href="https://rdrr.io/pkg/glm2/man/glm2.html" class="external-link">glm2::glm2</a></code> instead of <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">stats::glm</a></code> to avoid issues with erratic IRLS in the latter; see <a href="https://journal.r-project.org/archive/2011/RJ-2011-012/" class="external-link uri">https://journal.r-project.org/archive/2011/RJ-2011-012/</a> for details.</li>
+<li>Changed default propensity score truncation bounds specified in <code>g_bounds</code> by an order of magnitude, from <code>c(0.001, 0.999)</code> to <code>c(0.01, 0.99)</code>, to mitigate potential stability issues.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.1" id="medoutcon-021">medoutcon 0.2.1<a class="anchor" aria-label="anchor" href="#medoutcon-021"></a></h2>
+<ul><li>Fixes bug in weighted TMLEs introduced during prior update to <code><a href="../reference/est_tml.html">est_tml()</a></code>.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.0" id="medoutcon-020">medoutcon 0.2.0<a class="anchor" aria-label="anchor" href="#medoutcon-020"></a></h2>
 <ul><li>Added support for a semiparametric correction for outcome-dependent two-phase sampling designs with known or estimated sampling weights.</li>
 <li>Tightened sanity checks for estimation of natural direct and indirect effects by requiring that EIF scores related to intermediate confounders uniformly be zero when <code>Z = NULL</code> is specified.</li>
@@ -87,7 +103,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

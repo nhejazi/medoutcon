@@ -1,9 +1,9 @@
-pandoc: '2.18'
-pkgdown: 2.0.6
+pandoc: 3.1.9
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   intro_medoutcon: intro_medoutcon.html
-last_built: 2022-10-12T21:35Z
+last_built: 2024-03-17T21:26Z
 urls:
   reference: https://code.nimahejazi.org/medoutcon/reference
   article: https://code.nimahejazi.org/medoutcon/articles

@@ -452,7 +452,7 @@ two_phase_eif <- function(R,
 #'  If \code{TRUE}, the folds are stratified by passing the outcome variable to
 #'  the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
 #'  the default is \code{FALSE}, an override is triggered when the incidence of
-#'  the binary outcome variable falls below 10%.
+#'  the binary outcome variable falls below 0.1.
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom stats var weighted.mean
@@ -482,7 +482,7 @@ est_onestep <- function(data,
 
   # create cross-validation folds
   if (cv_stratify ||
-      (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
+    (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
     # if outcome is binary and rare, use stratified V-fold cross-validation
     folds <- origami::make_folds(
       data,
@@ -628,7 +628,7 @@ est_onestep <- function(data,
 #'  If \code{TRUE}, the folds are stratified by passing the outcome variable to
 #'  the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
 #'  the default is \code{FALSE}, an override is triggered when the incidence of
-#'  the binary outcome variable falls below 10%.
+#'  the binary outcome variable falls below 0.1.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken for the iterative procedure to construct a TML estimator.
 #' @param tiltmod_tol A \code{numeric} indicating the maximum step size to be
@@ -668,8 +668,7 @@ est_tml <- function(data,
 
   # create cross-validation folds
   if (cv_stratify ||
-      (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
-
+    (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
     # if outcome is binary and rare, use stratified V-fold cross-validation
     folds <- origami::make_folds(
       data,

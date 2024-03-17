@@ -72,8 +72,34 @@ confounder (`Z`), consider the following example:
 ``` r
 library(data.table)
 library(tidyverse)
+#> ── Attaching core tidyverse packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 2.0.0 ──
+#> ✔ dplyr     1.1.3     ✔ readr     2.1.4
+#> ✔ forcats   1.0.0     ✔ stringr   1.5.0
+#> ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+#> ✔ lubridate 1.9.3     ✔ tidyr     1.3.0
+#> ✔ purrr     1.0.2     
+#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ✖ dplyr::between()     masks data.table::between()
+#> ✖ dplyr::filter()      masks stats::filter()
+#> ✖ dplyr::first()       masks data.table::first()
+#> ✖ lubridate::hour()    masks data.table::hour()
+#> ✖ lubridate::isoweek() masks data.table::isoweek()
+#> ✖ dplyr::lag()         masks stats::lag()
+#> ✖ dplyr::last()        masks data.table::last()
+#> ✖ lubridate::mday()    masks data.table::mday()
+#> ✖ lubridate::minute()  masks data.table::minute()
+#> ✖ lubridate::month()   masks data.table::month()
+#> ✖ lubridate::quarter() masks data.table::quarter()
+#> ✖ lubridate::second()  masks data.table::second()
+#> ✖ purrr::transpose()   masks data.table::transpose()
+#> ✖ lubridate::wday()    masks data.table::wday()
+#> ✖ lubridate::week()    masks data.table::week()
+#> ✖ lubridate::yday()    masks data.table::yday()
+#> ✖ lubridate::year()    masks data.table::year()
+#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 library(medoutcon)
-set.seed(1584)
+#> medoutcon v0.2.3: Efficient Natural and Interventional Causal Mediation Analysis
+set.seed(02138)
 
 # produces a simple data set based on ca causal model with mediation
 make_example_data <- function(n_obs = 1000) {
@@ -111,12 +137,12 @@ m_names <- str_subset(colnames(example_data), "M")
 # quick look at the data
 head(example_data)
 #>    W_1 W_2 W_3 A Z M Y
-#> 1:   1   1   0 0 1 0 1
-#> 2:   0   0   0 1 0 1 0
-#> 3:   1   0   1 0 0 1 0
-#> 4:   0   0   0 0 0 1 0
-#> 5:   0   0   0 0 0 0 1
-#> 6:   1   0   0 1 0 1 0
+#> 1:   1   0   0 0 0 1 0
+#> 2:   0   0   0 0 0 0 1
+#> 3:   1   0   1 1 1 1 0
+#> 4:   1   0   1 1 0 1 1
+#> 5:   1   0   1 0 1 1 1
+#> 6:   1   0   0 0 0 1 0
 
 # compute one-step estimate of the interventional direct effect
 os_de <- medoutcon(
@@ -129,6 +155,11 @@ os_de <- medoutcon(
   estimator = "onestep"
 )
 os_de
+#> Interventional Direct Effect
+#> Estimator: onestep
+#> Estimate: -0.101
+#> Std. Error: 0.028
+#> 95% CI: [-0.156, -0.045]
 
 # compute targeted minimum loss estimate of the interventional direct effect
 tmle_de <- medoutcon(
@@ -141,6 +172,11 @@ tmle_de <- medoutcon(
   estimator = "tmle"
 )
 tmle_de
+#> Interventional Direct Effect
+#> Estimator: tmle
+#> Estimate: -0.103
+#> Std. Error: 0.029
+#> 95% CI: [-0.16, -0.046]
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -200,24 +236,24 @@ After using the `medoutcon` R package, please cite the following:
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
           title = {{medoutcon}: Efficient natural and interventional causal
             mediation analysis},
-          year  = {2022},
+          year  = {2024},
           doi = {10.5281/zenodo.5809519},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.1.6}
+          note = {R package version 0.2.3}
         }
 
 ------------------------------------------------------------------------
 
 ## License
 
-© 2020-2022 [Nima S. Hejazi](https://nimahejazi.org)
+© 2020-2024 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
 
-    Copyright (c) 2020-2022 Nima S. Hejazi
+    Copyright (c) 2020-2024 Nima S. Hejazi
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

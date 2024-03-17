@@ -120,8 +120,34 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; ── Attaching core tidyverse packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 2.0.0 ──</span></span>
+<span><span class="co">#&gt; ✔ dplyr     1.1.3     ✔ readr     2.1.4</span></span>
+<span><span class="co">#&gt; ✔ forcats   1.0.0     ✔ stringr   1.5.0</span></span>
+<span><span class="co">#&gt; ✔ ggplot2   3.4.4     ✔ tibble    3.2.1</span></span>
+<span><span class="co">#&gt; ✔ lubridate 1.9.3     ✔ tidyr     1.3.0</span></span>
+<span><span class="co">#&gt; ✔ purrr     1.0.2     </span></span>
+<span><span class="co">#&gt; ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></span>
+<span><span class="co">#&gt; ✖ dplyr::between()     masks data.table::between()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::filter()      masks stats::filter()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::first()       masks data.table::first()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::hour()    masks data.table::hour()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::isoweek() masks data.table::isoweek()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::lag()         masks stats::lag()</span></span>
+<span><span class="co">#&gt; ✖ dplyr::last()        masks data.table::last()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::mday()    masks data.table::mday()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::minute()  masks data.table::minute()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::month()   masks data.table::month()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::quarter() masks data.table::quarter()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::second()  masks data.table::second()</span></span>
+<span><span class="co">#&gt; ✖ purrr::transpose()   masks data.table::transpose()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::wday()    masks data.table::wday()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::week()    masks data.table::week()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::yday()    masks data.table::yday()</span></span>
+<span><span class="co">#&gt; ✖ lubridate::year()    masks data.table::year()</span></span>
+<span><span class="co">#&gt; ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/medoutcon" class="external-link">medoutcon</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1584</span><span class="op">)</span></span>
+<span><span class="co">#&gt; medoutcon v0.2.3: Efficient Natural and Interventional Causal Mediation Analysis</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">02138</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># produces a simple data set based on ca causal model with mediation</span></span>
 <span><span class="va">make_example_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_obs</span> <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">{</span></span>
@@ -159,12 +185,12 @@
 <span><span class="co"># quick look at the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    W_1 W_2 W_3 A Z M Y</span></span>
-<span><span class="co">#&gt; 1:   1   1   0 0 1 0 1</span></span>
-<span><span class="co">#&gt; 2:   0   0   0 1 0 1 0</span></span>
-<span><span class="co">#&gt; 3:   1   0   1 0 0 1 0</span></span>
-<span><span class="co">#&gt; 4:   0   0   0 0 0 1 0</span></span>
-<span><span class="co">#&gt; 5:   0   0   0 0 0 0 1</span></span>
-<span><span class="co">#&gt; 6:   1   0   0 1 0 1 0</span></span>
+<span><span class="co">#&gt; 1:   1   0   0 0 0 1 0</span></span>
+<span><span class="co">#&gt; 2:   0   0   0 0 0 0 1</span></span>
+<span><span class="co">#&gt; 3:   1   0   1 1 1 1 0</span></span>
+<span><span class="co">#&gt; 4:   1   0   1 1 0 1 1</span></span>
+<span><span class="co">#&gt; 5:   1   0   1 0 1 1 1</span></span>
+<span><span class="co">#&gt; 6:   1   0   0 0 0 1 0</span></span>
 <span></span>
 <span><span class="co"># compute one-step estimate of the interventional direct effect</span></span>
 <span><span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span></span>
@@ -177,6 +203,11 @@
 <span>  estimator <span class="op">=</span> <span class="st">"onestep"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">os_de</span></span>
+<span><span class="co">#&gt; Interventional Direct Effect</span></span>
+<span><span class="co">#&gt; Estimator: onestep</span></span>
+<span><span class="co">#&gt; Estimate: -0.101</span></span>
+<span><span class="co">#&gt; Std. Error: 0.028</span></span>
+<span><span class="co">#&gt; 95% CI: [-0.156, -0.045]</span></span>
 <span></span>
 <span><span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span></span>
 <span><span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/medoutcon.html">medoutcon</a></span><span class="op">(</span></span>
@@ -188,7 +219,12 @@
 <span>  effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
 <span>  estimator <span class="op">=</span> <span class="st">"tmle"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">tmle_de</span></span></code></pre></div>
+<span><span class="va">tmle_de</span></span>
+<span><span class="co">#&gt; Interventional Direct Effect</span></span>
+<span><span class="co">#&gt; Estimator: tmle</span></span>
+<span><span class="co">#&gt; Estimate: -0.103</span></span>
+<span><span class="co">#&gt; Std. Error: 0.029</span></span>
+<span><span class="co">#&gt; 95% CI: [-0.16, -0.046]</span></span></code></pre></div>
 <p>For details on how to use data adaptive regression (machine learning) techniques in the estimation of nuisance parameters, consider consulting the vignette that accompanies the package.</p>
 <hr>
 </div>
@@ -239,21 +275,21 @@
 <span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="st">      author={Hejazi, Nima S and D{</span><span class="sc">\'</span><span class="st">\i}az, Iv{</span><span class="sc">\'</span><span class="st">a}n and Rudolph, Kara E},</span></span>
 <span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="st">      title = {{medoutcon}: Efficient natural and interventional causal</span></span>
 <span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="st">        mediation analysis},</span></span>
-<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="st">      year  = {2022},</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="st">      year  = {2024},</span></span>
 <span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="st">      doi = {10.5281/zenodo.5809519},</span></span>
 <span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="st">      url = {https://github.com/nhejazi/medoutcon},</span></span>
-<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="st">      note = {R package version 0.1.6}</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="st">      note = {R package version 0.2.3}</span></span>
 <span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="st">    }</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>© 2020-2022 <a href="https://nimahejazi.org" class="external-link">Nima S. Hejazi</a></p>
+<p>© 2020-2024 <a href="https://nimahejazi.org" class="external-link">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>MIT License</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">Copyright</span> (c) <span class="dv">2020-2022</span> Nima S. Hejazi</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">Copyright</span> (c) <span class="dv">2020-2024</span> Nima S. Hejazi</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>Permission is hereby granted, free of charge, to any person obtaining a copy</span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>of this software and associated documentation <span class="fu">files</span> (the <span class="st">"Software"</span>), to deal</span>

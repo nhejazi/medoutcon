@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 # R/`medoutcon`
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/nhejazi/medoutcon/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/medoutcon/actions)
+[![R-CMD-check](https://github.com/nhejazi/medoutcon/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/nhejazi/medoutcon/actions/workflows/R-CMD-check.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
@@ -109,7 +109,7 @@ make_example_data <- function(n_obs = 1000) {
 }
 
 # set seed and simulate example data
-example_data <- make_example_data()
+example_data <- make_example_data(n_obs = 5000L)
 w_names <- str_subset(colnames(example_data), "W")
 m_names <- str_subset(colnames(example_data), "M")
 

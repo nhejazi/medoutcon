@@ -81,7 +81,7 @@ cv_eif <- function(fold,
                    effect_type = c("interventional", "natural"),
                    w_names,
                    m_names,
-                   g_bounds = c(0.01, 0.99)) {
+                   g_bounds = c(0.005, 0.995)) {
   # make training and validation data
   train_data <- origami::training(data_in)
   valid_data <- origami::validation(data_in)
@@ -160,9 +160,11 @@ cv_eif <- function(fold,
   g_star <- g_out$treat_est_valid$treat_pred_A_star[valid_data$R == 1]
   h_prime <- h_out$treat_est_valid$treat_pred_A_prime
   g_prime <- g_out$treat_est_valid$treat_pred_A_prime[valid_data$R == 1]
-  q_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
+  q_prime_Z_one <-
+    q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
   r_prime_Z_one <- r_out$moc_est_valid_Z_one$moc_pred_A_prime
-  q_prime_Z_natural <- q_out$moc_est_valid_Z_natural$moc_pred_A_prime[valid_data$R == 1]
+  q_prime_Z_natural <-
+    q_out$moc_est_valid_Z_natural$moc_pred_A_prime[valid_data$R == 1]
   r_prime_Z_natural <- r_out$moc_est_valid_Z_natural$moc_pred_A_prime
 
   # need pseudo-outcome regressions with intervention set to a contrast
@@ -208,12 +210,14 @@ cv_eif <- function(fold,
 
     # predict u(z, a', w) using intervened data with treatment set A = a'
     # NOTE: here, obs_weights should not include two_phase_weights (?)
-    u_task_valid_z_interv <- sl3::sl3_Task$new(
-      data = valid_data_z_interv,
-      weights = "obs_weights",
-      covariates = c("Z", "A", w_names),
-      outcome = "U_pseudo",
-      outcome_type = "continuous"
+    suppressWarnings(
+      u_task_valid_z_interv <- sl3::sl3_Task$new(
+        data = valid_data_z_interv,
+        weights = "obs_weights",
+        covariates = c("Z", "A", w_names),
+        outcome = "U_pseudo",
+        outcome_type = "continuous"
+      )
     )
 
     # return partial pseudo-outcome for v nuisance regression
@@ -352,7 +356,7 @@ two_phase_eif <- function(R,
   # for each index in R with R == 0, add a zero at the same index in eif
   new_eif <- rep(NA, length(R))
   eif_idx <- 1
-  for (idx in seq_len(length(R))) {
+  for (idx in seq_along(R)) {
     if (R[idx] == 1) {
       new_eif[idx] <- eif[eif_idx]
       eif_idx <- eif_idx + 1
@@ -443,6 +447,12 @@ two_phase_eif <- function(R,
 #'  conditions on the one-step estimator to be relaxed. For compatibility with
 #'  \code{\link[origami]{make_folds}}, this value specified must be greater
 #'  than or equal to 2; the default is to create 5 folds.
+#' @param cv_stratify A \code{logical} atomic vector indicating whether V-fold
+#'  cross-validation should stratify the folds based on the outcome variable.
+#'  If \code{TRUE}, the folds are stratified by passing the outcome variable to
+#'  the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
+#'  the default is \code{FALSE}, an override is triggered when the incidence of
+#'  the binary outcome variable falls below 10%.
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom stats var weighted.mean
@@ -462,18 +472,32 @@ est_onestep <- function(data,
                         w_names,
                         m_names,
                         y_bounds,
-                        g_bounds = c(0.01, 0.99),
+                        g_bounds = c(0.005, 0.995),
                         effect_type = c("interventional", "natural"),
                         svy_weights = NULL,
-                        cv_folds = 5L) {
+                        cv_folds = 10L,
+                        cv_stratify = FALSE) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
   # create cross-validation folds
-  folds <- origami::make_folds(data,
-    fold_fun = origami::folds_vfold,
-    V = cv_folds
-  )
+  if (cv_stratify ||
+      (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
+    # if outcome is binary and rare, use stratified V-fold cross-validation
+    folds <- origami::make_folds(
+      data,
+      fold_fun = origami::folds_vfold,
+      V = cv_folds,
+      strata_ids = data$Y
+    )
+  } else {
+    # just use standard V-fold cross-validation
+    folds <- origami::make_folds(
+      data,
+      fold_fun = origami::folds_vfold,
+      V = cv_folds
+    )
+  }
 
   # estimate the EIF on a per-fold basis
   cv_eif_results <- origami::cross_validate(
@@ -599,6 +623,12 @@ est_onestep <- function(data,
 #'  conditions on the TML estimator to be relaxed. Note: for compatibility with
 #'  \code{\link[origami]{make_folds}}, this value  must be greater than or
 #'  equal to 2; the default is to create 10 folds.
+#' @param cv_stratify A \code{logical} atomic vector indicating whether V-fold
+#'  cross-validation should stratify the folds based on the outcome variable.
+#'  If \code{TRUE}, the folds are stratified by passing the outcome variable to
+#'  the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
+#'  the default is \code{FALSE}, an override is triggered when the incidence of
+#'  the binary outcome variable falls below 10%.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken for the iterative procedure to construct a TML estimator.
 #' @param tiltmod_tol A \code{numeric} indicating the maximum step size to be
@@ -626,20 +656,35 @@ est_tml <- function(data,
                     w_names,
                     m_names,
                     y_bounds,
-                    g_bounds = c(0.01, 0.99),
+                    g_bounds = c(0.005, 0.95),
                     effect_type = c("interventional", "natural"),
                     svy_weights = NULL,
-                    cv_folds = 5L,
-                    max_iter = 5L,
+                    cv_folds = 10L,
+                    cv_stratify = FALSE,
+                    max_iter = 10L,
                     tiltmod_tol = 5) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
   # create cross-validation folds
-  folds <- origami::make_folds(data,
-    fold_fun = origami::folds_vfold,
-    V = cv_folds
-  )
+  if (cv_stratify ||
+      (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
+
+    # if outcome is binary and rare, use stratified V-fold cross-validation
+    folds <- origami::make_folds(
+      data,
+      fold_fun = origami::folds_vfold,
+      V = cv_folds,
+      strata_ids = data$Y
+    )
+  } else {
+    # just use standard V-fold cross-validation
+    folds <- origami::make_folds(
+      data,
+      fold_fun = origami::folds_vfold,
+      V = cv_folds
+    )
+  }
 
   # perform the cv_eif procedure on a per-fold basis
   cv_eif_results <- origami::cross_validate(

@@ -18,10 +18,11 @@ est_onestep(
   w_names,
   m_names,
   y_bounds,
-  g_bounds = c(0.01, 0.99),
+  g_bounds = c(0.005, 0.995),
   effect_type = c("interventional", "natural"),
   svy_weights = NULL,
-  cv_folds = 5L
+  cv_folds = 10L,
+  cv_stratify = FALSE
 )
 }
 \arguments{
@@ -108,6 +109,13 @@ be created for cross-validation. Use of cross-validation allows for entropy
 conditions on the one-step estimator to be relaxed. For compatibility with
 \code{\link[origami]{make_folds}}, this value specified must be greater
 than or equal to 2; the default is to create 5 folds.}
+
+\item{cv_stratify}{A \code{logical} atomic vector indicating whether V-fold
+cross-validation should stratify the folds based on the outcome variable.
+If \code{TRUE}, the folds are stratified by passing the outcome variable to
+the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
+the default is \code{FALSE}, an override is triggered when the incidence of
+the binary outcome variable falls below 10%.}
 }
 \description{
 One-step estimator for natural and interventional (in)direct effects

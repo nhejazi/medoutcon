@@ -69,16 +69,16 @@
 #'   contrast-specific parameter) to be computed. Both an efficient one-step
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
 #'   estimator (TMLE) are available. The default is the TML estimator.
-#' @param estimator_args A \code{list} of extra arguments to be passed (via
+#' @param estimator_args A \code{list} of additional arguments passed (via
 #'   \code{...}) to the function call for the specified estimator. The default
 #'   is chosen so as to allow the number of folds used to compute the one-step
-#'   or TML estimators to be easily adjusted. In the case of the TML estimator,
-#'   the number of update (fluctuation) iterations is limited, and a tolerance
-#'   is included for the updates introduced by tilting (fluctuation) models.
+#'   or TML estimators to be adjusted and for stratified cross-validation to be
+#'   used in cases of rare outcomes. In the case of the TML estimator, the
+#'   number of update (fluctuation) iterations is limited, and a tolerance is
+#'   included for the updates introduced by tilting (fluctuation) models.
 #' @param g_bounds A \code{numeric} vector containing two values, the first
 #'   being the minimum allowable estimated propensity score value and the
 #'   second being the maximum allowable for estimated propensity scores.
-#'   Defaults to \code{c(0.001, 0.999)}.
 #'
 #' @importFrom data.table as.data.table setnames set
 #' @importFrom sl3 Lrnr_glm_fast Lrnr_hal9001
@@ -139,10 +139,10 @@ medoutcon <- function(W,
                       d_learners = sl3::Lrnr_glm_fast$new(),
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
-                        cv_folds = 5L, max_iter = 5L,
-                        tiltmod_tol = 5
+                        cv_folds = 10L, cv_stratify = FALSE,
+                        max_iter = 10L, tiltmod_tol = 5
                       ),
-                      g_bounds = c(0.01, 0.99)) {
+                      g_bounds = c(0.005, 0.995)) {
   # set defaults
   estimator <- match.arg(estimator)
   estimator_args <- unlist(estimator_args, recursive = FALSE)

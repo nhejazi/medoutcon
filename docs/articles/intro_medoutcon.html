@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">medoutcon</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.3</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@ natural and interventional effects</h1>
 <a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a>, <a href="https://www.idiaz.xyz/" class="external-link">Iván Díaz</a>, and <a href="https://kararudolph.github.io/" class="external-link">Kara Rudolph</a>
 </h4>
             
-            <h4 data-toc-skip class="date">2022-10-12</h4>
+            <h4 data-toc-skip class="date">2024-03-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/medoutcon/blob/HEAD/vignettes/intro_medoutcon.Rmd" class="external-link"><code>vignettes/intro_medoutcon.Rmd</code></a></small>
       <div class="hidden name"><code>intro_medoutcon.Rmd</code></div>
@@ -306,8 +306,8 @@ W_3)\)</span>, a binary exposure variable <span class="math inline">\(A\)</span>
 <span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span> <span class="op">-</span> <span class="va">z</span> <span class="op">+</span> <span class="va">a</span> <span class="op">+</span> <span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co">## construct output</span></span>
-<span>  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>w <span class="op">=</span> <span class="va">w</span>, a <span class="op">=</span> <span class="va">a</span>, z <span class="op">=</span> <span class="va">z</span>, m <span class="op">=</span> <span class="va">m</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">w_names</span>, <span class="st">"A"</span>, <span class="st">"Z"</span>, <span class="va">m_names</span>, <span class="st">"Y"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>w <span class="op">=</span> <span class="va">w</span>, a <span class="op">=</span> <span class="va">a</span>, z <span class="op">=</span> <span class="va">z</span>, m <span class="op">=</span> <span class="va">m</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">w_names</span>, <span class="st">"A"</span>, <span class="st">"Z"</span>, <span class="va">m_names</span>, <span class="st">"Y"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -392,8 +392,10 @@ elastic net regression that equally weights the <span class="math inline">\(\ell
 <span><span class="va">hal_bounded_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Pipeline.html" class="external-link">Pipeline</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">hal_gaussian_lrnr</span>, <span class="va">bound_lrnr</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># create learner library and instantiate super learner ensemble</span></span>
-<span><span class="va">lrnr_lib</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">mean_lrnr</span>, <span class="va">fglm_lrnr</span>, <span class="va">enet_lrnr</span>, <span class="va">lasso_lrnr</span>,</span>
-<span>                      <span class="va">rf_lrnr</span>, <span class="va">hal_bounded_lrnr</span><span class="op">)</span></span>
+<span><span class="va">lrnr_lib</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Stack.html" class="external-link">Stack</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="va">mean_lrnr</span>, <span class="va">fglm_lrnr</span>, <span class="va">enet_lrnr</span>, <span class="va">lasso_lrnr</span>,</span>
+<span>  <span class="va">rf_lrnr</span>, <span class="va">hal_bounded_lrnr</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">sl_lrnr</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_sl.html" class="external-link">Lrnr_sl</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>learners <span class="op">=</span> <span class="va">lrnr_lib</span>, metalearner <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_nnls.html" class="external-link">Lrnr_nnls</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>While we recommend the use of a Super Learner ensemble model like the
 one constructed above in practice, such a library will be too
@@ -443,58 +445,62 @@ of the delta method to each of the one-step estimators (and EIFs) for
 these contrasts.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compute one-step estimate of the interventional direct effect</span></span>
-<span><span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
-<span>                   A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
-<span>                   Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
-<span>                   M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
-<span>                   Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
-<span>                   g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
-<span>                   estimator <span class="op">=</span> <span class="st">"onestep"</span>,</span>
-<span>                   estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">os_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span></span>
+<span>  W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
+<span>  A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
+<span>  Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
+<span>  M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
+<span>  Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
+<span>  g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
+<span>  estimator <span class="op">=</span> <span class="st">"onestep"</span>,</span>
+<span>  estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">os_de</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
-<span><span class="co">##    lwr_ci param_est upr_ci var_est  eif_mean estimator param                </span></span>
-<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.093</span><span style="color: #BB0000; text-decoration: underline;">5</span>    0.014<span style="text-decoration: underline;">7</span>  0.123 0.003<span style="text-decoration: underline;">05</span> -<span style="color: #BB0000;">3.53</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-17</span> onestep   direct_interventional</span></span></code></pre>
+<span><span class="co">##    lwr_ci param_est upr_ci var_est eif_mean estimator param                </span></span>
+<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.086</span><span style="color: #BB0000; text-decoration: underline;">2</span>    0.029<span style="text-decoration: underline;">3</span>  0.145 0.003<span style="text-decoration: underline;">47</span> 3.38<span style="color: #949494;">e</span><span style="color: #BB0000;">-17</span> onestep   direct_interventional</span></span></code></pre>
 <p>From the output of the summary method, we note that the one-step
 estimate of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{DE}}\)</span> is
-0.015, with 95% confidence interval [-0.094, 0.123].</p>
+0.029, with 95% confidence interval [-0.086, 0.145].</p>
 <p>Next, let’s compare the one-step estimate to the TML estimate.
 Analogous to the case of the one-step estimator, the TML estimator can
 be evaluated via a single call to the <code>medoutcon</code>
 function:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compute targeted minimum loss estimate of the interventional direct effect</span></span>
-<span><span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
-<span>                     A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
-<span>                     Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
-<span>                     M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
-<span>                     Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
-<span>                     g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
-<span>                     estimator <span class="op">=</span> <span class="st">"tmle"</span>,</span>
-<span>                     estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span>, max_iter <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tmle_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span></span>
+<span>  W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
+<span>  A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
+<span>  Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
+<span>  M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
+<span>  Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
+<span>  g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  effect <span class="op">=</span> <span class="st">"direct"</span>,</span>
+<span>  estimator <span class="op">=</span> <span class="st">"tmle"</span>,</span>
+<span>  estimator_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_folds <span class="op">=</span> <span class="fl">2</span>, max_iter <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tmle_de</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
 <span><span class="co">##    lwr_ci param_est upr_ci var_est eif_mean estimator param                </span></span>
 <span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.075</span><span style="color: #BB0000; text-decoration: underline;">7</span>    0.024<span style="text-decoration: underline;">7</span>  0.125 0.002<span style="text-decoration: underline;">62</span> -<span style="color: #BB0000;">0.002</span><span style="color: #BB0000; text-decoration: underline;">34</span> tmle      direct_interventional</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.094</span><span style="color: #BB0000; text-decoration: underline;">1</span>    0.019<span style="text-decoration: underline;">7</span>  0.134 0.003<span style="text-decoration: underline;">37</span>  0.003<span style="text-decoration: underline;">54</span> tmle      direct_interventional</span></span></code></pre>
 <p>From the output of the summary method, we note that the TML estimate
 of the interventional direct effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{DE}}\)</span> is
-0.025, with 95% confidence interval [-0.076, 0.125]. Here, we recall
-that the TML estimator generally exhibits better finite-sample
-performance than the one-step estimator <span class="citation">(van der
-Laan and Rose 2011, 2018)</span>, so the TML estimate is likely to be
-more reliable in our modest sample size of <span class="math inline">\(n
+0.02, with 95% confidence interval [-0.094, 0.134]. Here, we recall that
+the TML estimator generally exhibits better finite-sample performance
+than the one-step estimator <span class="citation">(van der Laan and
+Rose 2011, 2018)</span>, so the TML estimate is likely to be more
+reliable in our modest sample size of <span class="math inline">\(n
 =\)</span> 500.</p>
 </div>
 <div class="section level3">
@@ -525,59 +531,63 @@ constructed by application of the delta method to each of the one-step
 estimators (and EIFs) for the contrasts.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compute one-step estimate of the interventional indirect effect</span></span>
-<span><span class="va">os_ie</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
-<span>                   A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
-<span>                   Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
-<span>                   M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
-<span>                   Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
-<span>                   g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                   effect <span class="op">=</span> <span class="st">"indirect"</span>,</span>
-<span>                   estimator <span class="op">=</span> <span class="st">"onestep"</span><span class="op">)</span></span>
+<span><span class="va">os_ie</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span></span>
+<span>  W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
+<span>  A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
+<span>  Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
+<span>  M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
+<span>  Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
+<span>  g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  effect <span class="op">=</span> <span class="st">"indirect"</span>,</span>
+<span>  estimator <span class="op">=</span> <span class="st">"onestep"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">os_ie</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
 <span><span class="co">##   lwr_ci param_est  upr_ci var_est  eif_mean estimator param                  </span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.241</span>    -<span style="color: #BB0000;">0.161</span> -<span style="color: #BB0000;">0.081</span><span style="color: #BB0000; text-decoration: underline;">3</span> 0.001<span style="text-decoration: underline;">67</span> -<span style="color: #BB0000;">3.12</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-17</span> onestep   indirect_interventional</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.206</span>    -<span style="color: #BB0000;">0.143</span> -<span style="color: #BB0000;">0.080</span><span style="color: #BB0000; text-decoration: underline;">2</span> 0.001<span style="text-decoration: underline;">03</span> -<span style="color: #BB0000;">5.42</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-17</span> onestep   indirect_interventional</span></span></code></pre>
 <p>From the output of the summary method, we note that the one-step
 estimate of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{os}}^{\text{IE}}\)</span> is
--0.161, with 95% confidence interval [-0.241, -0.081].</p>
+-0.143, with 95% confidence interval [-0.206, -0.08].</p>
 <p>As before, let’s compare the one-step estimate to the TML estimate.
 Analogous to the case of the one-step estimator, the TML estimator can
 be evaluated via a single call to the <code>medoutcon</code> function,
 as demonstrated below</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compute targeted minimum loss estimate of the interventional indirect effect</span></span>
-<span><span class="va">tmle_ie</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
-<span>                     A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
-<span>                     Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
-<span>                     M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
-<span>                     Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
-<span>                     g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
-<span>                     effect <span class="op">=</span> <span class="st">"indirect"</span>,</span>
-<span>                     estimator <span class="op">=</span> <span class="st">"tmle"</span><span class="op">)</span></span>
+<span><span class="va">tmle_ie</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/medoutcon.html">medoutcon</a></span><span class="op">(</span></span>
+<span>  W <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..w_names</span><span class="op">]</span>,</span>
+<span>  A <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">A</span>,</span>
+<span>  Z <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Z</span>,</span>
+<span>  M <span class="op">=</span> <span class="va">example_data</span><span class="op">[</span>, <span class="va">..m_names</span><span class="op">]</span>,</span>
+<span>  Y <span class="op">=</span> <span class="va">example_data</span><span class="op">$</span><span class="va">Y</span>,</span>
+<span>  g_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  h_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  b_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  q_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  r_learners <span class="op">=</span> <span class="va">sl_lrnr</span>,</span>
+<span>  effect <span class="op">=</span> <span class="st">"indirect"</span>,</span>
+<span>  estimator <span class="op">=</span> <span class="st">"tmle"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tmle_ie</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
 <span><span class="co">##   lwr_ci param_est  upr_ci var_est eif_mean estimator param                  </span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.204</span>    -<span style="color: #BB0000;">0.136</span> -<span style="color: #BB0000;">0.067</span><span style="color: #BB0000; text-decoration: underline;">1</span> 0.001<span style="text-decoration: underline;">22</span> 0.000<span style="text-decoration: underline;">383</span> tmle      indirect_interventional</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> -<span style="color: #BB0000;">0.197</span>    -<span style="color: #BB0000;">0.121</span> -<span style="color: #BB0000;">0.045</span><span style="color: #BB0000; text-decoration: underline;">1</span> 0.001<span style="text-decoration: underline;">51</span> -<span style="color: #BB0000;">0.008</span><span style="color: #BB0000; text-decoration: underline;">34</span> tmle      indirect_interventional</span></span></code></pre>
 <p>From the output of the summary method, we note that the TML estimate
 of the interventional indirect effect <span class="math inline">\(\hat{\theta}_{\text{tmle}}^{\text{IE}}\)</span> is
--0.136, with 95% confidence interval [-0.204, -0.067]. As before, the
+-0.121, with 95% confidence interval [-0.197, -0.045]. As before, the
 TML estimator provides better finite-sample performance than the
 one-step estimator, so it may be preferred in this example.</p>
 </div>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-chernozhukov2018double" class="csl-entry">
 Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
 Christian Hansen, Whitney Newey, and James Robins. 2018.
@@ -649,7 +659,7 @@ Learning: Causal Inference for Observational and Experimental Data</em>,
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

@@ -589,7 +589,8 @@ fit_nuisance_u <- function(train_data,
   g_star <- g_out$treat_est_train$treat_pred_A_star[train_data$R == 1]
   h_prime <- h_out$treat_est_train$treat_pred_A_prime
   g_prime <- g_out$treat_est_train$treat_pred_A_prime[train_data$R == 1]
-  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
+  q_prime_Z_natural <-
+    q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
   r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
 
   # remove observations that were not sampled in second stage
@@ -618,12 +619,14 @@ fit_nuisance_u <- function(train_data,
     w_names, "A", "Z", "U_pseudo",
     "obs_weights"
   ))
-  u_task_train <- sl3::sl3_Task$new(
-    data = u_data_train,
-    weights = "obs_weights",
-    covariates = c("Z", "A", w_names),
-    outcome = "U_pseudo",
-    outcome_type = "continuous"
+  suppressWarnings(
+    u_task_train <- sl3::sl3_Task$new(
+      data = u_data_train,
+      weights = "obs_weights",
+      covariates = c("Z", "A", w_names),
+      outcome = "U_pseudo",
+      outcome_type = "continuous"
+    )
   )
 
   ## fit model for nuisance parameter regression on training data
@@ -640,12 +643,14 @@ fit_nuisance_u <- function(train_data,
     w_names, "A", "Z", "U_pseudo",
     "obs_weights"
   ))
-  u_task_valid <- sl3::sl3_Task$new(
-    data = u_data_valid,
-    weights = "obs_weights",
-    covariates = c("Z", "A", w_names),
-    outcome = "U_pseudo",
-    outcome_type = "continuous"
+  suppressWarnings(
+    u_task_valid <- sl3::sl3_Task$new(
+      data = u_data_valid,
+      weights = "obs_weights",
+      covariates = c("Z", "A", w_names),
+      outcome = "U_pseudo",
+      outcome_type = "continuous"
+    )
   )
 
   ## predict from nuisance parameter regression on validation and training data
@@ -702,8 +707,10 @@ fit_nuisance_v <- function(train_data,
                            m_names,
                            w_names) {
   ## extract nuisance estimates necessary for this routrine
-  q_train_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
-  q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
+  q_train_prime_Z_one <-
+    q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
+  q_valid_prime_Z_one <-
+    q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
 
   # remove observations that were not sampled in second stage
   train_data <- train_data[R == 1, ]
@@ -799,24 +806,28 @@ fit_nuisance_v <- function(train_data,
 
   ## build regression tasks for training and validation sets
   train_data[, V_pseudo := v_pseudo_train]
-  v_task_train <- sl3::sl3_Task$new(
-    data = train_data,
-    weights = "obs_weights", # NOTE: should not include two_phase_weights
-    covariates = c("A", w_names),
-    outcome = "V_pseudo",
-    outcome_type = "continuous"
+  suppressWarnings(
+    v_task_train <- sl3::sl3_Task$new(
+      data = train_data,
+      weights = "obs_weights", # NOTE: should not include two_phase_weights
+      covariates = c("A", w_names),
+      outcome = "V_pseudo",
+      outcome_type = "continuous"
+    )
   )
   # NOTE: independent implementation from ID sets A to a* as done below
   valid_data[, `:=`(
     V_pseudo = v_pseudo_valid,
     A = contrast[2]
   )]
-  v_task_valid <- sl3::sl3_Task$new(
-    data = valid_data,
-    weights = "obs_weights", # NOTE: should not include two_phase_weights
-    covariates = c("A", w_names),
-    outcome = "V_pseudo",
-    outcome_type = "continuous"
+  suppressWarnings(
+    v_task_valid <- sl3::sl3_Task$new(
+      data = valid_data,
+      weights = "obs_weights", # NOTE: should not include two_phase_weights
+      covariates = c("A", w_names),
+      outcome = "V_pseudo",
+      outcome_type = "continuous"
+    )
   )
 
   ## fit regression model for v on training task, get predictions on validation
@@ -911,8 +922,10 @@ fit_nuisance_d <- function(train_data,
   g_prime <- g_out$treat_est_train$treat_pred_A_prime[train_data$R == 1]
   u_prime <- u_out$u_train_pred
   v_star <- v_out$v_train_pred
-  q_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
-  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
+  q_prime_Z_one <-
+    q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
+  q_prime_Z_natural <-
+    q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
   r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
 
   # NOTE: assuming Z in {0,1}; other cases not supported yet
@@ -926,12 +939,14 @@ fit_nuisance_d <- function(train_data,
     )]
 
     # predict u(z, a', w) using intervened data with treatment set A = a'
-    u_task_train_z_interv <- sl3::sl3_Task$new(
-      data = train_data_z_interv,
-      weights = "obs_weights", # NOTE: should not include two_phase_weights
-      covariates = c("Z", "A", w_names),
-      outcome = "U_pseudo",
-      outcome_type = "continuous"
+    suppressWarnings(
+      u_task_train_z_interv <- sl3::sl3_Task$new(
+        data = train_data_z_interv,
+        weights = "obs_weights", # NOTE: should not include two_phase_weights
+        covariates = c("Z", "A", w_names),
+        outcome = "U_pseudo",
+        outcome_type = "continuous"
+      )
     )
 
     # return partial pseudo-outcome for v nuisance regression
@@ -966,12 +981,14 @@ fit_nuisance_d <- function(train_data,
 
   # generate the sl3 task
   # NOTE: Purposefully not adding two-phase sampling weights
-  d_task_train <- sl3::sl3_Task$new(
-    data = eif_data_train,
-    weights = "obs_weights", # NOTE: should not include two_phase_weights
-    covariates = c(w_names, "A", "Z", "Y"),
-    outcome = "eif",
-    outcome_type = "continuous"
+  suppressWarnings(
+    d_task_train <- sl3::sl3_Task$new(
+      data = eif_data_train,
+      weights = "obs_weights", # NOTE: should not include two_phase_weights
+      covariates = c(w_names, "A", "Z", "Y"),
+      outcome = "eif",
+      outcome_type = "continuous"
+    )
   )
 
   ## fit model for nuisance parameter regression on training data

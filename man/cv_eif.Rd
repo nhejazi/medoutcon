@@ -19,7 +19,7 @@ cv_eif(
   effect_type = c("interventional", "natural"),
   w_names,
   m_names,
-  g_bounds = c(0.01, 0.99)
+  g_bounds = c(0.005, 0.995)
 )
 }
 \arguments{

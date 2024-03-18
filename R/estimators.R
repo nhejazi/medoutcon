@@ -447,12 +447,16 @@ two_phase_eif <- function(R,
 #'  conditions on the one-step estimator to be relaxed. For compatibility with
 #'  \code{\link[origami]{make_folds}}, this value specified must be greater
 #'  than or equal to 2; the default is to create 5 folds.
-#' @param cv_stratify A \code{logical} atomic vector indicating whether V-fold
+#' @param cv_strat A \code{logical} atomic vector indicating whether V-fold
 #'  cross-validation should stratify the folds based on the outcome variable.
 #'  If \code{TRUE}, the folds are stratified by passing the outcome variable to
 #'  the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
 #'  the default is \code{FALSE}, an override is triggered when the incidence of
-#'  the binary outcome variable falls below 0.1.
+#'  the binary outcome variable falls below the tolerance in \code{strat_pmin}.
+#' @param strat_pmin A \code{numeric} atomic vector indicating a tolerance for
+#'  the minimum proportion of cases (for a binary outcome variable) below which
+#'  stratified V-fold cross-validation is invoked if \code{cv_strat} is set to
+#'  \code{TRUE} (default is \code{FALSE}). The default tolerance is 0.1.
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom stats var weighted.mean
@@ -476,13 +480,16 @@ est_onestep <- function(data,
                         effect_type = c("interventional", "natural"),
                         svy_weights = NULL,
                         cv_folds = 10L,
-                        cv_stratify = FALSE) {
+                        cv_strat = FALSE,
+                        strat_pmin = 0.1) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
   # create cross-validation folds
-  if (cv_stratify ||
-    (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
+  if (cv_strat && data[, mean(Y) <= strat_pmin]) {
+    # check that outcome is binary for stratified V-fold cross-validation
+    assertthat::assert_that(data[, all(unique(Y) %in% c(0, 1))])
+
     # if outcome is binary and rare, use stratified V-fold cross-validation
     folds <- origami::make_folds(
       data,
@@ -623,12 +630,16 @@ est_onestep <- function(data,
 #'  conditions on the TML estimator to be relaxed. Note: for compatibility with
 #'  \code{\link[origami]{make_folds}}, this value  must be greater than or
 #'  equal to 2; the default is to create 10 folds.
-#' @param cv_stratify A \code{logical} atomic vector indicating whether V-fold
+#' @param cv_strat A \code{logical} atomic vector indicating whether V-fold
 #'  cross-validation should stratify the folds based on the outcome variable.
 #'  If \code{TRUE}, the folds are stratified by passing the outcome variable to
 #'  the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
 #'  the default is \code{FALSE}, an override is triggered when the incidence of
-#'  the binary outcome variable falls below 0.1.
+#'  the binary outcome variable falls below the tolerance in \code{strat_pmin}.
+#' @param strat_pmin A \code{numeric} atomic vector indicating a tolerance for
+#'  the minimum proportion of cases (for a binary outcome variable) below which
+#'  stratified V-fold cross-validation is invoked if \code{cv_strat} is set to
+#'  \code{TRUE} (default is \code{FALSE}). The default tolerance is 0.1.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken for the iterative procedure to construct a TML estimator.
 #' @param tiltmod_tol A \code{numeric} indicating the maximum step size to be
@@ -660,15 +671,18 @@ est_tml <- function(data,
                     effect_type = c("interventional", "natural"),
                     svy_weights = NULL,
                     cv_folds = 10L,
-                    cv_stratify = FALSE,
+                    cv_strat = FALSE,
+                    strat_pmin = 0.1,
                     max_iter = 10L,
                     tiltmod_tol = 5) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
   # create cross-validation folds
-  if (cv_stratify ||
-    (data[, all(unique(Y) %in% c(0, 1))] && data[, mean(Y) <= 0.1])) {
+  if (cv_strat && data[, mean(Y) <= strat_pmin]) {
+    # check that outcome is binary for stratified V-fold cross-validation
+    assertthat::assert_that(data[, all(unique(Y) %in% c(0, 1))])
+
     # if outcome is binary and rare, use stratified V-fold cross-validation
     folds <- origami::make_folds(
       data,

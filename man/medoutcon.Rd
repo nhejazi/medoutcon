@@ -25,8 +25,8 @@ medoutcon(
   v_learners = sl3::Lrnr_hal9001$new(),
   d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
-  estimator_args = list(cv_folds = 10L, cv_stratify = FALSE, max_iter = 10L, tiltmod_tol
-    = 5),
+  estimator_args = list(cv_folds = 10L, cv_strat = FALSE, strat_pmin = 0.1, max_iter =
+    10L, tiltmod_tol = 5),
   g_bounds = c(0.005, 0.995)
 )
 }
@@ -64,9 +64,9 @@ weights corresponding to the inverse probability of the mediator being
 measured. Defaults to a vector of ones.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct or
-the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
-This is ignored when the argument \code{contrast} is provided. By default,
-the direct effect is estimated.}
+the indirect effects of <https://doi.org/10.1093/biomet/asaa085>. This is
+ignored when the argument \code{contrast} is provided. By default, the
+direct effect is estimated.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
 intervention \code{A} to be compared. The default value of \code{NULL} has

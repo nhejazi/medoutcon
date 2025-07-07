@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 # R/`medoutcon`
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/nhejazi/medoutcon/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/medoutcon/actions)
+[![R-CMD-check](https://github.com/nhejazi/medoutcon/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/nhejazi/medoutcon/actions/workflows/R-CMD-check.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
@@ -74,11 +74,11 @@ To illustrate how `medoutcon` may be used to estimate stochastic interventional
 mediator(s) (`M`) and a mediator-outcome confounder (`Z`), consider the
 following example:
 
-```{r example, warning=FALSE, message=FALSE}
+```{r example, warning=FALSE}
 library(data.table)
-library(tidyverse)
+library(stringr)
 library(medoutcon)
-set.seed(1584)
+set.seed(02138)
 
 # produces a simple data set based on ca causal model with mediation
 make_example_data <- function(n_obs = 1000) {
@@ -109,7 +109,7 @@ make_example_data <- function(n_obs = 1000) {
 }
 
 # set seed and simulate example data
-example_data <- make_example_data()
+example_data <- make_example_data(n_obs = 5000L)
 w_names <- str_subset(colnames(example_data), "W")
 m_names <- str_subset(colnames(example_data), "M")
 
@@ -198,24 +198,24 @@ After using the `medoutcon` R package, please cite the following:
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
           title = {{medoutcon}: Efficient natural and interventional causal
             mediation analysis},
-          year  = {2022},
+          year  = {2024},
           doi = {10.5281/zenodo.5809519},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.1.6}
+          note = {R package version 0.2.3}
         }
 
 ---
 
 ## License
 
-&copy; 2020-2022 [Nima S. Hejazi](https://nimahejazi.org)
+&copy; 2020-2024 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:
 ```
 MIT License
 
-Copyright (c) 2020-2022 Nima S. Hejazi
+Copyright (c) 2020-2024 Nima S. Hejazi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -239,4 +239,5 @@ SOFTWARE.
 ---
 
 ## References
+
 

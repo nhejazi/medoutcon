@@ -1,6 +1,6 @@
 Package: medoutcon
 Title: Efficient Natural and Interventional Causal Mediation Analysis
-Version: 0.2.2
+Version: 0.2.4
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -43,7 +43,7 @@ Imports:
     stringr,
     origami (>= 1.0.3),
     glm2,
-    sl3 (>= 1.4.3)
+    sl3 (>= 1.4.5)
 Suggests:
     testthat,
     knitr,
@@ -53,14 +53,14 @@ Suggests:
     nnls,
     SuperLearner,
     glmnet,
-    hal9001 (>= 0.4.1),
+    hal9001 (>= 0.4.6),
     speedglm,
     xgboost,
     ranger,
     arm
 Remotes:
     github::tlverse/hal9001,
-    github::tlverse/sl3@devel
+    github::tlverse/sl3
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/medoutcon
 BugReports: https://github.com/nhejazi/medoutcon/issues

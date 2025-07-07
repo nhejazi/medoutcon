@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/nhejazi/medoutcon/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/medoutcon/actions)
+[![R-CMD-check](https://github.com/nhejazi/medoutcon/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/nhejazi/medoutcon/actions/workflows/R-CMD-check.yml)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/medoutcon/master.svg)](https://codecov.io/github/nhejazi/medoutcon?branch=master)
 [![Project Status: Active – The project has reached a stable, usable
@@ -36,19 +36,18 @@ only). In the presence of an intermediate <b>med</b>iator-<b>out</b>come
 <b>con</b>founder $Z$, itself affected by the treatment $A$, these
 correspond to the *interventional* (in)direct effects described by Dı́az
 et al. (2020), though similar (yet less general) effect definitions
-and/or estimation strategies have appeared in VanderWeele, Vansteelandt,
-and Robins (2014), Rudolph et al. (2017), Zheng and van der Laan (2017),
-and Benkeser and Ran (2021). When no intermediate confounders are
-present, these effect definitions simplify to the well-studied *natural*
-(in)direct effects, and our estimators are analogs of those formulated
-by Zheng and van der Laan (2012). Both an efficient one-step
-bias-corrected estimator with cross-fitting (Pfanzagl and Wefelmeyer
-1985; Zheng and van der Laan 2011; Chernozhukov et al. 2018) and a
-cross-validated targeted minimum loss estimator (TMLE) (van der Laan and
-Rose 2011; Zheng and van der Laan 2011) are made available. `medoutcon`
-integrates with the [`sl3` R package](https://github.com/tlverse/sl3)
-(Coyle et al. 2021) to leverage statistical machine learning in the
-estimation procedure.
+and/or estimation strategies have appeared i`n @`vanderweele2014effect,
+Rudolph et al. (2017), Zheng and van der Laan (2017), and Benkeser and
+Ran (2021). When no intermediate confounders are present, these effect
+definitions simplify to the well-studied *natural* (in)direct effects,
+and our estimators are analogs of those formulated by Zheng and van der
+Laan (2012). Both an efficient one-step bias-corrected estimator with
+cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
+2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
+loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
+Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3) (Coyle et al. 2021) to leverage
+statistical machine learning in the estimation procedure.
 
 ------------------------------------------------------------------------
 
@@ -72,22 +71,10 @@ confounder (`Z`), consider the following example:
 
 ``` r
 library(data.table)
-library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────────────────────── tidyverse 1.3.2 ──
-#> ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
-#> ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-#> ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
-#> ✔ readr   2.1.2      ✔ forcats 0.5.2 
-#> ── Conflicts ────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::between()   masks data.table::between()
-#> ✖ dplyr::filter()    masks stats::filter()
-#> ✖ dplyr::first()     masks data.table::first()
-#> ✖ dplyr::lag()       masks stats::lag()
-#> ✖ dplyr::last()      masks data.table::last()
-#> ✖ purrr::transpose() masks data.table::transpose()
+library(stringr)
 library(medoutcon)
-#> medoutcon v0.1.6: Efficient Natural and Interventional Causal Mediation Analysis
-set.seed(1584)
+#> medoutcon v0.2.4: Efficient Natural and Interventional Causal Mediation Analysis
+set.seed(02138)
 
 # produces a simple data set based on ca causal model with mediation
 make_example_data <- function(n_obs = 1000) {
@@ -118,49 +105,54 @@ make_example_data <- function(n_obs = 1000) {
 }
 
 # set seed and simulate example data
-example_data <- make_example_data()
+example_data <- make_example_data(n_obs = 5000L)
 w_names <- str_subset(colnames(example_data), "W")
 m_names <- str_subset(colnames(example_data), "M")
 
 # quick look at the data
 head(example_data)
-#>    W_1 W_2 W_3 A Z M Y
-#> 1:   1   0   1 0 0 0 1
-#> 2:   0   1   0 0 0 1 0
-#> 3:   1   1   1 1 0 1 1
-#> 4:   0   1   1 0 0 1 0
-#> 5:   0   0   0 0 0 1 1
-#> 6:   1   0   1 1 0 1 0
+#>      W_1   W_2   W_3     A     Z     M     Y
+#>    <num> <num> <num> <num> <num> <num> <num>
+#> 1:     1     0     0     0     0     1     0
+#> 2:     0     0     0     0     0     0     1
+#> 3:     1     0     1     1     1     1     0
+#> 4:     1     0     1     1     0     1     1
+#> 5:     1     0     1     0     1     1     1
+#> 6:     1     0     0     0     0     1     0
 
 # compute one-step estimate of the interventional direct effect
-os_de <- medoutcon(W = example_data[, ..w_names],
-                   A = example_data$A,
-                   Z = example_data$Z,
-                   M = example_data[, ..m_names],
-                   Y = example_data$Y,
-                   effect = "direct",
-                   estimator = "onestep")
+os_de <- medoutcon(
+  W = example_data[, ..w_names],
+  A = example_data$A,
+  Z = example_data$Z,
+  M = example_data[, ..m_names],
+  Y = example_data$Y,
+  effect = "direct",
+  estimator = "onestep"
+)
 os_de
 #> Interventional Direct Effect
 #> Estimator: onestep
-#> Estimate: -0.065
-#> Std. Error: 0.054
-#> 95% CI: [-0.17, 0.041]
+#> Estimate: -0.102
+#> Std. Error: 0.028
+#> 95% CI: [-0.157, -0.047]
 
 # compute targeted minimum loss estimate of the interventional direct effect
-tmle_de <- medoutcon(W = example_data[, ..w_names],
-                     A = example_data$A,
-                     Z = example_data$Z,
-                     M = example_data[, ..m_names],
-                     Y = example_data$Y,
-                     effect = "direct",
-                     estimator = "tmle")
+tmle_de <- medoutcon(
+  W = example_data[, ..w_names],
+  A = example_data$A,
+  Z = example_data$Z,
+  M = example_data[, ..m_names],
+  Y = example_data$Y,
+  effect = "direct",
+  estimator = "tmle"
+)
 tmle_de
 #> Interventional Direct Effect
 #> Estimator: tmle
-#> Estimate: -0.06
-#> Std. Error: 0.058
-#> 95% CI: [-0.173, 0.053]
+#> Estimate: -0.103
+#> Std. Error: 0.028
+#> 95% CI: [-0.158, -0.047]
 ```
 
 For details on how to use data adaptive regression (machine learning)
@@ -220,24 +212,24 @@ After using the `medoutcon` R package, please cite the following:
           author={Hejazi, Nima S and D{\'\i}az, Iv{\'a}n and Rudolph, Kara E},
           title = {{medoutcon}: Efficient natural and interventional causal
             mediation analysis},
-          year  = {2022},
+          year  = {2024},
           doi = {10.5281/zenodo.5809519},
           url = {https://github.com/nhejazi/medoutcon},
-          note = {R package version 0.1.6}
+          note = {R package version 0.2.3}
         }
 
 ------------------------------------------------------------------------
 
 ## License
 
-© 2020-2022 [Nima S. Hejazi](https://nimahejazi.org)
+© 2020-2024 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
 
-    Copyright (c) 2020-2022 Nima S. Hejazi
+    Copyright (c) 2020-2024 Nima S. Hejazi
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -261,7 +253,8 @@ See below for details:
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-benkeser2020nonparametric" class="csl-entry">
 
@@ -284,8 +277,8 @@ Parameters.” *The Econometrics Journal* 21 (1).
 <div id="ref-coyle-gh-sl3" class="csl-entry">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and
-Oleg Sofrygin. 2021. *`sl3`: Modern Machine Learning Pipelines for Super
-Learning* (version 1.4.4). <https://doi.org/10.5281/zenodo.1342293>.
+Oleg Sofrygin. 2021. “`sl3`: Modern Machine Learning Pipelines for Super
+Learning.” <https://doi.org/10.5281/zenodo.1342293>.
 
 </div>
 
@@ -320,15 +313,6 @@ Proposed Method and Example in a Randomized Trial Setting.”
 van der Laan, Mark J, and Sherri Rose. 2011. *Targeted Learning: Causal
 Inference for Observational and Experimental Data*. Springer Science &
 Business Media.
-
-</div>
-
-<div id="ref-vanderweele2014effect" class="csl-entry">
-
-VanderWeele, Tyler J, Stijn Vansteelandt, and James M Robins. 2014.
-“Effect Decomposition in the Presence of an Exposure-Induced
-Mediator-Outcome Confounder.” *Epidemiology* 25 (2): 300.
-<https://doi.org/10.1097/ede.0000000000000034>.
 
 </div>
 

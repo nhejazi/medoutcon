@@ -25,8 +25,9 @@ medoutcon(
   v_learners = sl3::Lrnr_hal9001$new(),
   d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
-  estimator_args = list(cv_folds = 5L, max_iter = 5L, tiltmod_tol = 5),
-  g_bounds = c(0.01, 0.99)
+  estimator_args = list(cv_folds = 10L, cv_strat = FALSE, strat_pmin = 0.1, max_iter =
+    10L, tiltmod_tol = 5),
+  g_bounds = c(0.005, 0.995)
 )
 }
 \arguments{
@@ -63,9 +64,9 @@ weights corresponding to the inverse probability of the mediator being
 measured. Defaults to a vector of ones.}
 
 \item{effect}{A \code{character} indicating whether to compute the direct or
-the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
-This is ignored when the argument \code{contrast} is provided. By default,
-the direct effect is estimated.}
+the indirect effects of <https://doi.org/10.1093/biomet/asaa085>. This is
+ignored when the argument \code{contrast} is provided. By default, the
+direct effect is estimated.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
 intervention \code{A} to be compared. The default value of \code{NULL} has
@@ -119,17 +120,17 @@ contrast-specific parameter) to be computed. Both an efficient one-step
 estimator using cross-fitting and a cross-validated targeted minimum loss
 estimator (TMLE) are available. The default is the TML estimator.}
 
-\item{estimator_args}{A \code{list} of extra arguments to be passed (via
+\item{estimator_args}{A \code{list} of additional arguments passed (via
 \code{...}) to the function call for the specified estimator. The default
 is chosen so as to allow the number of folds used to compute the one-step
-or TML estimators to be easily adjusted. In the case of the TML estimator,
-the number of update (fluctuation) iterations is limited, and a tolerance
-is included for the updates introduced by tilting (fluctuation) models.}
+or TML estimators to be adjusted and for stratified cross-validation to be
+used in cases of rare outcomes. In the case of the TML estimator, the
+number of update (fluctuation) iterations is limited, and a tolerance is
+included for the updates introduced by tilting (fluctuation) models.}
 
 \item{g_bounds}{A \code{numeric} vector containing two values, the first
 being the minimum allowable estimated propensity score value and the
-second being the maximum allowable for estimated propensity scores.
-Defaults to \code{c(0.001, 0.999)}.}
+second being the maximum allowable for estimated propensity scores.}
 }
 \description{
 Efficient estimation of natural and interventional (in)direct effects

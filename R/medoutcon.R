@@ -24,9 +24,9 @@
 #'   weights corresponding to the inverse probability of the mediator being
 #'   measured. Defaults to a vector of ones.
 #' @param effect A \code{character} indicating whether to compute the direct or
-#'   the indirect effect as discussed in <https://arxiv.org/abs/1912.09936>.
-#'   This is ignored when the argument \code{contrast} is provided. By default,
-#'   the direct effect is estimated.
+#'   the indirect effects of <https://doi.org/10.1093/biomet/asaa085>. This is
+#'   ignored when the argument \code{contrast} is provided. By default, the
+#'   direct effect is estimated.
 #' @param contrast A \code{numeric} double indicating the two values of the
 #'   intervention \code{A} to be compared. The default value of \code{NULL} has
 #'   no effect, as the value of the argument \code{effect} is instead used to
@@ -69,16 +69,16 @@
 #'   contrast-specific parameter) to be computed. Both an efficient one-step
 #'   estimator using cross-fitting and a cross-validated targeted minimum loss
 #'   estimator (TMLE) are available. The default is the TML estimator.
-#' @param estimator_args A \code{list} of extra arguments to be passed (via
+#' @param estimator_args A \code{list} of additional arguments passed (via
 #'   \code{...}) to the function call for the specified estimator. The default
 #'   is chosen so as to allow the number of folds used to compute the one-step
-#'   or TML estimators to be easily adjusted. In the case of the TML estimator,
-#'   the number of update (fluctuation) iterations is limited, and a tolerance
-#'   is included for the updates introduced by tilting (fluctuation) models.
+#'   or TML estimators to be adjusted and for stratified cross-validation to be
+#'   used in cases of rare outcomes. In the case of the TML estimator, the
+#'   number of update (fluctuation) iterations is limited, and a tolerance is
+#'   included for the updates introduced by tilting (fluctuation) models.
 #' @param g_bounds A \code{numeric} vector containing two values, the first
 #'   being the minimum allowable estimated propensity score value and the
 #'   second being the maximum allowable for estimated propensity scores.
-#'   Defaults to \code{c(0.001, 0.999)}.
 #'
 #' @importFrom data.table as.data.table setnames set
 #' @importFrom sl3 Lrnr_glm_fast Lrnr_hal9001
@@ -139,17 +139,12 @@ medoutcon <- function(W,
                       d_learners = sl3::Lrnr_glm_fast$new(),
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
-                        cv_folds = 5L, max_iter = 5L,
-                        tiltmod_tol = 5
+                        cv_folds = 10L, cv_strat = FALSE, strat_pmin = 0.1,
+                        max_iter = 10L, tiltmod_tol = 5
                       ),
-                      g_bounds = c(0.01, 0.99)) {
+                      g_bounds = c(0.005, 0.995)) {
   # set defaults
   estimator <- match.arg(estimator)
-  estimator_args <- unlist(estimator_args, recursive = FALSE)
-  est_args_os <- estimator_args[names(estimator_args) %in%
-    names(formals(est_onestep))]
-  est_args_tmle <- estimator_args[names(estimator_args) %in%
-    names(formals(est_tml))]
 
   # set constant Z for estimation of the natural (in)direct effects
   if (is.null(Z)) {
@@ -203,8 +198,12 @@ medoutcon <- function(W,
 
   est_params <- lapply(contrast_grid, function(contrast) {
     if (estimator == "onestep") {
+      # set arguments to pass to one-step workhorse function
+      estimator_args <- estimator_args[names(estimator_args) %in%
+        names(formals(est_onestep))]
+
       # EFFICIENT ONE-STEP ESTIMATOR
-      onestep_est_args <- list(
+      est_onestep_args <- list(
         data = data,
         contrast = contrast,
         g_learners = g_learners,
@@ -222,13 +221,17 @@ medoutcon <- function(W,
         svy_weights = svy_weights,
         g_bounds = g_bounds
       )
-      onestep_est_args <- unlist(list(onestep_est_args, est_args_os),
+      est_onestep_args <- unlist(list(est_onestep_args, estimator_args),
         recursive = FALSE
       )
-      est_out <- do.call(est_onestep, onestep_est_args)
+      est_out <- do.call(est_onestep, est_onestep_args)
     } else if (estimator == "tmle") {
+      # set arguments to pass to TMLE workhorse function
+      estimator_args <- estimator_args[names(estimator_args) %in%
+        names(formals(est_tml))]
+
       # TARGETED MINIMUM LOSS ESTIMATOR
-      tmle_est_args <- list(
+      est_tml_args <- list(
         data = data,
         contrast = contrast,
         g_learners = g_learners,
@@ -246,10 +249,10 @@ medoutcon <- function(W,
         svy_weights = svy_weights,
         g_bounds = g_bounds
       )
-      tmle_est_args <- unlist(list(tmle_est_args, est_args_tmle),
+      est_tml_args <- unlist(list(est_tml_args, estimator_args),
         recursive = FALSE
       )
-      est_out <- do.call(est_tml, tmle_est_args)
+      est_out <- do.call(est_tml, est_tml_args)
     }
 
     # lazily create output as classed list

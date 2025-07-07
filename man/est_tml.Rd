@@ -18,11 +18,13 @@ est_tml(
   w_names,
   m_names,
   y_bounds,
-  g_bounds = c(0.01, 0.99),
+  g_bounds = c(0.005, 0.95),
   effect_type = c("interventional", "natural"),
   svy_weights = NULL,
-  cv_folds = 5L,
-  max_iter = 5L,
+  cv_folds = 10L,
+  cv_strat = FALSE,
+  strat_pmin = 0.1,
+  max_iter = 10L,
   tiltmod_tol = 5
 )
 }
@@ -110,6 +112,18 @@ created for cross-validation. Use of cross-validation allows for entropy
 conditions on the TML estimator to be relaxed. Note: for compatibility with
 \code{\link[origami]{make_folds}}, this value  must be greater than or
 equal to 2; the default is to create 10 folds.}
+
+\item{cv_strat}{A \code{logical} atomic vector indicating whether V-fold
+cross-validation should stratify the folds based on the outcome variable.
+If \code{TRUE}, the folds are stratified by passing the outcome variable to
+the \code{strata_ids} argument of \code{\link[origami]{make_folds}}. While
+the default is \code{FALSE}, an override is triggered when the incidence of
+the binary outcome variable falls below the tolerance in \code{strat_pmin}.}
+
+\item{strat_pmin}{A \code{numeric} atomic vector indicating a tolerance for
+the minimum proportion of cases (for a binary outcome variable) below which
+stratified V-fold cross-validation is invoked if \code{cv_strat} is set to
+\code{TRUE} (default is \code{FALSE}). The default tolerance is 0.1.}
 
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken for the iterative procedure to construct a TML estimator.}

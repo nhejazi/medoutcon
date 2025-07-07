@@ -1,7 +1,12 @@
+# medoutcon 0.2.4
+
+* Updated required versions of some dependencies to their most recent stable
+  versions, including `hal9001` (v0.4.6) and `sl3` (v1.4.5).
+
 # medoutcon 0.2.3
 
-* Added a new named argument `cv_stratify` to `est_onestep()` and `est_tml()`
-  and to the `estimator_args` list-argument in `medoutcon()`, which allows for
+* Added a new named argument `cv_strat` to `est_onestep()` and `est_tml()` and
+  to the `estimator_args` list-argument in `medoutcon()`, which allows for
   stratified folds to be generated for cross-fitting (by passing these to the
   `strata_ids` argument of `make_folds()` from the `origami` package). This is
   also triggered by an override in `est_onestep()` and `est_tml()` when the
@@ -10,7 +15,7 @@
   `cv_folds = 10L` in named arguments to `est_onestep()` and `est_tml()` and to
   the `estimator_args` list-argument in `medoutcon()`.
 * Changed default propensity score truncation bounds specified in `g_bounds` to
-  `c(0.005, 0.995)` from `c(0.01, 0.99)` (in v0.22), based on sanity checks and 
+  `c(0.005, 0.995)` from `c(0.01, 0.99)` (in v0.22), based on sanity checks and
   manual experimentation.
 * Wrapped instances of `sl3_Task()` in which `outcome_type = "continuous"` is
   specified in `suppressWarnings()` to sink warnings when the outcome variable

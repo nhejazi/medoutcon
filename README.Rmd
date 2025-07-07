@@ -76,7 +76,7 @@ following example:
 
 ```{r example, warning=FALSE}
 library(data.table)
-library(tidyverse)
+library(stringr)
 library(medoutcon)
 set.seed(02138)
 

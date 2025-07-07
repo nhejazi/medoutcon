@@ -432,9 +432,9 @@ two_phase_eif <- function(R,
 #' @param y_bounds A \code{numeric} double indicating the minimum and maximum
 #'  observed values of the outcome variable Y prior to its being re-scaled to
 #'  the unit interval.
-#' @param g_bounds A \code{numeric} vector containing two values, the
-#'   first being the minimum allowable estimated propensity score value and the
-#'   second being the maximum allowable for estimated propensity score value.
+#' @param g_bounds A \code{numeric} vector containing two values, the first
+#'  being the minimum allowable estimated propensity score value and the second
+#'  being the maximum allowable for estimated propensity score value.
 #' @param effect_type A \code{character} indicating whether components of the
 #'  interventional or natural (in)direct effects are to be estimated. In the
 #'  case of the natural (in)direct effects, estimation of several nuisance
@@ -615,9 +615,9 @@ est_onestep <- function(data,
 #' @param y_bounds A \code{numeric} double indicating the minimum and maximum
 #'  observed values of the outcome variable Y prior to its being re-scaled to
 #'  the unit interval.
-#' @param g_bounds A \code{numeric} vector containing two values, the
-#'   first being the minimum allowable estimated propensity score value and the
-#'   second being the maximum allowable for estimated propensity score value.
+#' @param g_bounds A \code{numeric} vector containing two values, the first
+#'  being the minimum allowable estimated propensity score value and the second
+#'  being the maximum allowable for estimated propensity score value.
 #' @param effect_type A \code{character} indicating whether components of the
 #'  interventional or natural (in)direct effects are to be estimated. In the
 #'  case of the natural (in)direct effects, estimation of several nuisance

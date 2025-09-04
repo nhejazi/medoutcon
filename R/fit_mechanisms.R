@@ -47,14 +47,20 @@ fit_treat_mech <- function(train_data,
     # NOTE: estimation of treatment propensity does not require two-phase
     #       sampling weights
     cov_names <- w_names
+
+    # initialize observation weights without two-phase sampling weights
+    # NOTE: importantly, re-weighting the propensity score (g) estimator is
+    #       not necessary under two-phase sampling of the mediators
+    train_data[, obs_weights_gh := obs_weights]
+    valid_data[, obs_weights_gh := obs_weights]
   } else if (type == "h") {
     cov_names <- c(m_names, w_names)
 
     # update observation weights with two-phase sampling weights, if necessary
     # NOTE: importantly, re-weighting the propensity score (g) estimator is
     #       not necessary under two-phase sampling of the mediators
-    train_data[, obs_weights := two_phase_weights * obs_weights]
-    valid_data[, obs_weights := two_phase_weights * obs_weights]
+    train_data[, obs_weights_gh := two_phase_weights * obs_weights]
+    valid_data[, obs_weights_gh := two_phase_weights * obs_weights]
 
     # remove observations that were not sampled in second stage
     train_data <- train_data[R == 1, ]
@@ -64,7 +70,7 @@ fit_treat_mech <- function(train_data,
   ## construct task for treatment mechanism fit
   treat_task <- sl3::sl3_Task$new(
     data = train_data,
-    weights = "obs_weights",
+    weights = "obs_weights_gh",
     covariates = cov_names,
     outcome = "A",
     outcome_type = "binomial"
@@ -109,7 +115,7 @@ fit_treat_mech <- function(train_data,
         ## create task to generate contrast-specific predictions
         treat_task <- sl3::sl3_Task$new(
           data = data,
-          weights = "obs_weights",
+          weights = "obs_weights_gh",
           covariates = cov_names,
           outcome = "A",
           outcome_type = "binomial"
@@ -185,8 +191,8 @@ fit_out_mech <- function(train_data,
                          m_names,
                          w_names) {
   # update observation weights with two-phase sampling weights, if necessary
-  train_data[, obs_weights := two_phase_weights * obs_weights]
-  valid_data[, obs_weights := two_phase_weights * obs_weights]
+  train_data[, obs_weights_b := two_phase_weights * obs_weights]
+  valid_data[, obs_weights_b := two_phase_weights * obs_weights]
 
   # remove observations that were not sampled in second stage
   train_data <- train_data[R == 1, ]
@@ -195,7 +201,7 @@ fit_out_mech <- function(train_data,
   ##  construct task for propensity score fit
   b_natural_task <- sl3::sl3_Task$new(
     data = train_data,
-    weights = "obs_weights",
+    weights = "obs_weights_b",
     covariates = c(m_names, "Z", "A", w_names),
     outcome = "Y"
   )
@@ -216,7 +222,7 @@ fit_out_mech <- function(train_data,
     ## create task for post-intervention outcome regression
     b_intervened_prime_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
-      weights = "obs_weights",
+      weights = "obs_weights_b",
       covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
@@ -228,7 +234,7 @@ fit_out_mech <- function(train_data,
     train_data_intervene[, A := contrast[2]]
     b_intervened_star_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
-      weights = "obs_weights",
+      weights = "obs_weights_b",
       covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
@@ -262,7 +268,7 @@ fit_out_mech <- function(train_data,
     b_natural_pred_train <- b_natural_fit$predict()
     b_natural_task_valid <- sl3::sl3_Task$new(
       data = valid_data,
-      weights = "obs_weights",
+      weights = "obs_weights_b",
       covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
@@ -276,7 +282,7 @@ fit_out_mech <- function(train_data,
         data_intervene[, A := contrast[1]]
         b_intervened_prime_task <- sl3::sl3_Task$new(
           data = data_intervene,
-          weights = "obs_weights",
+          weights = "obs_weights_b",
           covariates = c(m_names, "Z", "A", w_names),
           outcome = "Y"
         )
@@ -289,7 +295,7 @@ fit_out_mech <- function(train_data,
         data_intervene[, A := contrast[2]]
         b_intervened_star_task <- sl3::sl3_Task$new(
           data = data_intervene,
-          weights = "obs_weights",
+          weights = "obs_weights_b",
           covariates = c(m_names, "Z", "A", w_names),
           outcome = "Y"
         )
@@ -374,23 +380,27 @@ fit_moc_mech <- function(train_data,
 
     # update observation weights with two-phase sampling weights, if necessary
     # NOTE: Might not be necessary, check with Nima
-    train_data[, obs_weights := two_phase_weights * obs_weights]
-    valid_data[, obs_weights := two_phase_weights * obs_weights]
+    train_data[, obs_weights_qr := two_phase_weights * obs_weights]
+    valid_data[, obs_weights_qr := two_phase_weights * obs_weights]
+
+    # remove observations that were not sampled for phase-two
+    train_data <- train_data[R == 1, ]
+    valid_data <- valid_data[R == 1, ]
   } else if (type == "r") {
     cov_names <- c(m_names, w_names)
 
     # update observation weights with two-phase sampling weights, if necessary
-    train_data[, obs_weights := two_phase_weights * obs_weights]
-    valid_data[, obs_weights := two_phase_weights * obs_weights]
+    train_data[, obs_weights_qr := two_phase_weights * obs_weights]
+    valid_data[, obs_weights_qr := two_phase_weights * obs_weights]
 
-    # remove observations that were not sampled in second stage
+    # remove observations that were not sampled for phase-two
     train_data <- train_data[R == 1, ]
     valid_data <- valid_data[R == 1, ]
   }
 
   moc_task <- sl3::sl3_Task$new(
     data = train_data,
-    weights = "obs_weights",
+    weights = "obs_weights_qr",
     covariates = c("A", cov_names),
     outcome = "Z",
     outcome_type = "binomial"
@@ -411,7 +421,7 @@ fit_moc_mech <- function(train_data,
     ## create task for post-intervention outcome regression
     moc_prime_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
-      weights = "obs_weights",
+      weights = "obs_weights_qr",
       covariates = c("A", cov_names),
       outcome = "Z",
       outcome_type = "binomial"
@@ -424,7 +434,7 @@ fit_moc_mech <- function(train_data,
     train_data_intervene[, A := contrast[2]]
     moc_star_task <- sl3::sl3_Task$new(
       data = train_data_intervene,
-      weights = "obs_weights",
+      weights = "obs_weights_qr",
       covariates = c("A", cov_names),
       outcome = "Z",
       outcome_type = "binomial"
@@ -461,7 +471,7 @@ fit_moc_mech <- function(train_data,
     ## create task for post-intervention outcome regression
     moc_task_valid <- sl3::sl3_Task$new(
       data = valid_data,
-      weights = "obs_weights",
+      weights = "obs_weights_qr",
       covariates = c("A", cov_names),
       outcome = "Z",
       outcome_type = "binomial"
@@ -480,7 +490,7 @@ fit_moc_mech <- function(train_data,
         ## create task for post-intervention outcome regression
         moc_prime_task <- sl3::sl3_Task$new(
           data = data_intervene,
-          weights = "obs_weights",
+          weights = "obs_weights_qr",
           covariates = c("A", cov_names),
           outcome = "Z",
           outcome_type = "binomial"
@@ -493,7 +503,7 @@ fit_moc_mech <- function(train_data,
         data_intervene[, A := contrast[2]]
         moc_star_task <- sl3::sl3_Task$new(
           data = data_intervene,
-          weights = "obs_weights",
+          weights = "obs_weights_qr",
           covariates = c("A", cov_names),
           outcome = "Z",
           outcome_type = "binomial"
@@ -568,7 +578,7 @@ fit_moc_mech <- function(train_data,
 #'  automatically generated by \code{\link{medoutcon}}.
 #'
 #' @importFrom data.table as.data.table copy setnames ":="
-#' @importFrom sl3 sl3_Task Lrnr_mean
+#' @importFrom sl3 sl3_Task Lrnr_glm_fast
 #' @importFrom stats sd
 fit_nuisance_u <- function(train_data,
                            valid_data,
@@ -580,8 +590,8 @@ fit_nuisance_u <- function(train_data,
                            h_out,
                            w_names) {
   # update observation weights with two-phase sampling weights, if necessary
-  train_data[, obs_weights := two_phase_weights * obs_weights]
-  valid_data[, obs_weights := two_phase_weights * obs_weights]
+  train_data[, obs_weights_u := two_phase_weights * obs_weights]
+  valid_data[, obs_weights_u := two_phase_weights * obs_weights]
 
   ## extract nuisance estimates necessary for constructing pseudo-outcome
   b_prime <- b_out$b_est_train$b_pred_A_prime
@@ -589,8 +599,7 @@ fit_nuisance_u <- function(train_data,
   g_star <- g_out$treat_est_train$treat_pred_A_star[train_data$R == 1]
   h_prime <- h_out$treat_est_train$treat_pred_A_prime
   g_prime <- g_out$treat_est_train$treat_pred_A_prime[train_data$R == 1]
-  q_prime_Z_natural <-
-    q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
+  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime
   r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
 
   # remove observations that were not sampled in second stage
@@ -605,7 +614,7 @@ fit_nuisance_u <- function(train_data,
   ## override choice of learner with intercept model if constant
   if (stats::sd(u_pseudo_train) < .Machine$double.eps) {
     warning("U: constant pseudo-outcome, using intercept model.")
-    learners <- sl3::Lrnr_mean$new()
+    learners <- sl3::Lrnr_glm_fast$new()
   }
 
   ## construct data set and training task
@@ -613,16 +622,16 @@ fit_nuisance_u <- function(train_data,
     train_data[, ..w_names],
     train_data$A, train_data$Z,
     u_pseudo_train,
-    train_data$obs_weights
+    train_data$obs_weights_u
   ))
   data.table::setnames(u_data_train, c(
     w_names, "A", "Z", "U_pseudo",
-    "obs_weights"
+    "obs_weights_u"
   ))
   suppressWarnings(
     u_task_train <- sl3::sl3_Task$new(
       data = u_data_train,
-      weights = "obs_weights",
+      weights = "obs_weights_u",
       covariates = c("Z", "A", w_names),
       outcome = "U_pseudo",
       outcome_type = "continuous"
@@ -637,16 +646,16 @@ fit_nuisance_u <- function(train_data,
     valid_data[, ..w_names],
     valid_data$A, valid_data$Z,
     rep(0, nrow(valid_data)),
-    valid_data$obs_weights
+    valid_data$obs_weights_u
   ))
   data.table::setnames(u_data_valid, c(
     w_names, "A", "Z", "U_pseudo",
-    "obs_weights"
+    "obs_weights_u"
   ))
   suppressWarnings(
     u_task_valid <- sl3::sl3_Task$new(
       data = u_data_valid,
-      weights = "obs_weights",
+      weights = "obs_weights_u",
       covariates = c("Z", "A", w_names),
       outcome = "U_pseudo",
       outcome_type = "continuous"
@@ -696,7 +705,7 @@ fit_nuisance_u <- function(train_data,
 #'  automatically generated by \code{\link{medoutcon}}.
 #'
 #' @importFrom data.table as.data.table copy setnames ":="
-#' @importFrom sl3 sl3_Task Lrnr_mean
+#' @importFrom sl3 sl3_Task Lrnr_glm_fast
 #' @importFrom stats sd
 fit_nuisance_v <- function(train_data,
                            valid_data,
@@ -706,24 +715,22 @@ fit_nuisance_v <- function(train_data,
                            q_out,
                            m_names,
                            w_names) {
-  ## extract nuisance estimates necessary for this routrine
-  q_train_prime_Z_one <-
-    q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
-  q_valid_prime_Z_one <-
-    q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
+  ## extract nuisance estimates necessary for this routine
+  ## NOTE: predictions are only available for the R==1 group
+  q_train_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime
+  q_valid_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime
 
   # remove observations that were not sampled in second stage
   train_data <- train_data[R == 1, ]
   valid_data <- valid_data[R == 1, ]
 
   ## first, compute components of integral over mediator-outcome confounder
-  ## assuming Z in {0,1} for interventional effects. NOTE: other cases (e.g.,
-  ## continuous intermediate confounder) not yet supported. For the natural
-  ## (in)direct effects, this will loop only over Z = 1.
+  ## assuming Z in {0,1} for interventional effects.
+  ## NOTE: For the natural (in)direct effects, this will loop only over Z = 1.
   v_pseudo <- lapply(unique(train_data$Z), function(z_val) {
     ## training data
     train_data_z_interv <- data.table::copy(train_data)
-    train_data_z_interv[, obs_weights := two_phase_weights * obs_weights]
+    train_data_z_interv[, obs_weights_v := two_phase_weights * obs_weights]
     train_data_z_interv[, `:=`(
       Z = z_val,
       A = contrast[1]
@@ -732,7 +739,7 @@ fit_nuisance_v <- function(train_data,
     ## tasks for predicting from trained b and q regression models
     b_reg_train_v_subtask <- sl3::sl3_Task$new(
       data = train_data_z_interv,
-      weights = "obs_weights",
+      weights = "obs_weights_v",
       covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
@@ -744,7 +751,7 @@ fit_nuisance_v <- function(train_data,
 
     ## now on validation set
     valid_data_z_interv <- data.table::copy(valid_data)
-    valid_data_z_interv[, obs_weights := two_phase_weights * obs_weights]
+    valid_data_z_interv[, obs_weights_v := two_phase_weights * obs_weights]
     valid_data_z_interv[, `:=`(
       Z = z_val,
       A = contrast[1]
@@ -753,7 +760,7 @@ fit_nuisance_v <- function(train_data,
     ## tasks for predicting from trained m and q regression models
     b_reg_valid_v_subtask <- sl3::sl3_Task$new(
       data = valid_data_z_interv,
-      weights = "obs_weights",
+      weights = "obs_weights_v",
       covariates = c(m_names, "Z", "A", w_names),
       outcome = "Y"
     )
@@ -801,7 +808,7 @@ fit_nuisance_v <- function(train_data,
   ## override choice of learner with intercept model if constant
   if (stats::sd(v_pseudo_train) < .Machine$double.eps) {
     warning("V: constant pseudo-outcome, using intercept model.")
-    learners <- sl3::Lrnr_mean$new()
+    learners <- sl3::Lrnr_glm_fast$new()
   }
 
   ## build regression tasks for training and validation sets
@@ -922,13 +929,11 @@ fit_nuisance_d <- function(train_data,
   g_prime <- g_out$treat_est_train$treat_pred_A_prime[train_data$R == 1]
   u_prime <- u_out$u_train_pred
   v_star <- v_out$v_train_pred
-  q_prime_Z_one <-
-    q_out$moc_est_train_Z_one$moc_pred_A_prime[train_data$R == 1]
-  q_prime_Z_natural <-
-    q_out$moc_est_train_Z_natural$moc_pred_A_prime[train_data$R == 1]
+  q_prime_Z_one <- q_out$moc_est_train_Z_one$moc_pred_A_prime
+  q_prime_Z_natural <- q_out$moc_est_train_Z_natural$moc_pred_A_prime
   r_prime_Z_natural <- r_out$moc_est_train_Z_natural$moc_pred_A_prime
 
-  # NOTE: assuming Z in {0,1}; other cases not supported yet
+  # NOTE: assuming Z in {0, 1}
   u_int_eif <- lapply(c(1, 0), function(z_val) {
     # intervene on training and validation data sets
     train_data_z_interv <- data.table::copy(train_data[R == 1, ])
@@ -997,7 +1002,7 @@ fit_nuisance_d <- function(train_data,
   ## predict the efficient influence function on the validation data
   d_task_valid <- sl3::sl3_Task$new(
     data = valid_data,
-    weights = "obs_weights",
+    weights = "obs_weights", # NOTE: should not include two_phase_weights
     covariates = c(w_names, "A", "Z", "Y")
   )
 

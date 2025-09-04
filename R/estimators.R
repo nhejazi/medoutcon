@@ -125,34 +125,58 @@ cv_eif <- function(fold,
     # NOTE: in this case Z := 1 in the wrapper function, so overriding the
     #       provided learner with an intercept model guarantees predictions
     #       that are returned will be uniformly 1
-    q_learners <- sl3::Lrnr_mean$new()
+    q_learners <- sl3::Lrnr_glm_fast$new()
+    suppressWarnings(
+      q_out <- fit_moc_mech(
+        train_data = train_data,
+        valid_data = valid_data,
+        contrast = contrast,
+        learners = q_learners,
+        m_names = m_names,
+        w_names = w_names,
+        type = "q"
+      )
+    )
+  } else {
+    q_out <- fit_moc_mech(
+      train_data = train_data,
+      valid_data = valid_data,
+      contrast = contrast,
+      learners = q_learners,
+      m_names = m_names,
+      w_names = w_names,
+      type = "q"
+    )
   }
-  q_out <- fit_moc_mech(
-    train_data = train_data,
-    valid_data = valid_data,
-    contrast = contrast,
-    learners = q_learners,
-    m_names = m_names,
-    w_names = w_names,
-    type = "q"
-  )
 
   # 5) fit mediator-outcome confounder regression, conditioning on mediator(s)
   if (effect_type == "natural") {
     # NOTE: in this case Z := 1 in the wrapper function, so overriding the
     #       provided learner with an intercept model guarantees predictions
     #       that are returned will be uniformly 1
-    r_learners <- sl3::Lrnr_mean$new()
+    r_learners <- sl3::Lrnr_glm_fast$new()
+    suppressWarnings(
+      r_out <- fit_moc_mech(
+        train_data = train_data,
+        valid_data = valid_data,
+        contrast = contrast,
+        learners = r_learners,
+        m_names = m_names,
+        w_names = w_names,
+        type = "r"
+      )
+    )
+  } else {
+    r_out <- fit_moc_mech(
+      train_data = train_data,
+      valid_data = valid_data,
+      contrast = contrast,
+      learners = r_learners,
+      m_names = m_names,
+      w_names = w_names,
+      type = "r"
+    )
   }
-  r_out <- fit_moc_mech(
-    train_data = train_data,
-    valid_data = valid_data,
-    contrast = contrast,
-    learners = r_learners,
-    m_names = m_names,
-    w_names = w_names,
-    type = "r"
-  )
 
   # extract components; NOTE: only do this for observations in validation set
   b_prime <- b_out$b_est_valid$b_pred_A_prime
@@ -160,11 +184,9 @@ cv_eif <- function(fold,
   g_star <- g_out$treat_est_valid$treat_pred_A_star[valid_data$R == 1]
   h_prime <- h_out$treat_est_valid$treat_pred_A_prime
   g_prime <- g_out$treat_est_valid$treat_pred_A_prime[valid_data$R == 1]
-  q_prime_Z_one <-
-    q_out$moc_est_valid_Z_one$moc_pred_A_prime[valid_data$R == 1]
+  q_prime_Z_one <- q_out$moc_est_valid_Z_one$moc_pred_A_prime
   r_prime_Z_one <- r_out$moc_est_valid_Z_one$moc_pred_A_prime
-  q_prime_Z_natural <-
-    q_out$moc_est_valid_Z_natural$moc_pred_A_prime[valid_data$R == 1]
+  q_prime_Z_natural <- q_out$moc_est_valid_Z_natural$moc_pred_A_prime
   r_prime_Z_natural <- r_out$moc_est_valid_Z_natural$moc_pred_A_prime
 
   # need pseudo-outcome regressions with intervention set to a contrast
@@ -283,7 +305,7 @@ cv_eif <- function(fold,
     )
   } else {
     full_eif <- eif
-    centered_eif_pred <- NA
+    centered_eif_pred <- NA_real_
   }
 
   # output list
@@ -351,25 +373,20 @@ two_phase_eif <- function(R,
                           eif_predictions,
                           plugin_est) {
   # compute the weights for the EIF update
-  ipw_two_phase <- R * two_phase_weights
+  ipw_two_phase <- rep(NA_real_, length(R))
+  ipw_two_phase[R==1] <- two_phase_weights[R==1]
+  ipw_two_phase[R==0] <- 0L
 
-  # for each index in R with R == 0, add a zero at the same index in eif
-  new_eif <- rep(NA, length(R))
-  eif_idx <- 1
-  for (idx in seq_along(R)) {
-    if (R[idx] == 1) {
-      new_eif[idx] <- eif[eif_idx]
-      eif_idx <- eif_idx + 1
-    } else {
-      new_eif[idx] <- 0
-    }
-  }
+  # for each index in R with R == 0, put a zero at the same index in eif
+  new_eif <- rep(NA_real_, length(R))
+  new_eif[R==1] <- eif
+  new_eif[R==0] <- 0L
 
   # compute updated observed-data EIF by projection of complete-data EIF
   # NOTE: D_{obs} = R/g_R * D_{full} -
   #                 (R/g_R - 1) * E[D_{full} | R = 1, W, A, Z, Y]
-  two_phase_eif <- ipw_two_phase * new_eif +
-    (1 - ipw_two_phase) * eif_predictions
+  two_phase_eif <- ipw_two_phase * new_eif -
+    (ipw_two_phase - 1) * eif_predictions
 
   # return the un-centered two-phase eif
   uncentered_two_phase_eif <- two_phase_eif + plugin_est

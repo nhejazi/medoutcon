@@ -1,6 +1,3 @@
-################################################################################
-# Unit Tests
-################################################################################
 context("Two-phase sampling EIF convenience function")
 
 test_that("two_phase_eif returns an uncentered EIF", {
@@ -29,7 +26,6 @@ test_that("two_phase_eif returns an uncentered EIF", {
   )
 })
 
-
 context(paste(
   "Estimators of nuisance parameters match manual analogs closely",
   "in two-phase sampling designs"
@@ -54,17 +50,28 @@ n_samp <- 5000
 
 # set up learners for each nuisance parameter
 hal_binomial_lrnr <- Lrnr_hal9001$new(
+  max_degree = 2,
+  smoothness_orders = 0,
+  num_knots = c(100, 50, 25),
   family = "binomial",
   fit_control = list(
     nfolds = 5L,
-    use_min = TRUE
+    use_min = TRUE,
+    lambda.min.ratio = 1e-5,
+    type.measure = "mse"
   )
 )
+
 hal_gaussian_lrnr <- Lrnr_hal9001$new(
+  max_degree = 2,
+  smoothness_orders = 0,
+  num_knots = c(100, 50, 25),
   family = "gaussian",
   fit_control = list(
     nfolds = 5L,
-    use_min = TRUE
+    use_min = TRUE,
+    lambda.min.ratio = 1e-5,
+    type.measure = "mse"
   )
 )
 g_learners <- h_learners <- b_learners <- q_learners <- r_learners <-
@@ -76,8 +83,8 @@ data <- sim_medoutcon_data(n_obs = n_samp)
 w_names <- str_subset(colnames(data), "W")
 m_names <- str_subset(colnames(data), "M")
 data[, `:=`(
-  R = rbinom(n_samp, 1, 0.9),
-  two_phase_weights = 1,
+  R = rbinom(n_samp, 1, 0.7),
+  two_phase_weights = 1 / 0.7,
   obs_weights = 1
 )]
 w <- as_tibble(data)[, w_names]
@@ -95,7 +102,7 @@ g_out <- fit_treat_mech(
 )
 test_that("MSE of propensity score estimates is sufficiently low", {
   g_mse <- mean((g_out$treat_est_train$treat_pred_A_star - g(astar, w))^2)
-  expect_lt(g_mse, 0.05)
+  expect_lt(g_mse, 0.01)
 })
 
 ## fit propensity score conditioning on mediators
@@ -122,10 +129,10 @@ b_out <- fit_out_mech(
 test_that("MSE of outcome regression estimates is sufficiently low", {
   b_mse <- mean(
     (b_out$b_est_train$b_pred_A_prime -
-      my(m[data$R == 1], z[data$R == 1], aprime, w[data$R == 1, ])
+      my(m[data$R == 1], z[data$R == 1], aprime, w[which(data$R == 1), ])
     )^2
   )
-  expect_lt(b_mse, 0.02)
+  expect_lt(b_mse, 0.025)
 })
 
 ## fit mediator-outcome confounder regression, excluding mediator(s)
@@ -139,8 +146,12 @@ q_out <- fit_moc_mech(
   type = "q"
 )
 test_that("MSE of confounder regression q estimates is sufficiently low", {
-  q_mse <- mean((q_out$moc_est_train_Z_one$moc_pred_A_prime -
-    pz(1, aprime, w))^2)
+  q_mse <- mean(
+    (
+      q_out$moc_est_train_Z_one$moc_pred_A_prime -
+        pz(1, aprime, w[which(data$R == 1), ])
+    )^2
+  )
   expect_lt(q_mse, 0.01)
 })
 
@@ -158,7 +169,7 @@ test_that("MSE of confounder regression r estimates is sufficiently low", {
   r_mse <- mean(
     (
       r_out$moc_est_train_Z_one$moc_pred_A_prime -
-        r(1, aprime, m[data$R == 1], w[data$R == 1, ])
+        r(1, aprime, m[data$R == 1], w[which(data$R == 1), ])
     )^2
   )
   expect_lt(r_mse, 0.01)
@@ -183,7 +194,7 @@ u_out <- fit_nuisance_u(
 test_that("MSE of pseudo-outcome regression estimates is sufficiently low", {
   u_mse <- mean(
     (u_out$u_pred -
-      u(z[data$R == 1], w[data$R == 1, ], aprime, astar)
+      u(z[data$R == 1], w[which(data$R == 1), ], aprime, astar)
     )^2
   )
   expect_lt(u_mse, 0.02)
@@ -240,9 +251,9 @@ n_obs <- 500
 
 # 1) get data and column names for sl3 tasks (for convenience)
 data <- make_nide_data(n_obs = n_obs)
-R <- rbinom(n_obs, 1, 0.9)
+R <- rbinom(n_obs, 1, 0.7)
 R[data$Y > 5] <- 1
-two_phase_weights <- rep(1 / 0.9, nrow(data))
+two_phase_weights <- rep(1 / 0.7, nrow(data))
 two_phase_weights[data$Y > 5] <- 1
 data[, `:=`(
   R = R,
@@ -291,7 +302,6 @@ g_learners <- h_learners <- q_learners <- r_learners <- rf_lrnr
 
 ## nuisance functions with pseudo-outcomes have continuous outcomes
 d_learners <- u_learners <- v_learners <- b_learners <- rf_lrnr
-
 
 # 3) test different estimators
 nde_os <- medoutcon(

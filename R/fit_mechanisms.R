@@ -626,8 +626,8 @@ fit_nuisance_u <- function(train_data,
 
   # override choice of learner with intercept model if constant
   if (stats::sd(u_pseudo_train) < .Machine$double.eps) {
-    warning("U: constant pseudo-outcome, using intercept model.")
-    learners <- sl3::Lrnr_glm_fast$new()
+    message("U: constant pseudo-outcome, using intercept model.")
+    learners <- sl3::Lrnr_mean$new()
   }
 
   # construct data set and training task
@@ -824,8 +824,8 @@ fit_nuisance_v <- function(train_data,
 
   # override choice of learner with intercept model if constant
   if (stats::sd(v_pseudo_train) < .Machine$double.eps) {
-    warning("V: constant pseudo-outcome, using intercept model.")
-    learners <- sl3::Lrnr_glm_fast$new()
+    message("V: constant pseudo-outcome, using intercept model.")
+    learners <- sl3::Lrnr_mean$new()
   }
 
   # build regression tasks for training and validation sets

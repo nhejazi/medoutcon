@@ -246,7 +246,7 @@ cv_eif <- function(fold,
     out_valid <- u_out[["u_fit"]]$predict(u_task_valid_z_interv)
     return(out_valid)
   })
-  u_int_eif <- do.call(`-`, u_int_eif)
+  u_int_eif <- round(do.call(`-`, u_int_eif), 10)
 
   # create inverse probability weights
   ipw_a_prime <- as.numeric(valid_data[R == 1, A] == contrast[1]) / g_prime
@@ -691,7 +691,7 @@ est_tml <- function(data,
                     cv_strat = FALSE,
                     strat_pmin = 0.1,
                     max_iter = 10L,
-                    tiltmod_tol = 5) {
+                    tiltmod_tol = 2) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 

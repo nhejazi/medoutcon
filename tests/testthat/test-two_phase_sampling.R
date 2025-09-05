@@ -56,14 +56,14 @@ n_samp <- 5000
 hal_binomial_lrnr <- Lrnr_hal9001$new(
   family = "binomial",
   fit_control = list(
-    n_folds = 5,
+    nfolds = 5L,
     use_min = TRUE
   )
 )
 hal_gaussian_lrnr <- Lrnr_hal9001$new(
   family = "gaussian",
   fit_control = list(
-    n_folds = 5,
+    nfolds = 5L,
     use_min = TRUE
   )
 )

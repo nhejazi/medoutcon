@@ -67,21 +67,23 @@ utils::globalVariables(c("..w_names", "A", "Z", "Y", "R", "v_star"))
 #' @importFrom sl3 Lrnr_mean
 #'
 #' @keywords internal
-cv_eif <- function(fold,
-                   data_in,
-                   contrast,
-                   g_learners,
-                   h_learners,
-                   b_learners,
-                   q_learners,
-                   r_learners,
-                   u_learners,
-                   v_learners,
-                   d_learners,
-                   effect_type = c("interventional", "natural"),
-                   w_names,
-                   m_names,
-                   g_bounds = c(0.005, 0.995)) {
+cv_eif <- function(
+  fold,
+  data_in,
+  contrast,
+  g_learners,
+  h_learners,
+  b_learners,
+  q_learners,
+  r_learners,
+  u_learners,
+  v_learners,
+  d_learners,
+  effect_type = c("interventional", "natural"),
+  w_names,
+  m_names,
+  g_bounds = c(0.005, 0.995)
+) {
   # make training and validation data
   train_data <- origami::training(data_in)
   valid_data <- origami::validation(data_in)
@@ -253,13 +255,18 @@ cv_eif <- function(fold,
   ipw_a_star <- as.numeric(valid_data[R == 1, A] == contrast[2]) / g_star
 
   # residual term for outcome component of EIF
-  c_star <- (g_prime / g_star) * (q_prime_Z_natural / r_prime_Z_natural) *
+  c_star <- (g_prime / g_star) *
+    (q_prime_Z_natural / r_prime_Z_natural) *
     (h_star / h_prime)
 
   # compute uncentered efficient influence function components
-  eif_y <- ipw_a_prime * c_star / mean(ipw_a_prime * c_star) *
+  eif_y <- ipw_a_prime *
+    c_star /
+    mean(ipw_a_prime * c_star) *
     (valid_data[R == 1, Y] - b_prime)
-  eif_u <- ipw_a_prime / mean(ipw_a_prime) * u_int_eif *
+  eif_u <- ipw_a_prime /
+    mean(ipw_a_prime) *
+    u_int_eif *
     (valid_data[R == 1, Z] - q_prime_Z_one)
   eif_v <- ipw_a_star / mean(ipw_a_star) * (v_out$v_pseudo - v_star)
 
@@ -312,12 +319,20 @@ cv_eif <- function(fold,
   out <- list(
     tmle_components = data.table::data.table(
       # components necessary for fluctuation step of TMLE
-      g_prime = g_prime, g_star = g_star, h_prime = h_prime, h_star = h_star,
-      q_prime_Z_natural = q_prime_Z_natural, q_prime_Z_one = q_prime_Z_one,
-      r_prime_Z_natural = r_prime_Z_natural, r_prime_Z_one = r_prime_Z_one,
-      v_star = v_star, u_int_diff = u_int_eif,
-      b_prime = b_prime, b_prime_Z_zero = v_out$b_A_prime_Z_zero,
-      b_prime_Z_one = v_out$b_A_prime_Z_one, D_star = eif,
+      g_prime = g_prime,
+      g_star = g_star,
+      h_prime = h_prime,
+      h_star = h_star,
+      q_prime_Z_natural = q_prime_Z_natural,
+      q_prime_Z_one = q_prime_Z_one,
+      r_prime_Z_natural = r_prime_Z_natural,
+      r_prime_Z_one = r_prime_Z_one,
+      v_star = v_star,
+      u_int_diff = u_int_eif,
+      b_prime = b_prime,
+      b_prime_Z_zero = v_out$b_A_prime_Z_zero,
+      b_prime_Z_one = v_out$b_A_prime_Z_one,
+      D_star = eif,
       # fold IDs
       fold = origami::fold_index()
     ),
@@ -367,25 +382,28 @@ est_plugin <- function(v_pred) {
 #'   two-phase sampling design.
 #'
 #' @keywords internal
-two_phase_eif <- function(R,
-                          two_phase_weights,
-                          eif,
-                          eif_predictions,
-                          plugin_est) {
+two_phase_eif <- function(
+  R,
+  two_phase_weights,
+  eif,
+  eif_predictions,
+  plugin_est
+) {
   # compute the weights for the EIF update
   ipw_two_phase <- rep(NA_real_, length(R))
-  ipw_two_phase[R==1] <- two_phase_weights[R==1]
-  ipw_two_phase[R==0] <- 0L
+  ipw_two_phase[R == 1] <- two_phase_weights[R == 1]
+  ipw_two_phase[R == 0] <- 0L
 
   # for each index in R with R == 0, put a zero at the same index in eif
   new_eif <- rep(NA_real_, length(R))
-  new_eif[R==1] <- eif
-  new_eif[R==0] <- 0L
+  new_eif[R == 1] <- eif
+  new_eif[R == 0] <- 0L
 
   # compute updated observed-data EIF by projection of complete-data EIF
   # NOTE: D_{obs} = R/g_R * D_{full} -
   #                 (R/g_R - 1) * E[D_{full} | R = 1, W, A, Z, Y]
-  two_phase_eif <- ipw_two_phase * new_eif -
+  two_phase_eif <- ipw_two_phase *
+    new_eif -
     (ipw_two_phase - 1) * eif_predictions
 
   # return the un-centered two-phase eif
@@ -480,25 +498,27 @@ two_phase_eif <- function(R,
 #' @importFrom origami make_folds cross_validate folds_vfold
 #'
 #' @keywords internal
-est_onestep <- function(data,
-                        contrast,
-                        g_learners,
-                        h_learners,
-                        b_learners,
-                        q_learners,
-                        r_learners,
-                        u_learners,
-                        v_learners,
-                        d_learners,
-                        w_names,
-                        m_names,
-                        y_bounds,
-                        g_bounds = c(0.005, 0.995),
-                        effect_type = c("interventional", "natural"),
-                        svy_weights = NULL,
-                        cv_folds = 10L,
-                        cv_strat = FALSE,
-                        strat_pmin = 0.1) {
+est_onestep <- function(
+  data,
+  contrast,
+  g_learners,
+  h_learners,
+  b_learners,
+  q_learners,
+  r_learners,
+  u_learners,
+  v_learners,
+  d_learners,
+  w_names,
+  m_names,
+  y_bounds,
+  g_bounds = c(0.005, 0.995),
+  effect_type = c("interventional", "natural"),
+  svy_weights = NULL,
+  cv_folds = 10L,
+  cv_strat = FALSE,
+  strat_pmin = 0.1
+) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
@@ -511,6 +531,7 @@ est_onestep <- function(data,
     folds <- origami::make_folds(
       data,
       fold_fun = origami::folds_vfold,
+      # fold_fun = origami::folds_resubstitution,
       V = cv_folds,
       strata_ids = data$Y
     )
@@ -519,6 +540,7 @@ est_onestep <- function(data,
     folds <- origami::make_folds(
       data,
       fold_fun = origami::folds_vfold,
+      # fold_fun = origami::folds_resubstitution,
       V = cv_folds
     )
   }
@@ -671,27 +693,29 @@ est_onestep <- function(data,
 #' @importFrom glm2 glm2
 #'
 #' @keywords internal
-est_tml <- function(data,
-                    contrast,
-                    g_learners,
-                    h_learners,
-                    b_learners,
-                    q_learners,
-                    r_learners,
-                    u_learners,
-                    v_learners,
-                    d_learners,
-                    w_names,
-                    m_names,
-                    y_bounds,
-                    g_bounds = c(0.005, 0.95),
-                    effect_type = c("interventional", "natural"),
-                    svy_weights = NULL,
-                    cv_folds = 10L,
-                    cv_strat = FALSE,
-                    strat_pmin = 0.1,
-                    max_iter = 10L,
-                    tiltmod_tol = 2) {
+est_tml <- function(
+  data,
+  contrast,
+  g_learners,
+  h_learners,
+  b_learners,
+  q_learners,
+  r_learners,
+  u_learners,
+  v_learners,
+  d_learners,
+  w_names,
+  m_names,
+  y_bounds,
+  g_bounds = c(0.005, 0.95),
+  effect_type = c("interventional", "natural"),
+  svy_weights = NULL,
+  cv_folds = 10L,
+  cv_strat = FALSE,
+  strat_pmin = 0.1,
+  max_iter = 10L,
+  tiltmod_tol = 2
+) {
   # make sure that more than one fold is specified
   assertthat::assert_that(cv_folds > 1L)
 
@@ -804,7 +828,8 @@ est_tml <- function(data,
       c_star_b_tilt <- c_star_Z_natural
       if (tilt_two_phase_weights) {
         weights_b_tilt <- as.numeric(data[R == 1, A] == contrast[1]) /
-          g_prime * as.numeric(data[R == 1, two_phase_weights])
+          g_prime *
+          as.numeric(data[R == 1, two_phase_weights])
       } else {
         weights_b_tilt <- data$obs_weights * (data$A == contrast[1]) / g_prime
       }
@@ -824,23 +849,32 @@ est_tml <- function(data,
       )
       if (is.na(stats::coef(b_tilt_fit))) {
         b_tilt_fit$coefficients <- 0
-      } else if (!b_tilt_fit$converged || abs(max(stats::coef(b_tilt_fit))) >
-        tiltmod_tol) {
+      } else if (
+        !b_tilt_fit$converged || abs(max(stats::coef(b_tilt_fit))) > tiltmod_tol
+      ) {
         b_tilt_fit$coefficients <- 0
       }
       b_tilt_coef <- unname(stats::coef(b_tilt_fit))
 
       # update nuisance estimates via tilting regressions for outcome
-      b_prime_Z_natural <- stats::plogis(b_prime_Z_natural_logit +
-        b_tilt_coef * c_star_Z_natural)
-      b_prime_Z_one <- stats::plogis(b_prime_Z_one_logit +
-        b_tilt_coef * c_star_Z_one)
-      b_prime_Z_zero <- stats::plogis(b_prime_Z_zero_logit +
-        b_tilt_coef * c_star_Z_zero)
+      b_prime_Z_natural <- stats::plogis(
+        b_prime_Z_natural_logit +
+          b_tilt_coef * c_star_Z_natural
+      )
+      b_prime_Z_one <- stats::plogis(
+        b_prime_Z_one_logit +
+          b_tilt_coef * c_star_Z_one
+      )
+      b_prime_Z_zero <- stats::plogis(
+        b_prime_Z_zero_logit +
+          b_tilt_coef * c_star_Z_zero
+      )
 
       # compute efficient score for outcome regression component
       b_score <- data[R == 1, two_phase_weights] *
-        ipw_prime * c_star_Z_natural * (data[R == 1, Y] - b_prime_Z_natural)
+        ipw_prime *
+        c_star_Z_natural *
+        (data[R == 1, Y] - b_prime_Z_natural)
     } else {
       b_score <- 0
     }
@@ -856,7 +890,8 @@ est_tml <- function(data,
       u_prime_diff_q_tilt <- cv_eif_est$u_int_diff
       if (tilt_two_phase_weights) {
         weights_q_tilt <- as.numeric(data[R == 1, A] == contrast[1]) /
-          g_prime * as.numeric(data[R == 1, two_phase_weights])
+          g_prime *
+          as.numeric(data[R == 1, two_phase_weights])
       } else {
         weights_q_tilt <- data$obs_weights * (data$A == contrast[1]) / g_prime
       }
@@ -881,8 +916,9 @@ est_tml <- function(data,
       }
       if (is.na(stats::coef(q_tilt_fit))) {
         q_tilt_fit$coefficients <- 0
-      } else if (!q_tilt_fit$converged || abs(max(stats::coef(q_tilt_fit))) >
-        tiltmod_tol) {
+      } else if (
+        !q_tilt_fit$converged || abs(max(stats::coef(q_tilt_fit))) > tiltmod_tol
+      ) {
         q_tilt_fit$coefficients <- 0
       }
       q_tilt_coef <- unname(stats::coef(q_tilt_fit))
@@ -893,14 +929,18 @@ est_tml <- function(data,
         q_prime_Z_one <- data[R == 1, Z]
         q_prime_Z_natural <- data[R == 1, Z]
       } else {
-        q_prime_Z_one <- stats::plogis(q_prime_Z_one_logit + q_tilt_coef *
-          cv_eif_est$u_int_diff)
+        q_prime_Z_one <- stats::plogis(
+          q_prime_Z_one_logit +
+            q_tilt_coef *
+              cv_eif_est$u_int_diff
+        )
         q_prime_Z_natural <- (data[R == 1, Z] * q_prime_Z_one) +
           ((1 - data[R == 1, Z]) * (1 - q_prime_Z_one))
       }
 
       # compute efficient score for intermediate confounding component
-      q_score <- ipw_prime * cv_eif_est$u_int_diff *
+      q_score <- ipw_prime *
+        cv_eif_est$u_int_diff *
         (data[R == 1, Z] - q_prime_Z_one) *
         (data[R == 1, two_phase_weights])
     } else {
@@ -935,7 +975,8 @@ est_tml <- function(data,
 
   # fit tilting regression for substitution estimator
   if (tilt_two_phase_weights) {
-    weights_v_tilt <- (as.numeric(data[R == 1, A]) == contrast[2]) / g_star *
+    weights_v_tilt <- (as.numeric(data[R == 1, A]) == contrast[2]) /
+      g_star *
       (as.numeric(data[R == 1, two_phase_weights]))
   } else {
     weights_v_tilt <- data$obs_weights * (data$A == contrast[2]) / g_star

@@ -1,3 +1,10 @@
+# medoutcon 0.2.5
+
+* Fixed an inconsistency in arguments passed to `cv.glmnet` by `fit_hal` in
+  `hal9001` (v0.4.6+), where unit tests and the vignette included references to
+  an argument `n_folds` in `fit_hal()`'s `fit_control` argument that has been
+  deprecated in favor of using `cv.glmnet()`'s already-defined `nfolds`.
+
 # medoutcon 0.2.4
 
 * Updated required versions of some dependencies to their most recent stable

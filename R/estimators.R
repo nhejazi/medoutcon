@@ -531,7 +531,6 @@ est_onestep <- function(
     folds <- origami::make_folds(
       data,
       fold_fun = origami::folds_vfold,
-      # fold_fun = origami::folds_resubstitution,
       V = cv_folds,
       strata_ids = data$Y
     )
@@ -540,7 +539,6 @@ est_onestep <- function(
     folds <- origami::make_folds(
       data,
       fold_fun = origami::folds_vfold,
-      # fold_fun = origami::folds_resubstitution,
       V = cv_folds
     )
   }

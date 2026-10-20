@@ -34,18 +34,21 @@ treatment variable $A$ on an outcome variable $Y$, through a direct path
 (through $A$ only) and an indirect path (through a set of mediators $M$
 only). In the presence of an intermediate <b>med</b>iator-<b>out</b>come
 <b>con</b>founder $Z$, itself affected by the treatment $A$, these
-correspond to the *interventional* (in)direct effects described by Dı́az
-et al. (2020), though similar (yet less general) effect definitions
-and/or estimation strategies have appeared i`n @`vanderweele2014effect,
-Rudolph et al. (2017), Zheng and van der Laan (2017), and Benkeser and
-Ran (2021). When no intermediate confounders are present, these effect
-definitions simplify to the well-studied *natural* (in)direct effects,
-and our estimators are analogs of those formulated by Zheng and van der
-Laan (2012). Both an efficient one-step bias-corrected estimator with
-cross-fitting (Pfanzagl and Wefelmeyer 1985; Zheng and van der Laan
+correspond to the *interventional* (in)direct effects described by
+<span class="nocase">Dı́az et al.</span> (2020), though similar (yet less
+general) effect definitions and/or estimation strategies have appeared
+i`n @`vanderweele2014effect, <span class="nocase">Rudolph et al.</span>
+(2017), <span class="nocase">Zheng and van der Laan</span> (2017), and
+Benkeser and Ran (2021). When no intermediate confounders are present,
+these effect definitions simplify to the well-studied *natural*
+(in)direct effects, and our estimators are analogs of those formulated
+by <span class="nocase">Zheng and van der Laan</span> (2012). Both an
+efficient one-step bias-corrected estimator with cross-fitting (Pfanzagl
+and Wefelmeyer 1985; <span class="nocase">Zheng and van der Laan</span>
 2011; Chernozhukov et al. 2018) and a cross-validated targeted minimum
-loss estimator (TMLE) (van der Laan and Rose 2011; Zheng and van der
-Laan 2011) are made available. `medoutcon` integrates with the [`sl3` R
+loss estimator (TMLE) (<span class="nocase">van der Laan and Rose</span>
+2011; <span class="nocase">Zheng and van der Laan</span> 2011) are made
+available. `medoutcon` integrates with the [`sl3` R
 package](https://github.com/tlverse/sl3) (Coyle et al. 2021) to leverage
 statistical machine learning in the estimation procedure.
 
@@ -71,6 +74,11 @@ confounder (`Z`), consider the following example:
 
 ``` r
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 library(stringr)
 library(medoutcon)
 #> medoutcon v0.2.4: Efficient Natural and Interventional Causal Mediation Analysis
@@ -253,21 +261,19 @@ See below for details:
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
 <div id="ref-benkeser2020nonparametric" class="csl-entry">
 
 Benkeser, David, and Jialu Ran. 2021. “Nonparametric Inference for
 Interventional Effects with Multiple Mediators.” *Journal of Causal
-Inference*. <https://doi.org/10.1515/jci-2020-0018>.
+Inference*, ahead of print. <https://doi.org/10.1515/jci-2020-0018>.
 
 </div>
 
 <div id="ref-chernozhukov2018double" class="csl-entry">
 
-Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo,
-Christian Hansen, Whitney Newey, and James Robins. 2018.
+Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, et al. 2018.
 “Double/Debiased Machine Learning for Treatment and Structural
 Parameters.” *The Econometrics Journal* 21 (1).
 <https://doi.org/10.1111/ectj.12097>.
@@ -277,16 +283,16 @@ Parameters.” *The Econometrics Journal* 21 (1).
 <div id="ref-coyle-gh-sl3" class="csl-entry">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and
-Oleg Sofrygin. 2021. “`sl3`: Modern Machine Learning Pipelines for Super
-Learning.” <https://doi.org/10.5281/zenodo.1342293>.
+Oleg Sofrygin. 2021. *`sl3`: Modern Machine Learning Pipelines for Super
+Learning*. V. 1.4.4. Released. <https://doi.org/10.5281/zenodo.1342293>.
 
 </div>
 
 <div id="ref-diaz2020nonparametric" class="csl-entry">
 
-Dı́az, Iván, Nima S Hejazi, Kara E Rudolph, and Mark J van der Laan.
-2020. “Non-Parametric Efficient Causal Mediation with Intermediate
-Confounders.” *Biometrika* 108 (3): 627–41.
+<span class="nocase">Dı́az, Iván, Nima S Hejazi, Kara E Rudolph, and Mark
+J van der Laan</span>. 2020. “Non-Parametric Efficient Causal Mediation
+with Intermediate Confounders.” *Biometrika* 108 (3): 627–41.
 <https://doi.org/10.1093/biomet/asaa085>.
 
 </div>
@@ -301,33 +307,35 @@ Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
 
 <div id="ref-rudolph2017robust" class="csl-entry">
 
-Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and Mark J van der Laan.
-2017. “Robust and Flexible Estimation of Stochastic Mediation Effects: A
-Proposed Method and Example in a Randomized Trial Setting.”
-*Epidemiologic Methods* 7 (1). <https://doi.org/10.1515/em-2017-0007>.
+<span class="nocase">Rudolph, Kara E, Oleg Sofrygin, Wenjing Zheng, and
+Mark J van der Laan</span>. 2017. “Robust and Flexible Estimation of
+Stochastic Mediation Effects: A Proposed Method and Example in a
+Randomized Trial Setting.” *Epidemiologic Methods* 7 (1).
+<https://doi.org/10.1515/em-2017-0007>.
 
 </div>
 
 <div id="ref-vdl2011targeted" class="csl-entry">
 
-van der Laan, Mark J, and Sherri Rose. 2011. *Targeted Learning: Causal
-Inference for Observational and Experimental Data*. Springer Science &
-Business Media.
+<span class="nocase">van der Laan, Mark J, and Sherri Rose</span>. 2011.
+*Targeted Learning: Causal Inference for Observational and Experimental
+Data*. Springer Science & Business Media.
 
 </div>
 
 <div id="ref-zheng2011cross" class="csl-entry">
 
-Zheng, Wenjing, and Mark J van der Laan. 2011. “Cross-Validated Targeted
-Minimum-Loss-Based Estimation.” In *Targeted Learning: Causal Inference
-for Observational and Experimental Data*, 459–74. Springer.
-<https://doi.org/10.1007/978-1-4419-9782-1_27>.
+<span class="nocase">Zheng, Wenjing, and Mark J van der Laan</span>.
+2011. “Cross-Validated Targeted Minimum-Loss-Based Estimation.” In
+*Targeted Learning: Causal Inference for Observational and Experimental
+Data*. Springer. <https://doi.org/10.1007/978-1-4419-9782-1_27>.
 
 </div>
 
 <div id="ref-zheng2012targeted" class="csl-entry">
 
-———. 2012. “Targeted Maximum Likelihood Estimation of Natural Direct
+<span class="nocase">Zheng, Wenjing, and Mark J van der Laan</span>.
+2012. “Targeted Maximum Likelihood Estimation of Natural Direct
 Effects.” *International Journal of Biostatistics* 8 (1).
 <https://doi.org/10.2202/1557-4679.1361>.
 
@@ -335,9 +343,10 @@ Effects.” *International Journal of Biostatistics* 8 (1).
 
 <div id="ref-zheng2017longitudinal" class="csl-entry">
 
-———. 2017. “Longitudinal Mediation Analysis with Time-Varying Mediators
-and Exposures, with Application to Survival Outcomes.” *Journal of
-Causal Inference* 5 (2). <https://doi.org/10.1515/jci-2016-0006>.
+<span class="nocase">Zheng, Wenjing, and Mark J van der Laan</span>.
+2017. “Longitudinal Mediation Analysis with Time-Varying Mediators and
+Exposures, with Application to Survival Outcomes.” *Journal of Causal
+Inference* 5 (2). <https://doi.org/10.1515/jci-2016-0006>.
 
 </div>
 

@@ -1,5 +1,9 @@
 title: medoutcon
-url: https://code.nimahejazi.org/medoutcon
+url: https://codex.nimahejazi.org/medoutcon
 template:
-  params:
-    bootswatch: readable
+  bootstrap: 5
+  light-switch: true
+  bslib:
+    bootswatch: simplex
+    link-color: "#006DAE"
+    link-color-dark: "#66A7CE"

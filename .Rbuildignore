@@ -8,6 +8,7 @@
 ^appveyor\.yml$
 ^codecov\.yml$
 ^_pkgdown\.yml$
+^pkgdown$
 
 # Extra miscellaneous support files/directories.
 ^cran-comments\.md$

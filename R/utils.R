@@ -29,20 +29,29 @@ confint.medoutcon <- function(object,
   # first, let's get Z_(1 - alpha)
   ci_norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
-  # assume continuous outcome if more than two levels in outcome node
-  if (length(unique(object$outcome)) > 2 ||
-    stringr::str_detect(object$param, "direct")) {
+  # NOTE: when parameter is not a counterfactual mean, binary outcomes don't
+  #       imply boundedness in unit interval
+  if (is.null(object$.contrast)) {
     # NOTE: variance already scaled (i.e., Var(D)/n)
     se_eif <- sqrt(object$var)
 
     # compute the interval around the point estimate
     ci_theta <- ci_norm_bounds * se_eif + object$theta
-  } else if (length(unique(object$outcome)) == 2) {
-    # for binary outcomes, create CI on the logit scale and back-transform
-    theta_ratio <- stats::qlogis(object$theta)
-    grad_ratio_delta <- (1 / object$theta) + (1 / (1 - object$theta))
-    se_eif_logit <- sqrt(grad_ratio_delta^2 * object$var)
-    ci_theta <- stats::plogis(ci_norm_bounds * se_eif_logit + theta_ratio)
+  } else {
+    # assume continuous outcome if more than two levels in outcome node
+    if (length(unique(object$outcome)) > 2 || stringr::str_detect(object$param, "direct")) {
+      # NOTE: variance already scaled (i.e., Var(D)/n)
+      se_eif <- sqrt(object$var)
+
+      # compute the interval around the point estimate
+      ci_theta <- ci_norm_bounds * se_eif + object$theta
+    } else if (length(unique(object$outcome)) == 2) {
+      # for binary outcomes, create CI on the logit scale and back-transform
+      theta_ratio <- stats::qlogis(bound_precision(object$theta))
+      grad_ratio_delta <- (1 / object$theta) + (1 / (1 - object$theta))
+      se_eif_logit <- sqrt(grad_ratio_delta^2 * object$var)
+      ci_theta <- stats::plogis(ci_norm_bounds * se_eif_logit + theta_ratio)
+    }
   }
 
   # set up output CI object
@@ -150,7 +159,7 @@ print.medoutcon <- function(x, ...) {
 #' @importFrom assertthat assert_that
 #'
 #' @keywords internal
-bound_precision <- function(vals, tol = 1e-6) {
+bound_precision <- function(vals, tol = 1e-5) {
   vals[vals < tol] <- tol
   vals[vals > 1 - tol] <- 1 - tol
   return(vals)

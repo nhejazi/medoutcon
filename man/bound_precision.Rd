@@ -4,7 +4,7 @@
 \alias{bound_precision}
 \title{Bounding to numerical precision}
 \usage{
-bound_precision(vals, tol = 1e-06)
+bound_precision(vals, tol = 1e-05)
 }
 \arguments{
 \item{vals}{A \code{numeric} vector of values in the unit interval [0, 1].}

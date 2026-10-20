@@ -26,7 +26,8 @@
 #' @param effect A \code{character} indicating whether to compute the direct or
 #'   the indirect effects of <https://doi.org/10.1093/biomet/asaa085>. This is
 #'   ignored when the argument \code{contrast} is provided. By default, the
-#'   direct effect is estimated.
+#'   direct effect is estimated. When \code{Z = NULL}, the proportion mediated,
+#'   a contrast derived from the natural direct effect, may also be estimated.
 #' @param contrast A \code{numeric} double indicating the two values of the
 #'   intervention \code{A} to be compared. The default value of \code{NULL} has
 #'   no effect, as the value of the argument \code{effect} is instead used to
@@ -140,7 +141,7 @@ medoutcon <- function(W,
                       estimator = c("tmle", "onestep"),
                       estimator_args = list(
                         cv_folds = 10L, cv_strat = FALSE, strat_pmin = 0.1,
-                        max_iter = 10L, tiltmod_tol = 5
+                        max_iter = 10L, tiltmod_tol = 2
                       ),
                       g_bounds = c(0.005, 0.995)) {
   # set defaults
@@ -274,7 +275,7 @@ medoutcon <- function(W,
       var = de_var_est,
       eif = de_eif_est,
       type = estimator,
-      param = paste("direct", effect_type, sep = "_"),
+      param = paste("Direct", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
     class(de_est_out) <- "medoutcon"
@@ -291,7 +292,7 @@ medoutcon <- function(W,
       var = ie_var_est,
       eif = ie_eif_est,
       type = estimator,
-      param = paste("indirect", effect_type, sep = "_"),
+      param = paste("Indirect", effect_type, sep = "_"),
       outcome = as.numeric(Y)
     )
     class(ie_est_out) <- "medoutcon"
@@ -321,7 +322,7 @@ medoutcon <- function(W,
       var = pm_var_est,
       eif = pm_eif_est,
       type = estimator,
-      param = paste("pm", effect_type, sep = "_"),
+      param = paste("Proportion Mediated", effect_type, sep = "_"),
       outcome = as.numeric(Y),
       contrast_results = list(
         contrast_1_1_mean = est_params[[1]]$theta,

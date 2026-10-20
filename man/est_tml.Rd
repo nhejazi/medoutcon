@@ -25,7 +25,7 @@ est_tml(
   cv_strat = FALSE,
   strat_pmin = 0.1,
   max_iter = 10L,
-  tiltmod_tol = 5
+  tiltmod_tol = 2
 )
 }
 \arguments{

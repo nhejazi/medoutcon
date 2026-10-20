@@ -26,7 +26,7 @@ medoutcon(
   d_learners = sl3::Lrnr_glm_fast$new(),
   estimator = c("tmle", "onestep"),
   estimator_args = list(cv_folds = 10L, cv_strat = FALSE, strat_pmin = 0.1, max_iter =
-    10L, tiltmod_tol = 5),
+    10L, tiltmod_tol = 2),
   g_bounds = c(0.005, 0.995)
 )
 }
@@ -66,7 +66,8 @@ measured. Defaults to a vector of ones.}
 \item{effect}{A \code{character} indicating whether to compute the direct or
 the indirect effects of <https://doi.org/10.1093/biomet/asaa085>. This is
 ignored when the argument \code{contrast} is provided. By default, the
-direct effect is estimated.}
+direct effect is estimated. When \code{Z = NULL}, the proportion mediated,
+a contrast derived from the natural direct effect, may also be estimated.}
 
 \item{contrast}{A \code{numeric} double indicating the two values of the
 intervention \code{A} to be compared. The default value of \code{NULL} has

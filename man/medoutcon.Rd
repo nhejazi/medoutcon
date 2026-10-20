@@ -35,7 +35,9 @@ medoutcon(
 to a set of baseline covariates.}
 
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
-parameter of interest is defined as a location shift of this quantity.}
+(in)direct effects are defined by a joint intervention that sets this
+quantity to a static value and draws the mediators \code{M} stochastically
+from their distribution under a (possibly different) static value of it.}
 
 \item{Z}{A \code{numeric} vector corresponding to an intermediate confounder
 affected by treatment (on the causal pathway between the intervention A,
